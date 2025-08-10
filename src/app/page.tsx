@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react'
 import { ProductCard } from '@/components/product-card-simple'
 import { SearchBar } from '@/components/search-bar'
-import { CardCarousel } from '@/components/card-carousel'
+import { HorizontalCarousel } from '@/components/horizontal-carousel'
 import { BannerCarousel } from '@/components/banner-carousel'
 import { ImageCarouselContinuous } from '@/components/image-carousel-continuous'
 import { ImageCarouselContinuous2 } from '@/components/image-carousel-continuous2'
 import { InfoBannerCarousel } from '@/components/info-banner-carousel'
 import { Product } from '@/types/product'
-import { ChevronDown, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, ChevronUp, Menu } from 'lucide-react'
+import { ChevronDown, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, Menu } from 'lucide-react'
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([])
@@ -25,8 +25,6 @@ export default function Home() {
   // Estado para el menú móvil
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   
-  // Estado para controlar la visibilidad de la flecha de volver arriba
-  const [showScrollToTop, setShowScrollToTop] = useState(false)
 
   // Función para cerrar todos los modales
   const closeAllModals = () => {
@@ -99,29 +97,6 @@ export default function Home() {
     }
   }, [showCategorias, showArriendos, showServicios, showMobileMenu])
 
-  // Efecto para detectar scroll y mostrar/ocultar flecha de volver arriba
-  useEffect(() => {
-    const handleScroll = () => {
-      // Obtener la posición del header
-      const header = document.querySelector('header')
-      if (header) {
-        const headerRect = header.getBoundingClientRect()
-        // Mostrar flecha si el header no está visible (ha salido de la pantalla)
-        setShowScrollToTop(headerRect.bottom < 0)
-      }
-    }
-
-    // Agregar event listener de scroll
-    window.addEventListener('scroll', handleScroll)
-    
-    // Verificar estado inicial
-    handleScroll()
-    
-    // Limpiar event listener
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
 
   const fetchProducts = async () => {
     try {
@@ -135,13 +110,6 @@ export default function Home() {
     }
   }
 
-  // Función para volver al inicio de la página
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    })
-  }
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -487,7 +455,7 @@ export default function Home() {
       {/* Main Content */}
       <main className="container mx-auto py-8 px-6">
         {/* Sección Destacados */}
-        <CardCarousel
+        <HorizontalCarousel
           title="Destacados"
           subtitle="Los productos más populares del momento"
           products={filteredProducts.slice(0, 10)}
@@ -495,7 +463,7 @@ export default function Home() {
         />
 
         {/* Sección Ofertas */}
-        <CardCarousel
+        <HorizontalCarousel
           title="Ofertas"
           subtitle="Descuentos exclusivos por tiempo limitado"
           products={filteredProducts.filter(p => p.discount && p.discount > 0).slice(0, 10)}
@@ -505,7 +473,7 @@ export default function Home() {
   
 
         {/* Sección Novedades */}
-        <CardCarousel
+        <HorizontalCarousel
           title="Novedades"
           subtitle="Los últimos lanzamientos del mercado"
           products={filteredProducts.slice(4, 14)}
@@ -513,7 +481,7 @@ export default function Home() {
         />
 
         {/* Sección Tendencias */}
-        <CardCarousel
+        <HorizontalCarousel
           title="Tendencias"
           subtitle="Lo más buscado y deseado actualmente"
           products={filteredProducts.slice(2, 12)}
@@ -555,7 +523,7 @@ export default function Home() {
         />
 
         {/* Sección ¡No te lo Pierdas! */}
-        <CardCarousel
+        <HorizontalCarousel
           title="¡No te lo Pierdas!"
           subtitle="Oportunidades únicas que no puedes dejar pasar"
           products={filteredProducts.slice(6, 16)}
@@ -780,7 +748,7 @@ export default function Home() {
         </InfoBannerCarousel>
         
         {/* Sección Liquidaciones */}
-        <CardCarousel
+        <HorizontalCarousel
           title="Liquidaciones"
           subtitle="Precios increíbles en productos seleccionados"
           products={filteredProducts.slice(4, 12)}
@@ -902,26 +870,6 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Flecha de volver arriba */}
-      {showScrollToTop && (
-        <button
-          onClick={scrollToTop}
-          className="fixed right-8 top-1/2 transform -translate-y-1/2 z-50 group"
-          aria-label="Volver arriba"
-        >
-          <div className="relative">
-            {/* Círculo exterior con doble borde */}
-            <div className="w-16 h-16 rounded-full border-6 border-purple-600 bg-transparent flex items-center justify-center animate-pulse shadow-2xl">
-              {/* Círculo interior */}
-              <div className="w-12 h-12 rounded-full border-4 border-purple-500 bg-transparent flex items-center justify-center">
-                <ChevronUp className="w-8 h-8 text-purple-600 font-bold" />
-              </div>
-            </div>
-            {/* Efecto de brillo al hover */}
-            <div className="absolute inset-0 rounded-full bg-purple-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
-          </div>
-        </button>
-      )}
     </div>
   )
 }

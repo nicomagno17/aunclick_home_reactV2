@@ -19,9 +19,9 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <div className="group h-full bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col">
-      {/* Parte Superior - Imagen (sin cambios) */}
-      <div className="relative aspect-[3/3] overflow-hidden bg-white sm:aspect-[3/3]">
+    <div className="group h-full bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col min-w-[160px] sm:min-w-[200px] md:min-w-[240px]">
+      {/* Parte Superior - Imagen más grande para touch */}
+      <div className="relative aspect-[4/3] sm:aspect-[3/3] overflow-hidden bg-white">
         <img
           src={product.image}
           alt={product.name}
@@ -42,13 +42,13 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="absolute top-1 sm:top-2 right-1 sm:right-2 flex flex-col gap-1 sm:gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button className="h-6 w-6 sm:h-8 sm:w-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white">
-            <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700" />
+        {/* Action Buttons - Más grandes para touch */}
+        <div className="absolute top-2 right-2 flex flex-col gap-2">
+          <button className="h-10 w-10 sm:h-8 sm:w-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white touch-none">
+            <Heart className="h-5 w-5 sm:h-4 sm:w-4 text-gray-700" />
           </button>
-          <button className="h-6 w-6 sm:h-8 sm:w-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white">
-            <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700" />
+          <button className="h-10 w-10 sm:h-8 sm:w-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white touch-none">
+            <ExternalLink className="h-5 w-5 sm:h-4 sm:w-4 text-gray-700" />
           </button>
         </div>
 

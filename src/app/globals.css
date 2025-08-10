@@ -145,3 +145,34 @@
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+/* Estilos para scroll horizontal y touch */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+/* Mejoras para touch en dispositivos móviles */
+.touch-pan-x {
+  touch-action: pan-x;
+}
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+}
+
+/* Clase para prevenir selección de texto durante el arrastre */
+.select-none {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
