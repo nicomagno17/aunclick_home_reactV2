@@ -1,9 +1,7 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { Search, X } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 
 interface FloatingSearchBarProps {
@@ -40,10 +38,9 @@ export function FloatingSearchBar({
     }
   }
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    onChange(newValue)
-  }, [onChange])
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.value)
+  }
 
   return (
     <div 
@@ -61,44 +58,43 @@ export function FloatingSearchBar({
         <div className="flex items-center justify-center">
           <div className={`relative w-full max-w-2xl transition-all duration-300 ${isFocused ? 'scale-105' : ''}`}>
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white h-5 w-5 z-10" />
-              <Input
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white h-5 w-5 z-10 pointer-events-none" />
+              
+              <input
                 type="text"
                 value={value}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
-                className={`pl-12 pr-16 py-2.5 text-base text-white placeholder:text-white/70 border-2 transition-all duration-300 cursor-text ${
+                className={`w-full pl-12 pr-16 py-2.5 text-base text-white placeholder:text-white/70 border-2 rounded-lg transition-all duration-300 backdrop-blur-sm outline-none ${
                   isFocused 
                     ? 'border-white shadow-lg shadow-white/20 bg-white/20' 
                     : 'border-white/50 hover:border-white/80 bg-white/10'
-                } backdrop-blur-sm rounded-lg`}
+                }`}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
               />
               
               {/* Botón de limpiar (X) */}
               {value && (
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   onClick={handleClear}
-                  className="absolute right-12 top-1/2 transform -translate-y-1/2 h-6 w-6 md:h-8 md:w-8 p-0 hover:bg-white/20 z-10"
+                  className="absolute right-12 top-1/2 transform -translate-y-1/2 h-6 w-6 md:h-8 md:w-8 rounded-full hover:bg-white/20 flex items-center justify-center z-10 transition-colors"
+                  type="button"
                 >
                   <X className="h-3 w-3 md:h-4 md:w-4 text-white" />
-                </Button>
+                </button>
               )}
               
               {/* Botón de búsqueda (lupa clickeable) */}
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={handleSearch}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 md:h-10 md:w-10 p-0 hover:bg-white/20 z-10 rounded-full"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 md:h-10 md:w-10 rounded-full hover:bg-white/20 flex items-center justify-center z-10 transition-colors"
                 aria-label="Buscar"
+                type="button"
               >
                 <Search className="h-4 w-4 md:h-5 md:w-5 text-white" />
-              </Button>
+              </button>
             </div>
             
             {/* Decorative glow effect */}

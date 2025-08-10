@@ -1,0 +1,295 @@
+import { Product } from '@/types/product'
+
+export const mockProducts: Product[] = [
+  // Electrónicos
+  {
+    id: 'elec-001',
+    name: 'iPhone 15 Pro Max 256GB',
+    description: 'El iPhone más avanzado con chip A17 Pro, cámara de 48MP y pantalla Super Retina XDR de 6.7 pulgadas.',
+    price: 1199000,
+    originalPrice: 1299000,
+    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop',
+    category: 'electronica',
+    source: 'TechStore Pro',
+    rating: 4.8,
+    reviews: 1245,
+    inStock: true,
+    discount: 8
+  },
+  {
+    id: 'elec-002',
+    name: 'MacBook Air M2 13" 256GB',
+    description: 'Portátil ultradelgado con chip M2 de Apple, 8GB RAM, pantalla Liquid Retina de 13.6 pulgadas.',
+    price: 1299000,
+    originalPrice: 1399000,
+    image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop',
+    category: 'electronica',
+    source: 'Apple Store Oficial',
+    rating: 4.9,
+    reviews: 890,
+    inStock: true,
+    discount: 7
+  },
+  {
+    id: 'elec-003',
+    name: 'Samsung Galaxy S24 Ultra 512GB',
+    description: 'Smartphone premium con S Pen incorporado, cámara de 200MP y pantalla Dynamic AMOLED 2X.',
+    price: 1099000,
+    originalPrice: 1199000,
+    image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400&h=300&fit=crop',
+    category: 'electronica',
+    source: 'Samsung Store',
+    rating: 4.7,
+    reviews: 672,
+    inStock: true,
+    discount: 8
+  },
+  {
+    id: 'elec-004',
+    name: 'AirPods Pro 2ª Generación',
+    description: 'Audífonos inalámbricos con cancelación activa de ruido y audio espacial personalizado.',
+    price: 249000,
+    originalPrice: 289000,
+    image: 'https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=400&h=300&fit=crop',
+    category: 'electronica',
+    source: 'Audio Center',
+    rating: 4.6,
+    reviews: 2103,
+    inStock: true,
+    discount: 14
+  },
+  {
+    id: 'elec-005',
+    name: 'PlayStation 5 Digital Edition',
+    description: 'Consola de videojuegos de última generación con procesador AMD Ryzen Zen 2 y gráficos 4K.',
+    price: 399000,
+    originalPrice: 449000,
+    image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=300&fit=crop',
+    category: 'electronica',
+    source: 'GameWorld',
+    rating: 4.8,
+    reviews: 1567,
+    inStock: false,
+    discount: 11
+  },
+
+  // Ropa y Moda
+  {
+    id: 'ropa-001',
+    name: 'Nike Air Max 270 React',
+    description: 'Zapatillas deportivas con tecnología Air Max y suela React para máxima comodidad.',
+    price: 89000,
+    originalPrice: 109000,
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop',
+    category: 'ropa',
+    source: 'Nike Store',
+    rating: 4.5,
+    reviews: 834,
+    inStock: true,
+    discount: 18
+  },
+  {
+    id: 'ropa-002',
+    name: 'Chaqueta Adidas Originals',
+    description: 'Chaqueta deportiva clásica con capucha, diseño retro y logo bordado.',
+    price: 65000,
+    originalPrice: 79000,
+    image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=300&fit=crop',
+    category: 'ropa',
+    source: 'Adidas Official',
+    rating: 4.3,
+    reviews: 456,
+    inStock: true,
+    discount: 18
+  },
+  {
+    id: 'ropa-003',
+    name: 'Jeans Levi\'s 501 Original',
+    description: 'Jeans clásicos de corte recto, 100% algodón, diseño atemporal y duradero.',
+    price: 55000,
+    originalPrice: 69000,
+    image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=300&fit=crop',
+    category: 'ropa',
+    source: 'Levi\'s Store',
+    rating: 4.6,
+    reviews: 1203,
+    inStock: true,
+    discount: 20
+  },
+
+  // Hogar y Jardín
+  {
+    id: 'hogar-001',
+    name: 'Aspiradora Robot iRobot Roomba',
+    description: 'Robot aspirador inteligente con mapeo láser, control por app y vaciado automático.',
+    price: 449000,
+    originalPrice: 529000,
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
+    category: 'hogar',
+    source: 'Smart Home Tech',
+    rating: 4.4,
+    reviews: 789,
+    inStock: true,
+    discount: 15
+  },
+  {
+    id: 'hogar-002',
+    name: 'Cafetera Nespresso Vertuo',
+    description: 'Cafetera de cápsulas con tecnología Centrifusion, múltiples tamaños de taza.',
+    price: 189000,
+    originalPrice: 219000,
+    image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop',
+    category: 'hogar',
+    source: 'Kitchen World',
+    rating: 4.7,
+    reviews: 1456,
+    inStock: true,
+    discount: 14
+  },
+
+  // Deportes
+  {
+    id: 'deportes-001',
+    name: 'Bicicleta de Montaña Trek',
+    description: 'Bicicleta MTB con cuadro de aluminio, 21 velocidades y suspensión delantera.',
+    price: 349000,
+    originalPrice: 399000,
+    image: 'https://images.unsplash.com/photo-1544191696-15693072f5c4?w=400&h=300&fit=crop',
+    category: 'deportes',
+    source: 'Bike Center',
+    rating: 4.5,
+    reviews: 234,
+    inStock: true,
+    discount: 13
+  },
+  {
+    id: 'deportes-002',
+    name: 'Set de Pesas Ajustables',
+    description: 'Set completo de pesas desde 2.5kg hasta 25kg por mancuerna, ahorra espacio.',
+    price: 159000,
+    originalPrice: 189000,
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+    category: 'deportes',
+    source: 'FitLife Store',
+    rating: 4.6,
+    reviews: 567,
+    inStock: true,
+    discount: 16
+  },
+
+  // Belleza
+  {
+    id: 'belleza-001',
+    name: 'Set de Skincare Coreano',
+    description: 'Rutina completa de cuidado facial con limpiador, tónico, sérum y crema hidratante.',
+    price: 89000,
+    originalPrice: 109000,
+    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=300&fit=crop',
+    category: 'belleza',
+    source: 'K-Beauty Store',
+    rating: 4.8,
+    reviews: 923,
+    inStock: true,
+    discount: 18
+  },
+  {
+    id: 'belleza-002',
+    name: 'Perfume Chanel No. 5',
+    description: 'Fragancia clásica femenina con notas florales, elegante y atemporal.',
+    price: 129000,
+    image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=300&fit=crop',
+    category: 'belleza',
+    source: 'Perfume Palace',
+    rating: 4.9,
+    reviews: 1834,
+    inStock: true
+  },
+
+  // Libros
+  {
+    id: 'libros-001',
+    name: 'Atomic Habits - James Clear',
+    description: 'Libro bestseller sobre cómo crear buenos hábitos y romper los malos.',
+    price: 19000,
+    originalPrice: 24000,
+    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop',
+    category: 'libros',
+    source: 'Librería Central',
+    rating: 4.7,
+    reviews: 2456,
+    inStock: true,
+    discount: 21
+  },
+  {
+    id: 'libros-002',
+    name: 'El Principito - Antoine de Saint-Exupéry',
+    description: 'Clásico de la literatura universal, edición especial ilustrada.',
+    price: 15000,
+    originalPrice: 18000,
+    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=300&fit=crop',
+    category: 'libros',
+    source: 'Books & More',
+    rating: 4.9,
+    reviews: 3421,
+    inStock: true,
+    discount: 17
+  },
+
+  // Productos adicionales para búsqueda
+  {
+    id: 'misc-001',
+    name: 'Smart Watch Apple Watch Series 9',
+    description: 'Reloj inteligente con GPS, monitor de salud y pantalla Always-On Retina.',
+    price: 399000,
+    originalPrice: 449000,
+    image: 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=300&fit=crop',
+    category: 'electronica',
+    source: 'Wearable Tech',
+    rating: 4.6,
+    reviews: 1567,
+    inStock: true,
+    discount: 11
+  },
+  {
+    id: 'misc-002',
+    name: 'Mesa de Escritorio Ergonómica',
+    description: 'Mesa de trabajo regulable en altura, ideal para home office.',
+    price: 189000,
+    originalPrice: 229000,
+    image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
+    category: 'hogar',
+    source: 'Office Furniture',
+    rating: 4.4,
+    reviews: 345,
+    inStock: true,
+    discount: 17
+  },
+  {
+    id: 'misc-003',
+    name: 'Audífonos Gaming Razer',
+    description: 'Audífonos gaming con sonido envolvente 7.1, micrófono retráctil y RGB.',
+    price: 129000,
+    originalPrice: 159000,
+    image: 'https://images.unsplash.com/photo-1599669454699-248893623440?w=400&h=300&fit=crop',
+    category: 'electronica',
+    source: 'Gaming Store',
+    rating: 4.5,
+    reviews: 1123,
+    inStock: true,
+    discount: 19
+  },
+  {
+    id: 'misc-004',
+    name: 'Silla Gamer Ergonómica',
+    description: 'Silla gaming con respaldo alto, reposabrazos ajustables y soporte lumbar.',
+    price: 299000,
+    originalPrice: 349000,
+    image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&h=300&fit=crop',
+    category: 'hogar',
+    source: 'Gaming Furniture',
+    rating: 4.3,
+    reviews: 678,
+    inStock: true,
+    discount: 14
+  }
+]
