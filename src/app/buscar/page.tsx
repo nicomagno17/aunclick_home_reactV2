@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { SearchBar } from '@/components/search-bar'
+import { Header } from '@/components/header'
 import { Product } from '@/types/product'
 import { mockProducts } from '@/data/mock-products'
-import { ArrowLeft, Filter } from 'lucide-react'
+import { Filter } from 'lucide-react'
 
 function SearchPageContent() {
   const searchParams = useSearchParams()
@@ -96,72 +96,13 @@ function SearchPageContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header Principal Persistente */}
-      <header className="relative text-white shadow-2xl" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
-        <div className="container mx-auto relative z-10">
-          {/* Versión Desktop */}
-          <div className="hidden sm:block py-6 px-6">
-            <div className="flex items-center justify-between">
-              {/* Logo/Título - Dos filas a la izquierda */}
-              <div className="flex flex-col items-start">
-                <h1 className="text-xl font-bold leading-tight text-white">Solo a</h1>
-                <h1 className="text-4xl font-bold leading-tight text-yellow-300">un CLICK</h1>
-              </div>
-
-              {/* Buscador en el centro */}
-              <div className="flex-1 max-w-lg mx-8">
-                <SearchBar 
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  placeholder="Buscar productos, tiendas, categorías..."
-                />
-              </div>
-
-              {/* Botón volver a la derecha */}
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => router.back()}
-                  className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-purple-600/50 hover:bg-purple-600/70 px-4 py-2 rounded-lg backdrop-blur-sm border border-purple-300/30"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                  <span className="text-sm">Volver</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Versión Móvil */}
-          <div className="sm:hidden w-full">
-            {/* Primera fila: Título y botón volver */}
-            <div className="flex items-center justify-between px-4 py-3">
-              {/* Logo/Título - Más pequeño y a la izquierda */}
-              <div className="flex flex-col items-start">
-                <h1 className="text-sm font-bold leading-tight text-white">Solo a</h1>
-                <h1 className="text-lg font-bold leading-tight text-yellow-300">un CLICK</h1>
-              </div>
-
-              {/* Botón volver a la derecha */}
-              <button
-                onClick={() => router.back()}
-                className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-purple-600/50 hover:bg-purple-600/70 px-3 py-2 rounded-lg backdrop-blur-sm border border-purple-300/30"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="text-xs">Volver</span>
-              </button>
-            </div>
-
-            {/* Segunda fila: Buscador */}
-            <div className="px-4 pb-3">
-              <SearchBar 
-                value={searchTerm}
-                onChange={setSearchTerm}
-                placeholder="Buscar productos..."
-                className="text-sm"
-              />
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Header Reutilizable */}
+      <Header 
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        showBackButton={true}
+        showFloatingSearch={false}
+      />
 
       {/* Filtros y ordenamiento */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
