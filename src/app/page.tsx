@@ -5,6 +5,7 @@ import { ProductCard } from '@/components/product-card-simple'
 import { SearchBar } from '@/components/search-bar'
 import { FloatingSearchBar } from '@/components/floating-search-bar'
 import { HorizontalCarousel } from '@/components/horizontal-carousel'
+import { SkeletonCarousel } from '@/components/skeleton-carousel'
 import { BannerCarousel } from '@/components/banner-carousel'
 import { ImageCarouselContinuous } from '@/components/image-carousel-continuous'
 import { ImageCarouselContinuous2 } from '@/components/image-carousel-continuous2'
@@ -478,39 +479,65 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto py-8 px-6">
-        {/* Sección Destacados */}
-        <HorizontalCarousel
-          title="Destacados"
-          subtitle="Los productos más populares del momento"
-          products={products.slice(0, 10)}
-          cardKeyPrefix="destacados"
-        />
+        {loading ? (
+          <>
+            {/* Skeletons de carga */}
+            <SkeletonCarousel
+              title="Destacados"
+              subtitle="Los productos más populares del momento"
+              cardCount={10}
+            />
+            <SkeletonCarousel
+              title="Ofertas"
+              subtitle="Descuentos exclusivos por tiempo limitado"
+              cardCount={10}
+            />
+            <SkeletonCarousel
+              title="Novedades"
+              subtitle="Los últimos lanzamientos del mercado"
+              cardCount={10}
+            />
+            <SkeletonCarousel
+              title="Tendencias"
+              subtitle="Lo más buscado y deseado actualmente"
+              cardCount={10}
+            />
+          </>
+        ) : (
+          <>
+            {/* Sección Destacados */}
+            <HorizontalCarousel
+              title="Destacados"
+              subtitle="Los productos más populares del momento"
+              products={products.slice(0, 10)}
+              cardKeyPrefix="destacados"
+            />
 
-        {/* Sección Ofertas */}
-        <HorizontalCarousel
-          title="Ofertas"
-          subtitle="Descuentos exclusivos por tiempo limitado"
-          products={products.filter(p => p.discount && p.discount > 0).slice(0, 10)}
-          cardKeyPrefix="ofertas"
-        />
+            {/* Sección Ofertas */}
+            <HorizontalCarousel
+              title="Ofertas"
+              subtitle="Descuentos exclusivos por tiempo limitado"
+              products={products.filter(p => p.discount && p.discount > 0).slice(0, 10)}
+              cardKeyPrefix="ofertas"
+            />
 
-  
+            {/* Sección Novedades */}
+            <HorizontalCarousel
+              title="Novedades"
+              subtitle="Los últimos lanzamientos del mercado"
+              products={products.slice(4, 14)}
+              cardKeyPrefix="novedades"
+            />
 
-        {/* Sección Novedades */}
-        <HorizontalCarousel
-          title="Novedades"
-          subtitle="Los últimos lanzamientos del mercado"
-          products={products.slice(4, 14)}
-          cardKeyPrefix="novedades"
-        />
-
-        {/* Sección Tendencias */}
-        <HorizontalCarousel
-          title="Tendencias"
-          subtitle="Lo más buscado y deseado actualmente"
-          products={products.slice(2, 12)}
-          cardKeyPrefix="tendencias"
-        />
+            {/* Sección Tendencias */}
+            <HorizontalCarousel
+              title="Tendencias"
+              subtitle="Lo más buscado y deseado actualmente"
+              products={products.slice(2, 12)}
+              cardKeyPrefix="tendencias"
+            />
+          </>
+        )}
 
         {/* Segundo Carrusel Continuo de 12 Imágenes */}
         <ImageCarouselContinuous2 
@@ -546,13 +573,21 @@ export default function Home() {
           autoPlayInterval={6000}
         />
 
-        {/* Sección ¡No te lo Pierdas! */}
-        <HorizontalCarousel
-          title="¡No te lo Pierdas!"
-          subtitle="Oportunidades únicas que no puedes dejar pasar"
-          products={products.slice(6, 16)}
-          cardKeyPrefix="no-te-lo-pierdas"
-        />
+        {loading ? (
+          <SkeletonCarousel
+            title="¡No te lo Pierdas!"
+            subtitle="Oportunidades únicas que no puedes dejar pasar"
+            cardCount={10}
+          />
+        ) : (
+          /* Sección ¡No te lo Pierdas! */
+          <HorizontalCarousel
+            title="¡No te lo Pierdas!"
+            subtitle="Oportunidades únicas que no puedes dejar pasar"
+            products={products.slice(6, 16)}
+            cardKeyPrefix="no-te-lo-pierdas"
+          />
+        )}
 
         {/* Carrusel Informativo */}
         <InfoBannerCarousel autoPlayInterval={7000}>
@@ -771,13 +806,21 @@ export default function Home() {
           </section>
         </InfoBannerCarousel>
         
-        {/* Sección Liquidaciones */}
-        <HorizontalCarousel
-          title="Liquidaciones"
-          subtitle="Precios increíbles en productos seleccionados"
-          products={products.slice(4, 12)}
-          cardKeyPrefix="liquidaciones"
-        />
+        {loading ? (
+          <SkeletonCarousel
+            title="Liquidaciones"
+            subtitle="Precios increíbles en productos seleccionados"
+            cardCount={8}
+          />
+        ) : (
+          /* Sección Liquidaciones */
+          <HorizontalCarousel
+            title="Liquidaciones"
+            subtitle="Precios increíbles en productos seleccionados"
+            products={products.slice(4, 12)}
+            cardKeyPrefix="liquidaciones"
+          />
+        )}
       </main>
 
       {/* Footer */}

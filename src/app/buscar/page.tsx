@@ -3,10 +3,9 @@
 import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { SearchBar } from '@/components/search-bar'
-import { HorizontalCarousel } from '@/components/horizontal-carousel'
 import { Product } from '@/types/product'
 import { mockProducts } from '@/data/mock-products'
-import { ArrowLeft, Filter, SortDesc } from 'lucide-react'
+import { ArrowLeft, Filter } from 'lucide-react'
 
 function SearchPageContent() {
   const searchParams = useSearchParams()
@@ -97,27 +96,69 @@ function SearchPageContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header de búsqueda */}
-      <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-purple-700 text-white shadow-lg">
-        <div className="container mx-auto px-4 py-6">
-          {/* Botón volver */}
-          <div className="flex items-center gap-4 mb-4">
-            <button
-              onClick={() => router.back()}
-              className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="text-sm">Volver</span>
-            </button>
+      {/* Header Principal Persistente */}
+      <header className="relative text-white shadow-2xl" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
+        <div className="container mx-auto relative z-10">
+          {/* Versión Desktop */}
+          <div className="hidden sm:block py-6 px-6">
+            <div className="flex items-center justify-between">
+              {/* Logo/Título - Dos filas a la izquierda */}
+              <div className="flex flex-col items-start">
+                <h1 className="text-xl font-bold leading-tight text-white">Solo a</h1>
+                <h1 className="text-4xl font-bold leading-tight text-yellow-300">un CLICK</h1>
+              </div>
+
+              {/* Buscador en el centro */}
+              <div className="flex-1 max-w-lg mx-8">
+                <SearchBar 
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="Buscar productos, tiendas, categorías..."
+                />
+              </div>
+
+              {/* Botón volver a la derecha */}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => router.back()}
+                  className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-purple-600/50 hover:bg-purple-600/70 px-4 py-2 rounded-lg backdrop-blur-sm border border-purple-300/30"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                  <span className="text-sm">Volver</span>
+                </button>
+              </div>
+            </div>
           </div>
-          
-          {/* Barra de búsqueda */}
-          <div className="w-full">
-            <SearchBar 
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder="Buscar productos, tiendas, categorías..."
-            />
+
+          {/* Versión Móvil */}
+          <div className="sm:hidden w-full">
+            {/* Primera fila: Título y botón volver */}
+            <div className="flex items-center justify-between px-4 py-3">
+              {/* Logo/Título - Más pequeño y a la izquierda */}
+              <div className="flex flex-col items-start">
+                <h1 className="text-sm font-bold leading-tight text-white">Solo a</h1>
+                <h1 className="text-lg font-bold leading-tight text-yellow-300">un CLICK</h1>
+              </div>
+
+              {/* Botón volver a la derecha */}
+              <button
+                onClick={() => router.back()}
+                className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-purple-600/50 hover:bg-purple-600/70 px-3 py-2 rounded-lg backdrop-blur-sm border border-purple-300/30"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="text-xs">Volver</span>
+              </button>
+            </div>
+
+            {/* Segunda fila: Buscador */}
+            <div className="px-4 pb-3">
+              <SearchBar 
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="Buscar productos..."
+                className="text-sm"
+              />
+            </div>
           </div>
         </div>
       </header>
@@ -262,46 +303,57 @@ function SearchPageContent() {
           </div>
         )}
 
-        {/* Resultados */}
+        {/* Resultados en grid acumulativo */}
         {!loading && filteredProducts.length > 0 && (
-          <div className="space-y-8">
-            {/* Productos con descuento */}
-            {filteredProducts.some(p => p.discount) && (
-              <HorizontalCarousel
-                title="🔥 Ofertas encontradas"
-                subtitle={`${filteredProducts.filter(p => p.discount).length} productos con descuento`}
-                products={filteredProducts.filter(p => p.discount).slice(0, 12)}
-                cardKeyPrefix="offers-results"
-              />
-            )}
-            
-            {/* Todos los resultados */}
-            <HorizontalCarousel
-              title={searchTerm ? `Resultados para "${searchTerm}"` : "Todos los productos"}
-              subtitle={`${filteredProducts.length} productos encontrados${selectedCategory !== 'todos' ? ` en ${categories.find(c => c.id === selectedCategory)?.name}` : ''}`}
-              products={filteredProducts.slice(0, 20)}
-              cardKeyPrefix="all-results"
-            />
-            
-            {/* Productos mejor calificados */}
-            {filteredProducts.filter(p => p.rating >= 4.5).length > 0 && (
-              <HorizontalCarousel
-                title="⭐ Mejor calificados"
-                subtitle={`Los ${filteredProducts.filter(p => p.rating >= 4.5).length} productos mejor valorados`}
-                products={filteredProducts.filter(p => p.rating >= 4.5).slice(0, 12)}
-                cardKeyPrefix="top-rated-results"
-              />
-            )}
-            
-            {/* Más resultados si hay muchos productos */}
-            {filteredProducts.length > 20 && (
-              <HorizontalCarousel
-                title="Más resultados"
-                subtitle={`${filteredProducts.length - 20} productos adicionales`}
-                products={filteredProducts.slice(20, 40)}
-                cardKeyPrefix="more-results"
-              />
-            )}
+          <div className="space-y-6">
+            {/* Grid de productos */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+              {filteredProducts.map((product) => (
+                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
+                  <div className="relative">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-32 sm:h-36 md:h-40 object-cover"
+                    />
+                    {product.discount && (
+                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        -{product.discount}%
+                      </div>
+                    )}
+                    {!product.inStock && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">Agotado</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-2 h-10">{product.name}</h3>
+                    <p className="text-xs text-gray-600 mb-2">{product.source}</p>
+                    <div className="flex items-center mb-2">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <svg key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8 2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        ))}
+                        <span className="ml-1 text-xs text-gray-600">({product.reviews})</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col">
+                      {product.originalPrice && product.originalPrice > product.price ? (
+                        <>
+                          <span className="text-xs text-gray-400 line-through">${product.originalPrice.toLocaleString()}</span>
+                          <span className="text-sm font-bold text-purple-600">${product.price.toLocaleString()}</span>
+                        </>
+                      ) : (
+                        <span className="text-sm font-bold text-purple-600">${product.price.toLocaleString()}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
             {/* Estadísticas de búsqueda */}
             <div className="bg-gray-50 rounded-lg p-6 mt-8">
