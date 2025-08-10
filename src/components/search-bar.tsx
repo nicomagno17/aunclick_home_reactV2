@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Search, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -9,14 +9,35 @@ interface SearchBarProps {
   value: string
   onChange: (value: string) => void
   placeholder?: string
+  className?: string
+  onSearch?: (value: string) => void
 }
 
-export function SearchBar({ value, onChange, placeholder = "Buscar..." }: SearchBarProps) {
+export function SearchBar({ 
+  value, 
+  onChange, 
+  placeholder = "Buscar...", 
+  className = "",
+  onSearch
+}: SearchBarProps) {
   const [isFocused, setIsFocused] = useState(false)
 
   const handleClear = () => {
     onChange('')
+    onSearch?.('')
   }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      onSearch?.(value)
+    }
+  }
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value
+    onChange(newValue)
+  }, [onChange])
 
   return (
     <div className={`relative max-w-2xl mx-auto transition-all duration-300 ${isFocused ? 'scale-105' : ''}`}>
@@ -25,13 +46,14 @@ export function SearchBar({ value, onChange, placeholder = "Buscar..." }: Search
         <Input
           type="text"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={`pl-12 pr-12 py-2 text-lg text-white placeholder:text-white/70 border-2 transition-all duration-300 ${
             isFocused 
               ? 'border-white shadow-lg shadow-white/20' 
               : 'border-white/50 hover:border-white/80'
-          } bg-white/10 backdrop-blur-sm`}
+          } bg-white/10 backdrop-blur-sm ${className}`}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />

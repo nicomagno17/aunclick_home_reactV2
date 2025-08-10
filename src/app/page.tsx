@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useDebounce } from '@/hooks/use-debounce'
 import { ProductCard } from '@/components/product-card-simple'
 import { SearchBar } from '@/components/search-bar'
+import { FloatingSearchBar } from '@/components/floating-search-bar'
 import { HorizontalCarousel } from '@/components/horizontal-carousel'
 import { BannerCarousel } from '@/components/banner-carousel'
 import { ImageCarouselContinuous } from '@/components/image-carousel-continuous'
@@ -24,6 +26,9 @@ export default function Home() {
   
   // Estado para el menú móvil
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+
+  // Estado para la barra de búsqueda flotante
+  const [showFloatingSearch, setShowFloatingSearch] = useState(false)
   
 
   // Función para cerrar todos los modales
@@ -97,6 +102,25 @@ export default function Home() {
     }
   }, [showCategorias, showArriendos, showServicios, showMobileMenu])
 
+  // Efecto para detectar scroll y mostrar/ocultar barra de búsqueda flotante
+  useEffect(() => {
+    const handleScroll = () => {
+      const header = document.querySelector('header')
+      if (header) {
+        const headerRect = header.getBoundingClientRect()
+        // Mostrar barra flotante si el header no está visible
+        setShowFloatingSearch(headerRect.bottom < 0)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    handleScroll() // Verificar estado inicial
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
 
   const fetchProducts = async () => {
     try {
@@ -111,15 +135,33 @@ export default function Home() {
   }
 
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'todos' || product.category === selectedCategory
-    return matchesSearch && matchesCategory
-  })
+  // Aplicar debounce a la búsqueda para mejor performance
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const searchLower = debouncedSearchTerm.toLowerCase()
+      const matchesSearch = debouncedSearchTerm === '' || 
+        product.name.toLowerCase().includes(searchLower) ||
+        product.description.toLowerCase().includes(searchLower) ||
+        product.source.toLowerCase().includes(searchLower) ||
+        product.category.toLowerCase().includes(searchLower)
+      
+      const matchesCategory = selectedCategory === 'todos' || product.category === selectedCategory
+      return matchesSearch && matchesCategory
+    })
+  }, [products, debouncedSearchTerm, selectedCategory])
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Barra de búsqueda flotante */}
+      <FloatingSearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        isVisible={showFloatingSearch}
+        placeholder="Buscar productos, tiendas, categorías..."
+      />
+
       {/* Header Principal */}
       <header className="relative text-white shadow-2xl" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
         <div className="container mx-auto relative z-10">
@@ -454,6 +496,30 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto py-8 px-6">
+        {/* Mensaje cuando no hay resultados de búsqueda */}
+        {debouncedSearchTerm && filteredProducts.length === 0 && (
+          <div className="text-center py-12">
+            <div className="max-w-md mx-auto">
+              <div className="w-16 h-16 mx-auto mb-4 text-gray-400">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No se encontraron resultados
+              </h3>
+              <p className="text-gray-600 mb-4">
+                No pudimos encontrar productos que coincidan con "{debouncedSearchTerm}"
+              </p>
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Limpiar búsqueda
+              </button>
+            </div>
+          </div>
+        )}
         {/* Sección Destacados */}
         <HorizontalCarousel
           title="Destacados"
