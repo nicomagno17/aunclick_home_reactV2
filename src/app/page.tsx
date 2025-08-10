@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
-import { useDebounce } from '@/hooks/use-debounce'
+import { useState, useEffect } from 'react'
 import { ProductCard } from '@/components/product-card-simple'
 import { SearchBar } from '@/components/search-bar'
 import { FloatingSearchBar } from '@/components/floating-search-bar'
@@ -17,7 +16,6 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('todos')
   
   // Estados para los modales desplegables
   const [showCategorias, setShowCategorias] = useState(false)
@@ -135,22 +133,6 @@ export default function Home() {
   }
 
 
-  // Aplicar debounce a la búsqueda para mejor performance
-  const debouncedSearchTerm = useDebounce(searchTerm, 300)
-
-  const filteredProducts = useMemo(() => {
-    return products.filter(product => {
-      const searchLower = debouncedSearchTerm.toLowerCase()
-      const matchesSearch = debouncedSearchTerm === '' || 
-        product.name.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower) ||
-        product.source.toLowerCase().includes(searchLower) ||
-        product.category.toLowerCase().includes(searchLower)
-      
-      const matchesCategory = selectedCategory === 'todos' || product.category === selectedCategory
-      return matchesSearch && matchesCategory
-    })
-  }, [products, debouncedSearchTerm, selectedCategory])
 
   return (
     <div className="min-h-screen bg-background">
@@ -496,35 +478,11 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto py-8 px-6">
-        {/* Mensaje cuando no hay resultados de búsqueda */}
-        {debouncedSearchTerm && filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 mx-auto mb-4 text-gray-400">
-                <svg fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No se encontraron resultados
-              </h3>
-              <p className="text-gray-600 mb-4">
-                No pudimos encontrar productos que coincidan con "{debouncedSearchTerm}"
-              </p>
-              <button 
-                onClick={() => setSearchTerm('')}
-                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Limpiar búsqueda
-              </button>
-            </div>
-          </div>
-        )}
         {/* Sección Destacados */}
         <HorizontalCarousel
           title="Destacados"
           subtitle="Los productos más populares del momento"
-          products={filteredProducts.slice(0, 10)}
+          products={products.slice(0, 10)}
           cardKeyPrefix="destacados"
         />
 
@@ -532,7 +490,7 @@ export default function Home() {
         <HorizontalCarousel
           title="Ofertas"
           subtitle="Descuentos exclusivos por tiempo limitado"
-          products={filteredProducts.filter(p => p.discount && p.discount > 0).slice(0, 10)}
+          products={products.filter(p => p.discount && p.discount > 0).slice(0, 10)}
           cardKeyPrefix="ofertas"
         />
 
@@ -542,7 +500,7 @@ export default function Home() {
         <HorizontalCarousel
           title="Novedades"
           subtitle="Los últimos lanzamientos del mercado"
-          products={filteredProducts.slice(4, 14)}
+          products={products.slice(4, 14)}
           cardKeyPrefix="novedades"
         />
 
@@ -550,7 +508,7 @@ export default function Home() {
         <HorizontalCarousel
           title="Tendencias"
           subtitle="Lo más buscado y deseado actualmente"
-          products={filteredProducts.slice(2, 12)}
+          products={products.slice(2, 12)}
           cardKeyPrefix="tendencias"
         />
 
@@ -592,7 +550,7 @@ export default function Home() {
         <HorizontalCarousel
           title="¡No te lo Pierdas!"
           subtitle="Oportunidades únicas que no puedes dejar pasar"
-          products={filteredProducts.slice(6, 16)}
+          products={products.slice(6, 16)}
           cardKeyPrefix="no-te-lo-pierdas"
         />
 
@@ -817,7 +775,7 @@ export default function Home() {
         <HorizontalCarousel
           title="Liquidaciones"
           subtitle="Precios increíbles en productos seleccionados"
-          products={filteredProducts.slice(4, 12)}
+          products={products.slice(4, 12)}
           cardKeyPrefix="liquidaciones"
         />
       </main>
