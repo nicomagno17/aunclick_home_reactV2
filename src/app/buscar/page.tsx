@@ -17,6 +17,9 @@ function SearchPageContent() {
   const [sortBy, setSortBy] = useState<'relevance' | 'price-low' | 'price-high' | 'rating'>('relevance')
   const [showFilters, setShowFilters] = useState(false)
   const [showSortOptions, setShowSortOptions] = useState(false)
+  const [priceRange, setPriceRange] = useState([0, 1000000])
+  const [selectedRating, setSelectedRating] = useState('')
+  const [selectedAvailability, setSelectedAvailability] = useState('')
 
   // Obtener el término de búsqueda de la URL
   const initialQuery = searchParams.get('q') || ''
@@ -30,9 +33,15 @@ function SearchPageContent() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
-      if (!target.closest('.dropdown-container')) {
-        setShowFilters(false)
+      
+      // Solo cerrar sort options si el click no es en el contenedor de sort
+      if (!target.closest('.sort-dropdown-container')) {
         setShowSortOptions(false)
+      }
+      
+      // Solo cerrar filtros si el click no es en el contenedor de filtros
+      if (!target.closest('.filters-dropdown-container') && !target.closest('.filters-panel')) {
+        setShowFilters(false)
       }
     }
 
@@ -70,7 +79,19 @@ function SearchPageContent() {
         product.category.toLowerCase().includes(searchLower)
       
       const matchesCategory = selectedCategory === 'todos' || product.category === selectedCategory
-      return matchesSearch && matchesCategory
+      
+      // Filtro de precio
+      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
+      
+      // Filtro de calificación
+      const matchesRating = selectedRating === '' || product.rating >= parseFloat(selectedRating)
+      
+      // Filtro de disponibilidad
+      const matchesAvailability = selectedAvailability === '' || 
+        (selectedAvailability === 'instock' && product.inStock) ||
+        (selectedAvailability === 'discount' && product.discount)
+      
+      return matchesSearch && matchesCategory && matchesPrice && matchesRating && matchesAvailability
     })
 
     // Aplicar ordenamiento
@@ -146,7 +167,7 @@ function SearchPageContent() {
 
               {/* Controles de filtro y ordenamiento */}
               <div className="flex items-center gap-2 ml-4">
-                <div className="dropdown-container">
+                <div className="filters-dropdown-container">
                   <button
                     onClick={() => setShowFilters(!showFilters)}
                     className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
@@ -157,7 +178,7 @@ function SearchPageContent() {
                 </div>
                 
                 {/* Botón de ordenamiento desplegable para desktop */}
-                <div className="relative dropdown-container">
+                <div className="relative sort-dropdown-container">
                   <button
                     onClick={() => setShowSortOptions(!showSortOptions)}
                     className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
@@ -211,22 +232,47 @@ function SearchPageContent() {
 
             {/* Panel de filtros expandible Desktop */}
             {showFilters && (
-              <div className="border-t border-gray-200 pt-3">
+              <div className="filters-panel border-t border-gray-200 pt-3">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Precio</label>
-                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
-                      <option value="">Todos los precios</option>
-                      <option value="0-50000">Hasta $50.000</option>
-                      <option value="50000-100000">$50.000 - $100.000</option>
-                      <option value="100000-500000">$100.000 - $500.000</option>
-                      <option value="500000+">Más de $500.000</option>
-                    </select>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Precio: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
+                    </label>
+                    <div className="px-3 py-2">
+                      <input
+                        type="range"
+                        min="0"
+                        max="1000000"
+                        step="10000"
+                        value={priceRange[0]}
+                        onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mb-2"
+                        style={{
+                          background: `linear-gradient(to right, #9333ea 0%, #9333ea ${(priceRange[0]/1000000)*100}%, #e5e7eb ${(priceRange[0]/1000000)*100}%, #e5e7eb 100%)`
+                        }}
+                      />
+                      <input
+                        type="range"
+                        min="0"
+                        max="1000000"
+                        step="10000"
+                        value={priceRange[1]}
+                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, #e5e7eb 0%, #e5e7eb ${(priceRange[1]/1000000)*100}%, #9333ea ${(priceRange[1]/1000000)*100}%, #9333ea 100%)`
+                        }}
+                      />
+                    </div>
                   </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Calificación</label>
-                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    <select 
+                      value={selectedRating}
+                      onChange={(e) => setSelectedRating(e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                    >
                       <option value="">Todas</option>
                       <option value="4.5">4.5+ estrellas</option>
                       <option value="4">4+ estrellas</option>
@@ -236,7 +282,11 @@ function SearchPageContent() {
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Disponibilidad</label>
-                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    <select 
+                      value={selectedAvailability}
+                      onChange={(e) => setSelectedAvailability(e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                    >
                       <option value="">Todos</option>
                       <option value="instock">En stock</option>
                       <option value="discount">Con descuento</option>
@@ -251,7 +301,7 @@ function SearchPageContent() {
           <div className="sm:hidden">
             {/* Solo botones de filtro y ordenar */}
             <div className="flex items-center justify-center gap-3">
-              <div className="dropdown-container">
+              <div className="filters-dropdown-container">
                 <button
                   onClick={() => setShowFilters(!showFilters)}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
@@ -262,7 +312,7 @@ function SearchPageContent() {
               </div>
               
               {/* Botón de ordenamiento desplegable para móvil */}
-              <div className="relative dropdown-container">
+              <div className="relative sort-dropdown-container">
                 <button
                   onClick={() => setShowSortOptions(!showSortOptions)}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
@@ -315,7 +365,7 @@ function SearchPageContent() {
 
             {/* Panel de filtros expandible Móvil (incluye categorías) */}
             {showFilters && (
-              <div className="border-t border-gray-200 pt-3 mt-3">
+              <div className="filters-panel border-t border-gray-200 pt-3 mt-3">
                 {/* Categorías en filtros móvil */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
@@ -332,19 +382,44 @@ function SearchPageContent() {
                 
                 <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Precio</label>
-                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
-                      <option value="">Todos los precios</option>
-                      <option value="0-50000">Hasta $50.000</option>
-                      <option value="50000-100000">$50.000 - $100.000</option>
-                      <option value="100000-500000">$100.000 - $500.000</option>
-                      <option value="500000+">Más de $500.000</option>
-                    </select>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Precio: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
+                    </label>
+                    <div className="px-3 py-2">
+                      <input
+                        type="range"
+                        min="0"
+                        max="1000000"
+                        step="10000"
+                        value={priceRange[0]}
+                        onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mb-2"
+                        style={{
+                          background: `linear-gradient(to right, #9333ea 0%, #9333ea ${(priceRange[0]/1000000)*100}%, #e5e7eb ${(priceRange[0]/1000000)*100}%, #e5e7eb 100%)`
+                        }}
+                      />
+                      <input
+                        type="range"
+                        min="0"
+                        max="1000000"
+                        step="10000"
+                        value={priceRange[1]}
+                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, #e5e7eb 0%, #e5e7eb ${(priceRange[1]/1000000)*100}%, #9333ea ${(priceRange[1]/1000000)*100}%, #9333ea 100%)`
+                        }}
+                      />
+                    </div>
                   </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Calificación</label>
-                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    <select 
+                      value={selectedRating}
+                      onChange={(e) => setSelectedRating(e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                    >
                       <option value="">Todas</option>
                       <option value="4.5">4.5+ estrellas</option>
                       <option value="4">4+ estrellas</option>
@@ -354,7 +429,11 @@ function SearchPageContent() {
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Disponibilidad</label>
-                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    <select 
+                      value={selectedAvailability}
+                      onChange={(e) => setSelectedAvailability(e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                    >
                       <option value="">Todos</option>
                       <option value="instock">En stock</option>
                       <option value="discount">Con descuento</option>
