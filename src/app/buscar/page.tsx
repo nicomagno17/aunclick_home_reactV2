@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Product } from '@/types/product'
 import { mockProducts } from '@/data/mock-products'
-import { Filter } from 'lucide-react'
+import { Filter, ChevronDown } from 'lucide-react'
 
 function SearchPageContent() {
   const searchParams = useSearchParams()
@@ -16,6 +16,7 @@ function SearchPageContent() {
   const [selectedCategory, setSelectedCategory] = useState('todos')
   const [sortBy, setSortBy] = useState<'relevance' | 'price-low' | 'price-high' | 'rating'>('relevance')
   const [showFilters, setShowFilters] = useState(false)
+  const [showSortOptions, setShowSortOptions] = useState(false)
 
   // Obtener el término de búsqueda de la URL
   const initialQuery = searchParams.get('q') || ''
@@ -24,6 +25,22 @@ function SearchPageContent() {
     setSearchTerm(initialQuery)
     fetchProducts()
   }, [initialQuery])
+
+  // Efecto para cerrar dropdowns al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (!target.closest('.dropdown-container')) {
+        setShowFilters(false)
+        setShowSortOptions(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const fetchProducts = async () => {
     try {
@@ -107,83 +124,246 @@ function SearchPageContent() {
       {/* Filtros y ordenamiento */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="container mx-auto px-4 py-3">
-          {/* Filtros de categoría */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === category.id
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
+          {/* Versión Desktop */}
+          <div className="hidden sm:block">
+            {/* Filtros de categoría */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      selectedCategory === category.id
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
 
-            {/* Controles de filtro y ordenamiento */}
-            <div className="flex items-center gap-2 ml-4">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <Filter className="h-4 w-4" />
-                <span className="hidden sm:inline">Filtros</span>
-              </button>
-              
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 border-0 rounded-lg hover:bg-gray-200 transition-colors outline-none"
-              >
-                <option value="relevance">Más relevante</option>
-                <option value="price-low">Precio: menor a mayor</option>
-                <option value="price-high">Precio: mayor a menor</option>
-                <option value="rating">Mejor calificados</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Panel de filtros expandible */}
-          {showFilters && (
-            <div className="border-t border-gray-200 pt-3">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Precio</label>
-                  <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
-                    <option value="">Todos los precios</option>
-                    <option value="0-50000">Hasta $50.000</option>
-                    <option value="50000-100000">$50.000 - $100.000</option>
-                    <option value="100000-500000">$100.000 - $500.000</option>
-                    <option value="500000+">Más de $500.000</option>
-                  </select>
+              {/* Controles de filtro y ordenamiento */}
+              <div className="flex items-center gap-2 ml-4">
+                <div className="dropdown-container">
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    <Filter className="h-4 w-4" />
+                    <span>Filtros</span>
+                  </button>
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Calificación</label>
-                  <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
-                    <option value="">Todas</option>
-                    <option value="4.5">4.5+ estrellas</option>
-                    <option value="4">4+ estrellas</option>
-                    <option value="3.5">3.5+ estrellas</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Disponibilidad</label>
-                  <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
-                    <option value="">Todos</option>
-                    <option value="instock">En stock</option>
-                    <option value="discount">Con descuento</option>
-                  </select>
+                {/* Botón de ordenamiento desplegable para desktop */}
+                <div className="relative dropdown-container">
+                  <button
+                    onClick={() => setShowSortOptions(!showSortOptions)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    <span>Ordenar</span>
+                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showSortOptions ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {/* Dropdown de ordenamiento */}
+                  {showSortOptions && (
+                    <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                      <div className="py-2">
+                        <button
+                          onClick={() => { setSortBy('relevance'); setShowSortOptions(false) }}
+                          className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors ${
+                            sortBy === 'relevance' ? 'text-purple-600 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Más relevante
+                        </button>
+                        <button
+                          onClick={() => { setSortBy('price-low'); setShowSortOptions(false) }}
+                          className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors ${
+                            sortBy === 'price-low' ? 'text-purple-600 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Precio: menor a mayor
+                        </button>
+                        <button
+                          onClick={() => { setSortBy('price-high'); setShowSortOptions(false) }}
+                          className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors ${
+                            sortBy === 'price-high' ? 'text-purple-600 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Precio: mayor a menor
+                        </button>
+                        <button
+                          onClick={() => { setSortBy('rating'); setShowSortOptions(false) }}
+                          className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors ${
+                            sortBy === 'rating' ? 'text-purple-600 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Mejor calificados
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          )}
+
+            {/* Panel de filtros expandible Desktop */}
+            {showFilters && (
+              <div className="border-t border-gray-200 pt-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Precio</label>
+                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                      <option value="">Todos los precios</option>
+                      <option value="0-50000">Hasta $50.000</option>
+                      <option value="50000-100000">$50.000 - $100.000</option>
+                      <option value="100000-500000">$100.000 - $500.000</option>
+                      <option value="500000+">Más de $500.000</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Calificación</label>
+                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                      <option value="">Todas</option>
+                      <option value="4.5">4.5+ estrellas</option>
+                      <option value="4">4+ estrellas</option>
+                      <option value="3.5">3.5+ estrellas</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Disponibilidad</label>
+                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                      <option value="">Todos</option>
+                      <option value="instock">En stock</option>
+                      <option value="discount">Con descuento</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Versión Móvil */}
+          <div className="sm:hidden">
+            {/* Solo botones de filtro y ordenar */}
+            <div className="flex items-center justify-center gap-3">
+              <div className="dropdown-container">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <Filter className="h-4 w-4" />
+                  <span>Filtros</span>
+                </button>
+              </div>
+              
+              {/* Botón de ordenamiento desplegable para móvil */}
+              <div className="relative dropdown-container">
+                <button
+                  onClick={() => setShowSortOptions(!showSortOptions)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <span>Ordenar</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showSortOptions ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {/* Dropdown de ordenamiento */}
+                {showSortOptions && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                    <div className="py-2">
+                      <button
+                        onClick={() => { setSortBy('relevance'); setShowSortOptions(false) }}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors ${
+                          sortBy === 'relevance' ? 'text-purple-600 font-medium' : 'text-gray-700'
+                        }`}
+                      >
+                        Más relevante
+                      </button>
+                      <button
+                        onClick={() => { setSortBy('price-low'); setShowSortOptions(false) }}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors ${
+                          sortBy === 'price-low' ? 'text-purple-600 font-medium' : 'text-gray-700'
+                        }`}
+                      >
+                        Precio: menor a mayor
+                      </button>
+                      <button
+                        onClick={() => { setSortBy('price-high'); setShowSortOptions(false) }}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors ${
+                          sortBy === 'price-high' ? 'text-purple-600 font-medium' : 'text-gray-700'
+                        }`}
+                      >
+                        Precio: mayor a menor
+                      </button>
+                      <button
+                        onClick={() => { setSortBy('rating'); setShowSortOptions(false) }}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors ${
+                          sortBy === 'rating' ? 'text-purple-600 font-medium' : 'text-gray-700'
+                        }`}
+                      >
+                        Mejor calificados
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Panel de filtros expandible Móvil (incluye categorías) */}
+            {showFilters && (
+              <div className="border-t border-gray-200 pt-3 mt-3">
+                {/* Categorías en filtros móvil */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+                  <select 
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                  >
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>{category.name}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Precio</label>
+                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                      <option value="">Todos los precios</option>
+                      <option value="0-50000">Hasta $50.000</option>
+                      <option value="50000-100000">$50.000 - $100.000</option>
+                      <option value="100000-500000">$100.000 - $500.000</option>
+                      <option value="500000+">Más de $500.000</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Calificación</label>
+                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                      <option value="">Todas</option>
+                      <option value="4.5">4.5+ estrellas</option>
+                      <option value="4">4+ estrellas</option>
+                      <option value="3.5">3.5+ estrellas</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Disponibilidad</label>
+                    <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                      <option value="">Todos</option>
+                      <option value="instock">En stock</option>
+                      <option value="discount">Con descuento</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
