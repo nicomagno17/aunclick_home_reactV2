@@ -80,8 +80,8 @@ function SearchPageContent() {
       
       const matchesCategory = selectedCategory === 'todos' || product.category === selectedCategory
       
-      // Filtro de precio
-      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
+      // Filtro de precio - solo usar el máximo del range
+      const matchesPrice = product.price <= priceRange[1]
       
       // Filtro de calificación
       const matchesRating = selectedRating === '' || product.rating >= parseFloat(selectedRating)
@@ -117,7 +117,7 @@ function SearchPageContent() {
     }
 
     return filtered
-  }, [products, searchTerm, selectedCategory, sortBy])
+  }, [products, searchTerm, selectedCategory, sortBy, priceRange, selectedRating, selectedAvailability])
 
   const categories = [
     { id: 'todos', name: 'Todos' },
@@ -169,7 +169,10 @@ function SearchPageContent() {
               <div className="flex items-center gap-2 ml-4">
                 <div className="filters-dropdown-container">
                   <button
-                    onClick={() => setShowFilters(!showFilters)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setShowFilters(!showFilters)
+                    }}
                     className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                   >
                     <Filter className="h-4 w-4" />
@@ -232,25 +235,13 @@ function SearchPageContent() {
 
             {/* Panel de filtros expandible Desktop */}
             {showFilters && (
-              <div className="filters-panel border-t border-gray-200 pt-3">
+              <div className="filters-panel border-t border-gray-200 pt-3" onClick={(e) => e.stopPropagation()}>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Precio: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
+                      Precio máximo: ${priceRange[1].toLocaleString()}
                     </label>
                     <div className="px-3 py-2">
-                      <input
-                        type="range"
-                        min="0"
-                        max="1000000"
-                        step="10000"
-                        value={priceRange[0]}
-                        onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mb-2"
-                        style={{
-                          background: `linear-gradient(to right, #9333ea 0%, #9333ea ${(priceRange[0]/1000000)*100}%, #e5e7eb ${(priceRange[0]/1000000)*100}%, #e5e7eb 100%)`
-                        }}
-                      />
                       <input
                         type="range"
                         min="0"
@@ -260,7 +251,7 @@ function SearchPageContent() {
                         onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                         style={{
-                          background: `linear-gradient(to right, #e5e7eb 0%, #e5e7eb ${(priceRange[1]/1000000)*100}%, #9333ea ${(priceRange[1]/1000000)*100}%, #9333ea 100%)`
+                          background: `linear-gradient(to right, #9333ea 0%, #9333ea ${(priceRange[1]/1000000)*100}%, #e5e7eb ${(priceRange[1]/1000000)*100}%, #e5e7eb 100%)`
                         }}
                       />
                     </div>
@@ -272,6 +263,7 @@ function SearchPageContent() {
                       value={selectedRating}
                       onChange={(e) => setSelectedRating(e.target.value)}
                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <option value="">Todas</option>
                       <option value="4.5">4.5+ estrellas</option>
@@ -286,6 +278,7 @@ function SearchPageContent() {
                       value={selectedAvailability}
                       onChange={(e) => setSelectedAvailability(e.target.value)}
                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <option value="">Todos</option>
                       <option value="instock">En stock</option>
@@ -303,7 +296,10 @@ function SearchPageContent() {
             <div className="flex items-center justify-center gap-3">
               <div className="filters-dropdown-container">
                 <button
-                  onClick={() => setShowFilters(!showFilters)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowFilters(!showFilters)
+                  }}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   <Filter className="h-4 w-4" />
@@ -365,7 +361,7 @@ function SearchPageContent() {
 
             {/* Panel de filtros expandible Móvil (incluye categorías) */}
             {showFilters && (
-              <div className="filters-panel border-t border-gray-200 pt-3 mt-3">
+              <div className="filters-panel border-t border-gray-200 pt-3 mt-3" onClick={(e) => e.stopPropagation()}>
                 {/* Categorías en filtros móvil */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
@@ -373,6 +369,7 @@ function SearchPageContent() {
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     {categories.map((category) => (
                       <option key={category.id} value={category.id}>{category.name}</option>
@@ -383,21 +380,9 @@ function SearchPageContent() {
                 <div className="grid grid-cols-1 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Precio: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
+                      Precio máximo: ${priceRange[1].toLocaleString()}
                     </label>
                     <div className="px-3 py-2">
-                      <input
-                        type="range"
-                        min="0"
-                        max="1000000"
-                        step="10000"
-                        value={priceRange[0]}
-                        onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mb-2"
-                        style={{
-                          background: `linear-gradient(to right, #9333ea 0%, #9333ea ${(priceRange[0]/1000000)*100}%, #e5e7eb ${(priceRange[0]/1000000)*100}%, #e5e7eb 100%)`
-                        }}
-                      />
                       <input
                         type="range"
                         min="0"
@@ -407,7 +392,7 @@ function SearchPageContent() {
                         onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                         style={{
-                          background: `linear-gradient(to right, #e5e7eb 0%, #e5e7eb ${(priceRange[1]/1000000)*100}%, #9333ea ${(priceRange[1]/1000000)*100}%, #9333ea 100%)`
+                          background: `linear-gradient(to right, #9333ea 0%, #9333ea ${(priceRange[1]/1000000)*100}%, #e5e7eb ${(priceRange[1]/1000000)*100}%, #e5e7eb 100%)`
                         }}
                       />
                     </div>
@@ -419,6 +404,7 @@ function SearchPageContent() {
                       value={selectedRating}
                       onChange={(e) => setSelectedRating(e.target.value)}
                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <option value="">Todas</option>
                       <option value="4.5">4.5+ estrellas</option>
@@ -433,6 +419,7 @@ function SearchPageContent() {
                       value={selectedAvailability}
                       onChange={(e) => setSelectedAvailability(e.target.value)}
                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <option value="">Todos</option>
                       <option value="instock">En stock</option>
@@ -457,6 +444,37 @@ function SearchPageContent() {
             <p className="text-gray-600">
               {loading ? 'Buscando...' : `${filteredProducts.length} productos encontrados`}
             </p>
+          </div>
+        )}
+
+        {/* Resumen de búsqueda - Movido arriba */}
+        {!loading && filteredProducts.length > 0 && (
+          <div className="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen de búsqueda</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-purple-600">{filteredProducts.length}</div>
+                <div className="text-sm text-gray-600">Productos</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-green-600">
+                  {filteredProducts.filter(p => p.discount).length}
+                </div>
+                <div className="text-sm text-gray-600">Con descuento</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-blue-600">
+                  {new Set(filteredProducts.map(p => p.source)).size}
+                </div>
+                <div className="text-sm text-gray-600">Tiendas</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-orange-600">
+                  {filteredProducts.filter(p => p.rating >= 4.5).length}
+                </div>
+                <div className="text-sm text-gray-600">4.5+ ⭐</div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -503,105 +521,54 @@ function SearchPageContent() {
           </div>
         )}
 
-        {/* Resultados en grid acumulativo */}
+        {/* Resultados en grid */}
         {!loading && filteredProducts.length > 0 && (
-          <div className="space-y-6">
-            {/* Grid de productos */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-              {filteredProducts.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
-                  <div className="relative">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-32 sm:h-36 md:h-40 object-cover"
-                    />
-                    {product.discount && (
-                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                        -{product.discount}%
-                      </div>
-                    )}
-                    {!product.inStock && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">Agotado</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-2 h-10">{product.name}</h3>
-                    <p className="text-xs text-gray-600 mb-2">{product.source}</p>
-                    <div className="flex items-center mb-2">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <svg key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8 2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                          </svg>
-                        ))}
-                        <span className="ml-1 text-xs text-gray-600">({product.reviews})</span>
-                      </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+            {filteredProducts.map((product) => (
+              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
+                <div className="relative">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-32 sm:h-36 md:h-40 object-cover"
+                  />
+                  {product.discount && (
+                    <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                      -{product.discount}%
                     </div>
-                    <div className="flex flex-col">
-                      {product.originalPrice && product.originalPrice > product.price ? (
-                        <>
-                          <span className="text-xs text-gray-400 line-through">${product.originalPrice.toLocaleString()}</span>
-                          <span className="text-sm font-bold text-purple-600">${product.price.toLocaleString()}</span>
-                        </>
-                      ) : (
+                  )}
+                  {!product.inStock && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">Agotado</span>
+                    </div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-2 h-10">{product.name}</h3>
+                  <p className="text-xs text-gray-600 mb-2">{product.source}</p>
+                  <div className="flex items-center mb-2">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8 2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                      ))}
+                      <span className="ml-1 text-xs text-gray-600">({product.reviews})</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    {product.originalPrice && product.originalPrice > product.price ? (
+                      <>
+                        <span className="text-xs text-gray-400 line-through">${product.originalPrice.toLocaleString()}</span>
                         <span className="text-sm font-bold text-purple-600">${product.price.toLocaleString()}</span>
-                      )}
-                    </div>
+                      </>
+                    ) : (
+                      <span className="text-sm font-bold text-purple-600">${product.price.toLocaleString()}</span>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Estadísticas de búsqueda */}
-            <div className="bg-gray-50 rounded-lg p-6 mt-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen de búsqueda</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div className="bg-white rounded-lg p-4">
-                  <div className="text-2xl font-bold text-purple-600">{filteredProducts.length}</div>
-                  <div className="text-sm text-gray-600">Productos</div>
-                </div>
-                <div className="bg-white rounded-lg p-4">
-                  <div className="text-2xl font-bold text-green-600">
-                    {filteredProducts.filter(p => p.discount).length}
-                  </div>
-                  <div className="text-sm text-gray-600">Con descuento</div>
-                </div>
-                <div className="bg-white rounded-lg p-4">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {new Set(filteredProducts.map(p => p.source)).size}
-                  </div>
-                  <div className="text-sm text-gray-600">Tiendas</div>
-                </div>
-                <div className="bg-white rounded-lg p-4">
-                  <div className="text-2xl font-bold text-orange-600">
-                    {filteredProducts.filter(p => p.rating >= 4.5).length}
-                  </div>
-                  <div className="text-sm text-gray-600">4.5+ ⭐</div>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Mensaje cuando no hay término de búsqueda */}
-        {!loading && !searchTerm && (
-          <div className="text-center py-12">
-            <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 mx-auto mb-4 text-gray-400">
-                <svg fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                ¿Qué estás buscando?
-              </h3>
-              <p className="text-gray-600">
-                Escribe algo en el buscador para encontrar productos, tiendas y más.
-              </p>
-            </div>
+            ))}
           </div>
         )}
       </main>
