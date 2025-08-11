@@ -20,6 +20,7 @@ function SearchPageContent() {
   const [priceRange, setPriceRange] = useState([0, 1000000])
   const [selectedRating, setSelectedRating] = useState('')
   const [selectedAvailability, setSelectedAvailability] = useState('')
+  const [showMobileFilters, setShowMobileFilters] = useState(false)
 
   // Obtener el término de búsqueda de la URL
   const initialQuery = searchParams.get('q') || ''
@@ -132,6 +133,14 @@ function SearchPageContent() {
     { id: 'salud', name: 'Salud' }
   ]
 
+  const incrementPrice = () => {
+    setPriceRange([priceRange[0], Math.min(priceRange[1] + 5000, 1000000)])
+  }
+
+  const decrementPrice = () => {
+    setPriceRange([priceRange[0], Math.max(priceRange[1] - 5000, 0)])
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header Reutilizable */}
@@ -241,19 +250,33 @@ function SearchPageContent() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Precio máximo: ${priceRange[1].toLocaleString()}
                     </label>
-                    <div className="px-3 py-2">
-                      <input
-                        type="range"
-                        min="0"
-                        max="1000000"
-                        step="10000"
-                        value={priceRange[1]}
-                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                        style={{
-                          background: `linear-gradient(to right, #9333ea 0%, #9333ea ${(priceRange[1]/1000000)*100}%, #e5e7eb ${(priceRange[1]/1000000)*100}%, #e5e7eb 100%)`
-                        }}
-                      />
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={decrementPrice}
+                        className="w-8 h-8 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors flex items-center justify-center"
+                      >
+                        -
+                      </button>
+                      <div className="flex-1 px-3 py-2">
+                        <input
+                          type="range"
+                          min="0"
+                          max="1000000"
+                          step="5000"
+                          value={priceRange[1]}
+                          onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                          style={{
+                            background: `linear-gradient(to right, #9333ea 0%, #9333ea ${(priceRange[1]/1000000)*100}%, #e5e7eb ${(priceRange[1]/1000000)*100}%, #e5e7eb 100%)`
+                          }}
+                        />
+                      </div>
+                      <button
+                        onClick={incrementPrice}
+                        className="w-8 h-8 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors flex items-center justify-center"
+                      >
+                        +
+                      </button>
                     </div>
                   </div>
                   
@@ -296,10 +319,7 @@ function SearchPageContent() {
             <div className="flex items-center justify-center gap-3">
               <div className="filters-dropdown-container">
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setShowFilters(!showFilters)
-                  }}
+                  onClick={() => setShowMobileFilters(true)}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   <Filter className="h-4 w-4" />
@@ -359,76 +379,7 @@ function SearchPageContent() {
               </div>
             </div>
 
-            {/* Panel de filtros expandible Móvil (incluye categorías) */}
-            {showFilters && (
-              <div className="filters-panel border-t border-gray-200 pt-3 mt-3" onClick={(e) => e.stopPropagation()}>
-                {/* Categorías en filtros móvil */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
-                  <select 
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>{category.name}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Precio máximo: ${priceRange[1].toLocaleString()}
-                    </label>
-                    <div className="px-3 py-2">
-                      <input
-                        type="range"
-                        min="0"
-                        max="1000000"
-                        step="10000"
-                        value={priceRange[1]}
-                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                        style={{
-                          background: `linear-gradient(to right, #9333ea 0%, #9333ea ${(priceRange[1]/1000000)*100}%, #e5e7eb ${(priceRange[1]/1000000)*100}%, #e5e7eb 100%)`
-                        }}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Calificación</label>
-                    <select 
-                      value={selectedRating}
-                      onChange={(e) => setSelectedRating(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <option value="">Todas</option>
-                      <option value="4.5">4.5+ estrellas</option>
-                      <option value="4">4+ estrellas</option>
-                      <option value="3.5">3.5+ estrellas</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Disponibilidad</label>
-                    <select 
-                      value={selectedAvailability}
-                      onChange={(e) => setSelectedAvailability(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <option value="">Todos</option>
-                      <option value="instock">En stock</option>
-                      <option value="discount">Con descuento</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            )}
+            
           </div>
         </div>
       </div>
@@ -447,36 +398,7 @@ function SearchPageContent() {
           </div>
         )}
 
-        {/* Resumen de búsqueda - Movido arriba */}
-        {!loading && filteredProducts.length > 0 && (
-          <div className="bg-gray-50 rounded-lg p-6 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen de búsqueda</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-purple-600">{filteredProducts.length}</div>
-                <div className="text-sm text-gray-600">Productos</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-green-600">
-                  {filteredProducts.filter(p => p.discount).length}
-                </div>
-                <div className="text-sm text-gray-600">Con descuento</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-blue-600">
-                  {new Set(filteredProducts.map(p => p.source)).size}
-                </div>
-                <div className="text-sm text-gray-600">Tiendas</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-orange-600">
-                  {filteredProducts.filter(p => p.rating >= 4.5).length}
-                </div>
-                <div className="text-sm text-gray-600">4.5+ ⭐</div>
-              </div>
-            </div>
-          </div>
-        )}
+        
 
         {/* Loading state */}
         {loading && (
@@ -572,6 +494,124 @@ function SearchPageContent() {
           </div>
         )}
       </main>
+
+      {/* Mobile Filters Sidebar */}
+      {showMobileFilters && (
+        <>
+          {/* Overlay */}
+          <div 
+            className="fixed inset-0 bg-black/50 z-50 sm:hidden"
+            onClick={() => setShowMobileFilters(false)}
+          />
+          
+          {/* Sidebar */}
+          <div className="fixed right-0 top-0 h-full w-80 bg-white z-50 sm:hidden transform transition-transform duration-300 shadow-xl border-l border-gray-200">
+            <div className="h-full flex flex-col" style={{ background: 'linear-gradient(180deg, #3b0764 0%, #4c1d95 20%, #6d28d9 100%)' }}>
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-purple-300/30">
+                <h2 className="text-lg font-semibold text-white">Filtros</h2>
+                <button
+                  onClick={() => setShowMobileFilters(false)}
+                  className="w-8 h-8 bg-purple-600/50 text-white rounded-full hover:bg-purple-600/70 transition-colors flex items-center justify-center"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Filters Content */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                {/* Categorías */}
+                <div>
+                  <label className="block text-sm font-medium text-white mb-3">Categoría</label>
+                  <select 
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-purple-300/30 rounded-lg bg-white/10 text-white backdrop-blur-sm"
+                  >
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id} className="text-gray-900">{category.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Precio */}
+                <div>
+                  <label className="block text-sm font-medium text-white mb-3">
+                    Precio máximo: ${priceRange[1].toLocaleString()}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={decrementPrice}
+                      className="w-8 h-8 bg-yellow-400 text-purple-900 rounded-full hover:bg-yellow-300 transition-colors flex items-center justify-center font-bold"
+                    >
+                      -
+                    </button>
+                    <div className="flex-1 px-3 py-2">
+                      <input
+                        type="range"
+                        min="0"
+                        max="1000000"
+                        step="5000"
+                        value={priceRange[1]}
+                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                        className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, #fbbf24 0%, #fbbf24 ${(priceRange[1]/1000000)*100}%, rgba(255,255,255,0.2) ${(priceRange[1]/1000000)*100}%, rgba(255,255,255,0.2) 100%)`
+                        }}
+                      />
+                    </div>
+                    <button
+                      onClick={incrementPrice}
+                      className="w-8 h-8 bg-yellow-400 text-purple-900 rounded-full hover:bg-yellow-300 transition-colors flex items-center justify-center font-bold"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                {/* Calificación */}
+                <div>
+                  <label className="block text-sm font-medium text-white mb-3">Calificación</label>
+                  <select 
+                    value={selectedRating}
+                    onChange={(e) => setSelectedRating(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-purple-300/30 rounded-lg bg-white/10 text-white backdrop-blur-sm"
+                  >
+                    <option value="" className="text-gray-900">Todas</option>
+                    <option value="4.5" className="text-gray-900">4.5+ estrellas</option>
+                    <option value="4" className="text-gray-900">4+ estrellas</option>
+                    <option value="3.5" className="text-gray-900">3.5+ estrellas</option>
+                  </select>
+                </div>
+
+                {/* Disponibilidad */}
+                <div>
+                  <label className="block text-sm font-medium text-white mb-3">Disponibilidad</label>
+                  <select 
+                    value={selectedAvailability}
+                    onChange={(e) => setSelectedAvailability(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-purple-300/30 rounded-lg bg-white/10 text-white backdrop-blur-sm"
+                  >
+                    <option value="" className="text-gray-900">Todos</option>
+                    <option value="instock" className="text-gray-900">En stock</option>
+                    <option value="discount" className="text-gray-900">Con descuento</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 border-t border-purple-300/30">
+                <button
+                  onClick={() => setShowMobileFilters(false)}
+                  className="w-full bg-yellow-400 text-purple-900 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition-colors"
+                >
+                  Aplicar Filtros
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
