@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Product } from '@/types/product'
+import { ImageModal } from '@/components/image-modal'
 
 interface ProductCardProps {
   product: Product
@@ -40,8 +41,8 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
           </div>
 
-          {/* Action Buttons */}
-          <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {/* Action Buttons - Only visible on hover for desktop */}
+          <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
             <Button 
               size="sm" 
               variant="secondary" 
@@ -49,13 +50,23 @@ export function ProductCard({ product }: ProductCardProps) {
             >
               <Heart className="h-4 w-4" />
             </Button>
-            <Button 
-              size="sm" 
-              variant="secondary" 
-              className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm hover:bg-background"
+            <ImageModal 
+              imageSrc={product.image} 
+              imageAlt={product.name}
+              productName={product.name}
             >
-              <ExternalLink className="h-4 w-4" />
-            </Button>
+              <Button 
+                size="sm" 
+                variant="secondary" 
+                className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm hover:bg-background"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            </ImageModal>
           </div>
 
           {/* Source Badge */}

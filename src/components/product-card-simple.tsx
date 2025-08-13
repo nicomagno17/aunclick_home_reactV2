@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ExternalLink, Heart } from 'lucide-react'
+import { ShoppingCart, Heart, ExternalLink } from 'lucide-react'
 import { Product } from '@/types/product'
+import { ImageModal } from '@/components/image-modal'
 
 interface ProductCardProps {
   product: Product
@@ -27,7 +28,7 @@ export function ProductCard({ product }: ProductCardProps) {
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        
+
         {/* Badges */}
         <div className="absolute top-1 sm:top-2 left-1 sm:left-2 flex flex-col gap-1">
           {discountPercentage > 0 && (
@@ -42,14 +43,26 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        {/* Action Buttons - Más grandes para touch */}
-        <div className="absolute top-2 right-2 flex flex-col gap-2">
-          <button className="h-10 w-10 sm:h-8 sm:w-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white touch-none">
-            <Heart className="h-5 w-5 sm:h-4 sm:w-4 text-gray-700" />
+        {/* Action buttons overlay - Only visible on hover for desktop */}
+        <div className="absolute top-1 sm:top-2 right-1 sm:right-2 flex flex-col gap-1 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
+          <button className="bg-white/90 backdrop-blur-sm p-1.5 sm:p-2 rounded-full hover:bg-white transition-colors shadow-sm">
+            <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
           </button>
-          <button className="h-10 w-10 sm:h-8 sm:w-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white touch-none">
-            <ExternalLink className="h-5 w-5 sm:h-4 sm:w-4 text-gray-700" />
-          </button>
+          <ImageModal 
+            imageSrc={product.image} 
+            imageAlt={product.name}
+            productName={product.name}
+          >
+            <button 
+              className="bg-white/90 backdrop-blur-sm p-1.5 sm:p-2 rounded-full hover:bg-white transition-colors shadow-sm"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+              }}
+            >
+              <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
+            </button>
+          </ImageModal>
         </div>
 
         {/* Source Badge */}
@@ -63,7 +76,7 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Parte Inferior con efecto 3D - Se mantiene igual pero con volteo */}
       <div className="flex-1 relative perspective-1000 min-h-44 sm:min-h-56">
         <div className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-          
+
           {/* Parte Frontal (Contenido original del producto) */}
           <div className="absolute inset-0 w-full h-full backface-hidden p-1.5 sm:p-2 flex flex-col bg-white">
             {/* Category */}
@@ -78,7 +91,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <h3 className="font-semibold text-gray-900 line-clamp-2 leading-tight mb-0.5 min-h-[1.8em] sm:min-h-[2.2em] text-xs sm:text-sm">
                 {product.name}
               </h3>
-              
+
               {/* Description */}
               <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 leading-tight mb-0.5 min-h-[2.4em] sm:min-h-[3.6em]">
                 {product.description}
@@ -145,7 +158,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Botón de volver - Justo debajo de los horarios */}
                 <div className="mt-1 sm:mt-2">
                   <button 

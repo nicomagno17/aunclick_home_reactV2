@@ -9,12 +9,13 @@ import { ImageCarouselContinuous2 } from '@/components/image-carousel-continuous
 import { InfoBannerCarousel } from '@/components/info-banner-carousel'
 import { Product } from '@/types/product'
 import { Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText } from 'lucide-react'
+import { ResponsiveSearchSection } from '@/components/responsive-search-section'
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  
+
 
 
   useEffect(() => {
@@ -46,6 +47,9 @@ export default function Home() {
         showBackButton={false}
         showFloatingSearch={true}
       />
+
+      {/* Responsive Search Section */}
+      <ResponsiveSearchSection />
 
       {/* Carrusel Continuo de 12 Imágenes */}
       <ImageCarouselContinuous 
@@ -210,12 +214,12 @@ export default function Home() {
                   backgroundSize: '60px 60px'
                 }}></div>
               </div>
-              
+
               {/* Elementos flotantes animados */}
               <div className="absolute top-6 left-6 w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
               <div className="absolute bottom-8 right-8 w-4 h-4 bg-blue-400 rounded-full animate-ping"></div>
               <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></div>
-              
+
               {/* Contenido principal */}
               <div className="relative z-10 h-full flex flex-col lg:flex-row items-center justify-between p-4 md:p-6 lg:p-8">
                 {/* Lado izquierdo - Contenido principal */}
@@ -227,13 +231,13 @@ export default function Home() {
                         ¡REGÍSTRATE GRATIS!
                       </span>
                     </div>
-                    
+
                     {/* Descripción detallada */}
                     <p className="text-gray-200 text-xs md:text-sm mb-3 md:mb-6 leading-relaxed text-justify max-w-md">
                       <span className="lg:hidden">Sube productos, crea tu tienda virtual y expande tu alcance. ¡Aumenta tus ventas con nosotros!</span>
                       <span className="hidden lg:inline">Sube tus productos, crea tu tienda virtual y expande tu alcance. ¡Aumenta tus ventas y haz crecer tu negocio con nosotros!</span>
                     </p>
-                    
+
                     {/* CTA Principal */}
                     <button className="group relative bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold px-6 py-2 md:px-8 md:py-3 rounded-lg md:rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-yellow-500/40 overflow-hidden">
                       <span className="relative z-10 text-sm md:text-lg uppercase tracking-wide">COMENZAR AHORA</span>
@@ -245,7 +249,7 @@ export default function Home() {
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Lado derecho - Elementos visuales */}
                 <div className="flex-1 max-w-sm">
                   <div className="lg:hidden mt-2">
@@ -343,7 +347,7 @@ export default function Home() {
                   backgroundSize: '60px 60px'
                 }}></div>
               </div>
-              
+
               {/* Contenido principal */}
               <div className="relative z-10 h-full flex flex-col lg:flex-row items-center justify-between p-4 md:p-6 lg:p-8">
                 {/* Lado izquierdo - Mensaje principal */}
@@ -356,7 +360,7 @@ export default function Home() {
                       </svg>
                       <span className="text-red-300 font-semibold text-xs md:text-sm tracking-wide uppercase">Información de Seguridad</span>
                     </div>
-                    
+
                     {/* Mensaje principal */}
                     <p className="text-gray-200 text-xs md:text-sm mb-3 md:mb-6 leading-relaxed text-justify max-w-md">
                       <span className="lg:hidden">Plataforma de vitrina para negocios locales. No realizamos ventas directas. Verifica la identidad del vendedor antes de transferencias.</span>
@@ -364,7 +368,7 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Lado derecho - Tips de seguridad */}
                 <div className="flex-1 max-w-sm">
                   <div className="bg-red-600/10 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-red-500/20">
@@ -409,7 +413,7 @@ export default function Home() {
             </div>
           </section>
         </InfoBannerCarousel>
-        
+
         {loading ? (
           <SkeletonCarousel
             title="Liquidaciones"
@@ -432,10 +436,10 @@ export default function Home() {
         <div className="container mx-auto">
           {/* Fila superior - 2 filas de 2 columnas en móvil, 4 columnas en desktop */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mb-8">
-            
+
             {/* Primera fila en móvil: Logo y Contacto */}
             <div className="grid grid-cols-2 gap-6 md:gap-8 md:col-span-2">
-              
+
               {/* Columna 1 - Logo y descripción */}
               <div className="text-left">
                 <div className="mb-3 md:mb-4">
@@ -482,7 +486,7 @@ export default function Home() {
 
             {/* Segunda fila en móvil: Información y Contacto */}
             <div className="grid grid-cols-2 gap-6 md:gap-8 md:col-span-2">
-              
+
               {/* Columna 3 - Información */}
               <div className="text-left">
                 <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
