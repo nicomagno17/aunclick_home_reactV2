@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { SearchBar } from '@/components/search-bar'
 import { FloatingSearchBar } from '@/components/floating-search-bar'
 import { ChevronDown, Menu, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
 interface HeaderProps {
   searchTerm: string
@@ -20,12 +21,12 @@ export function Header({
   showFloatingSearch = true 
 }: HeaderProps) {
   const router = useRouter()
-  
+
   // Estados para los modales desplegables
   const [showCategorias, setShowCategorias] = useState(false)
   const [showArriendos, setShowArriendos] = useState(false)
   const [showServicios, setShowServicios] = useState(false)
-  
+
   // Estado para el menú móvil
   const [showMobileMenu, setShowMobileMenu] = useState(false)
 
@@ -92,7 +93,7 @@ export function Header({
 
     // Agregar event listener
     document.addEventListener('mousedown', handleClickOutside)
-    
+
     // Limpiar event listener
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
@@ -114,7 +115,7 @@ export function Header({
 
     window.addEventListener('scroll', handleScroll)
     handleScroll() // Verificar estado inicial
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
@@ -169,14 +170,14 @@ export function Header({
                 <div className="group w-56 h-16 bg-gradient-to-br from-purple-700/80 via-purple-600/70 to-purple-500/60 border-2 border-purple-300/60 rounded-xl flex items-center justify-center p-3 hover:shadow-xl hover:shadow-purple-400/40 transition-all duration-500 hover:scale-105 backdrop-blur-sm relative overflow-hidden">
                   {/* Efecto de brillo */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                  
+
                   {/* Icono decorativo */}
                   <div className="absolute top-1 right-2">
                     <svg className="w-3 h-3 text-white/60" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8 2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                     </svg>
                   </div>
-                  
+
                   <div className="text-center relative z-10">
                     <div className="text-[9px] font-extrabold text-white leading-tight tracking-wider uppercase">Espacio Premium</div>
                     <div className="text-xs font-bold text-white leading-tight tracking-wide">Publicitario</div>
@@ -203,14 +204,14 @@ export function Header({
                   <div className="group w-full h-12 bg-gradient-to-br from-purple-700/80 via-purple-600/70 to-purple-500/60 border-2 border-purple-300/60 rounded-lg flex items-center justify-center p-2 hover:shadow-lg hover:shadow-purple-400/40 transition-all duration-500 backdrop-blur-sm relative overflow-hidden">
                     {/* Efecto de brillo */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                    
+
                     {/* Icono decorativo */}
                     <div className="absolute top-1 right-2">
                       <svg className="w-2 h-2 text-white/60" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8 2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                       </svg>
                     </div>
-                    
+
                     <div className="text-center relative z-10">
                       <div className="text-[8px] font-extrabold text-white leading-tight tracking-wider uppercase">Espacio Premium</div>
                       <div className="text-[10px] font-bold text-white leading-tight tracking-wide">Publicitario</div>
@@ -262,7 +263,7 @@ export function Header({
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showCategorias ? 'rotate-180' : ''}`} />
                     <span>Categorías</span>
                   </button>
-                  
+
                   {/* Modal desplegable de Categorías */}
                   {showCategorias && (
                     <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
@@ -276,7 +277,7 @@ export function Header({
                     </div>
                   )}
                 </div>
-                
+
                 {/* Arriendos */}
                 <div className="relative modal-container">
                   <button 
@@ -286,7 +287,7 @@ export function Header({
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showArriendos ? 'rotate-180' : ''}`} />
                     <span>Arriendos</span>
                   </button>
-                  
+
                   {/* Modal desplegable de Arriendos */}
                   {showArriendos && (
                     <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
@@ -300,7 +301,7 @@ export function Header({
                     </div>
                   )}
                 </div>
-                
+
                 {/* Servicios */}
                 <div className="relative modal-container">
                   <button 
@@ -310,7 +311,7 @@ export function Header({
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showServicios ? 'rotate-180' : ''}`} />
                     <span>Servicios</span>
                   </button>
-                  
+
                   {/* Modal desplegable de Servicios */}
                   {showServicios && (
                     <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
@@ -325,7 +326,7 @@ export function Header({
                   )}
                 </div>
               </div>
-              
+
               {/* Enlaces al lado derecho: Registrarse, Ingresar con iconos */}
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
@@ -359,7 +360,7 @@ export function Header({
                   <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showCategorias ? 'rotate-180' : ''}`} />
                   <span>Categorías</span>
                 </button>
-                
+
                 {/* Modal desplegable de Categorías */}
                 {showCategorias && (
                   <div className="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
@@ -373,7 +374,7 @@ export function Header({
                   </div>
                 )}
               </div>
-              
+
               {/* Arriendos */}
               <div className="relative modal-container">
                 <button 
@@ -383,7 +384,7 @@ export function Header({
                   <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showArriendos ? 'rotate-180' : ''}`} />
                   <span>Arriendos</span>
                 </button>
-                
+
                 {/* Modal desplegable de Arriendos */}
                 {showArriendos && (
                   <div className="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
@@ -397,7 +398,7 @@ export function Header({
                   </div>
                 )}
               </div>
-              
+
               {/* Servicios */}
               <div className="relative modal-container">
                 <button 
@@ -407,7 +408,7 @@ export function Header({
                   <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showServicios ? 'rotate-180' : ''}`} />
                   <span>Servicios</span>
                 </button>
-                
+
                 {/* Modal desplegable de Servicios */}
                 {showServicios && (
                   <div className="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
@@ -422,7 +423,7 @@ export function Header({
                 )}
               </div>
             </div>
-            
+
             {/* Icono de hamburguesa a la derecha */}
             <div className="relative modal-container">
               <button 
@@ -431,7 +432,7 @@ export function Header({
               >
                 <Menu className="w-5 h-5" />
               </button>
-              
+
               {/* Menú desplegable de opciones de usuario */}
               {showMobileMenu && (
                 <div className="absolute top-full right-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
