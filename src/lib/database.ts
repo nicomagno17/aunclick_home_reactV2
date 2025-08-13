@@ -1,6 +1,5 @@
 
 import mysql from 'mysql2/promise'
-import { db as prismaClient } from './db'
 
 // Configuración de conexión directa a MySQL
 const mysqlConfig = {
@@ -34,9 +33,6 @@ export const closeMySQLPool = async (): Promise<void> => {
   }
 }
 
-// Exportar cliente de Prisma existente
-export const prisma = prismaClient
-
 // Función helper para ejecutar queries raw
 export const executeQuery = async <T = any>(
   query: string,
@@ -47,9 +43,41 @@ export const executeQuery = async <T = any>(
   return rows as T[]
 }
 
+// Función helper para ejecutar una sola query
+export const executeQuerySingle = async <T = any>(
+  query: string,
+  params?: any[]
+): Promise<T | null> => {
+  const results = await executeQuery<T>(query, params)
+  return results.length > 0 ? results[0] : null
+}
+
+// Función helper para insertar y obtener el ID insertado
+export const insertAndGetId = async (
+  query: string,
+  params?: any[]
+): Promise<number> => {
+  const pool = getMySQLPool()
+  const [result] = await pool.execute(query, params)
+  return (result as any).insertId
+}
+
+// Función helper para contar registros
+export const countRecords = async (
+  query: string,
+  params?: any[]
+): Promise<number> => {
+  const pool = getMySQLPool()
+  const [rows] = await pool.execute(query, params)
+  const result = rows as any[]
+  return result[0]?.count || 0
+}
+
 export default {
   mysql: getMySQLPool,
-  prisma,
   executeQuery,
+  executeQuerySingle,
+  insertAndGetId,
+  countRecords,
   closeMySQLPool
 }
