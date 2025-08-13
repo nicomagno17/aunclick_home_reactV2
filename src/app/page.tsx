@@ -48,8 +48,7 @@ export default function Home() {
         showFloatingSearch={true}
       />
 
-      {/* Responsive Search Section */}
-      <ResponsiveSearchSection />
+      
 
       {/* Carrusel Continuo de 12 Imágenes */}
       <ImageCarouselContinuous 

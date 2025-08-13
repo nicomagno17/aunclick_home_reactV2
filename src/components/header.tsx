@@ -189,7 +189,7 @@ export function Header({
 
           {/* Versión Móvil */}
           <div className="sm:hidden w-full">
-            {/* Primera fila: Título y botón volver o búsqueda */}
+            {/* Primera fila: Título y botón volver */}
             <div className="flex items-center justify-between px-4 py-3">
               {/* Logo/Título - Más pequeño y a la izquierda */}
               <div className="flex flex-col items-start cursor-pointer" onClick={() => router.push('/')}>
@@ -197,8 +197,8 @@ export function Header({
                 <h1 className="text-lg font-bold leading-tight text-yellow-300">un CLICK</h1>
               </div>
 
-              {/* Botón volver o Buscador a la derecha */}
-              {showBackButton ? (
+              {/* Botón volver si es necesario */}
+              {showBackButton && (
                 <button
                   onClick={() => router.back()}
                   className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-purple-600/50 hover:bg-purple-600/70 px-3 py-2 rounded-lg backdrop-blur-sm border border-purple-300/30"
@@ -206,29 +206,11 @@ export function Header({
                   <ArrowLeft className="h-4 w-4" />
                   <span className="text-xs">Volver</span>
                 </button>
-              ) : (
-                <div className="flex-1 max-w-[180px] ml-3">
-                  <SearchBar 
-                    value={searchTerm} 
-                    onChange={onSearchTermChange}
-                    placeholder="Buscar..."
-                    className="text-sm"
-                  />
-                </div>
               )}
             </div>
 
-            {/* Segunda fila: Buscador (solo si hay botón volver) o Banner publicitario */}
-            {showBackButton ? (
-              <div className="px-4 pb-3">
-                <SearchBar 
-                  value={searchTerm} 
-                  onChange={onSearchTermChange}
-                  placeholder="Buscar productos..."
-                  className="text-sm"
-                />
-              </div>
-            ) : (
+            {/* Segunda fila: Banner publicitario (solo si no hay botón volver) */}
+            {!showBackButton && (
               <div className="px-4 pb-3">
                 <div className="group w-full h-12 bg-gradient-to-br from-purple-700/80 via-purple-600/70 to-purple-500/60 border-2 border-purple-300/60 rounded-lg flex items-center justify-center p-2 hover:shadow-lg hover:shadow-purple-400/40 transition-all duration-500 backdrop-blur-sm relative overflow-hidden">
                   {/* Efecto de brillo */}
@@ -249,6 +231,16 @@ export function Header({
                 </div>
               </div>
             )}
+
+            {/* Tercera fila: Buscador (siempre presente) */}
+            <div className="px-4 pb-3">
+              <SearchBar 
+                value={searchTerm} 
+                onChange={onSearchTermChange}
+                placeholder="Buscar productos..."
+                className="text-sm"
+              />
+            </div>
           </div>
         </div>
       </header>

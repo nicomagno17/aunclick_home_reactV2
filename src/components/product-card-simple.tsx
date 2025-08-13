@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ShoppingCart, Heart, ExternalLink } from 'lucide-react'
+import { ShoppingCart, Heart, ExternalLink, Eye } from 'lucide-react'
 import { Product } from '@/types/product'
 import { ImageModal } from '@/components/image-modal'
 
@@ -11,6 +11,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const [isFlipped, setIsFlipped] = useState(false)
+  const [showModal, setShowModal] = useState(false) // State to control the modal visibility
   const discountPercentage = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
@@ -52,13 +53,18 @@ export function ProductCard({ product }: ProductCardProps) {
             imageSrc={product.image} 
             imageAlt={product.name}
             productName={product.name}
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
           >
+            {/* Icono de vista de imagen */}
             <button 
-              className="bg-white/90 backdrop-blur-sm p-1.5 sm:p-2 rounded-full hover:bg-white transition-colors shadow-sm"
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
+                setShowModal(true)
               }}
+              className="absolute top-2 right-2 p-2 bg-black/50 backdrop-blur-sm rounded-full hover:bg-black/70 transition-colors z-10"
+              aria-label="Ver imagen completa"
             >
               <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
             </button>

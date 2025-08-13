@@ -6,15 +6,19 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Product } from '@/types/product'
 import { ImageModal } from '@/components/image-modal'
+import { useState } from 'react'
+import { Eye } from 'lucide-react'
 
 interface ProductCardProps {
   product: Product
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const discountPercentage = product.originalPrice 
+  const discountPercentage = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
+
+  const [showModal, setShowModal] = useState(false)
 
   return (
     <Card className="group h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-border hover:border-primary/50 bg-card">
@@ -26,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          
+
           {/* Badges */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
             {discountPercentage > 0 && (
@@ -43,29 +47,32 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Action Buttons - Only visible on hover for desktop */}
           <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
-            <Button 
-              size="sm" 
-              variant="secondary" 
+            <Button
+              size="sm"
+              variant="secondary"
               className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm hover:bg-background"
             >
               <Heart className="h-4 w-4" />
             </Button>
-            <ImageModal 
-              imageSrc={product.image} 
+            <ImageModal
+              imageSrc={product.image}
               imageAlt={product.name}
               productName={product.name}
+              isOpen={showModal}
+              onClose={() => setShowModal(false)}
             >
-              <Button 
-                size="sm" 
-                variant="secondary" 
-                className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm hover:bg-background"
+              {/* Icono de vista de imagen */}
+              <button
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
+                  setShowModal(true)
                 }}
+                className="absolute top-2 right-2 p-2 bg-black/50 backdrop-blur-sm rounded-full hover:bg-black/70 transition-colors z-10"
+                aria-label="Ver imagen completa"
               >
-                <ExternalLink className="h-4 w-4" />
-              </Button>
+                <Eye className="h-4 w-4 text-white" />
+              </button>
             </ImageModal>
           </div>
 
@@ -109,7 +116,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Action Button */}
-          <Button 
+          <Button
             className="w-full bg-purple-700 hover:bg-purple-800 text-white mt-auto"
             disabled={!product.inStock}
           >
