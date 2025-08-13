@@ -25,7 +25,7 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
     isAutoPlaying: true,
     direction: 'forward'
   })
-  
+
   const [row2State, setRow2State] = useState<RowState>({
     startIndex: 4, // Empezar en la posición 4 para la segunda fila
     isAutoPlaying: true,
@@ -36,14 +36,14 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
   const timeoutRef2 = useRef<NodeJS.Timeout | null>(null)
   const restartTimeoutRef1 = useRef<NodeJS.Timeout | null>(null)
   const restartTimeoutRef2 = useRef<NodeJS.Timeout | null>(null)
-  
+
   // Configuración responsive
   const visibleCardsPerRowDesktop = 4 // 4 tarjetas visibles por fila en desktop
   const visibleCardsPerRowMobile = 2 // 2 tarjetas visibles por fila en móvil
   const cardsPerMove = 1 // Mover de a 1 tarjeta para mejor control en móvil
 
   const totalCards = products.length
-  
+
   // Calcular máximos basados en el viewport actual
   const getVisibleCardsPerRow = () => {
     if (typeof window !== 'undefined') {
@@ -51,34 +51,34 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
     }
     return visibleCardsPerRowDesktop // Default para SSR
   }
-  
+
   const [visibleCardsPerRow, setVisibleCardsPerRow] = useState(getVisibleCardsPerRow())
-  
+
   // Efecto para detectar cambios de viewport
   useEffect(() => {
     const handleResize = () => {
       const newVisibleCards = getVisibleCardsPerRow()
       setVisibleCardsPerRow(newVisibleCards)
-      
+
       // Resetear índices si es necesario para evitar estados inválidos
       const maxIndex1 = Math.max(0, totalCards - newVisibleCards)
       const maxIndex2 = Math.max(0, totalCards - newVisibleCards)
-      
+
       setRow1State(prev => ({
         ...prev,
         startIndex: Math.min(prev.startIndex, maxIndex1)
       }))
-      
+
       setRow2State(prev => ({
         ...prev,
         startIndex: Math.min(prev.startIndex, maxIndex2)
       }))
     }
-    
+
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [totalCards, visibleCardsPerRowDesktop, visibleCardsPerRowMobile])
-  
+
   // Calcular máximos usando useMemo para optimización
   const maxIndex1 = useMemo(() => Math.max(0, totalCards - visibleCardsPerRow), [totalCards, visibleCardsPerRow])
   const maxIndex2 = useMemo(() => Math.max(0, totalCards - visibleCardsPerRow), [totalCards, visibleCardsPerRow])
@@ -111,14 +111,14 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
     if (rowNumber === 1) {
       setRow1State(prev => ({ ...prev, isAutoPlaying: false }))
       clearTimeoutsForRow(1)
-      
+
       restartTimeoutRef1.current = setTimeout(() => {
         setRow1State(prev => ({ ...prev, isAutoPlaying: true }))
       }, 5000)
     } else {
       setRow2State(prev => ({ ...prev, isAutoPlaying: false }))
       clearTimeoutsForRow(2)
-      
+
       restartTimeoutRef2.current = setTimeout(() => {
         setRow2State(prev => ({ ...prev, isAutoPlaying: true }))
       }, 5000)
@@ -288,7 +288,7 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
         <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       </div>
-      
+
       {/* Fila 1 */}
       <div className="relative mb-8">
         <div className="overflow-hidden">
@@ -335,11 +335,11 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
           </div>
         </div>
 
-        {/* Flechas para la fila 2 */}
+        {/* Flechas para la fila 2 - Solo en desktop */}
         {row2State.startIndex > 0 && (
           <button
             onClick={() => handlePreviousForRow(2)}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-gradient-to-r from-purple-900 via-purple-800 via-purple-700 via-purple-600 to-purple-500 border border-yellow-400 rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10"
+            className="hidden sm:flex absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-gradient-to-r from-purple-900 via-purple-800 via-purple-700 via-purple-600 to-purple-500 border border-yellow-400 rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 items-center justify-center"
             aria-label="Ver tarjetas anteriores - Fila 2"
           >
             <ChevronLeft className="h-5 w-5 text-yellow-300" />
@@ -349,7 +349,7 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
         {row2State.startIndex < maxIndex2 && (
           <button
             onClick={() => handleNextForRow(2)}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-gradient-to-r from-purple-900 via-purple-800 via-purple-700 via-purple-600 to-purple-500 border border-yellow-400 rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10"
+            className="hidden sm:flex absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-gradient-to-r from-purple-900 via-purple-800 via-purple-700 via-purple-600 to-purple-500 border border-yellow-400 rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 items-center justify-center"
             aria-label="Ver más tarjetas - Fila 2"
           >
             <ChevronRight className="h-5 w-5 text-yellow-300" />

@@ -225,11 +225,11 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
           </div>
         </div>
         
-        {/* Flechas de navegación */}
+        {/* Flechas de navegación - Solo en desktop */}
         {currentIndex > 0 && (
           <button
             onClick={handlePrevious}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-gradient-to-r from-purple-900 to-purple-500 border border-yellow-400 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 touch-none"
+            className="hidden sm:flex absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-gradient-to-r from-purple-900 to-purple-500 border border-yellow-400 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 touch-none items-center justify-center"
             aria-label="Ver productos anteriores"
           >
             <ChevronLeft className="h-5 w-5 text-yellow-300" />
@@ -239,7 +239,7 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
         {currentIndex < maxIndex && (
           <button
             onClick={handleNext}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-gradient-to-r from-purple-900 to-purple-500 border border-yellow-400 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 touch-none"
+            className="hidden sm:flex absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-gradient-to-r from-purple-900 to-purple-500 border border-yellow-400 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 touch-none items-center justify-center"
             aria-label="Ver más productos"
           >
             <ChevronRight className="h-5 w-5 text-yellow-300" />
