@@ -85,6 +85,9 @@ export default function ProductoModal({
   const [isLoading, setIsLoading] = useState(false)
   const [negociosList, setNegociosList] = useState<any[]>([])
   const [categoriasList, setCategoriasList] = useState<any[]>([])
+  const [activeTab, setActiveTab] = useState('informacion')
+  const [imagenes, setImagenes] = useState<any[]>([])
+  const [imagenActual, setImagenActual] = useState<string | null>(null)
   const { toast } = useToast()
 
   const form = useForm<FormValues>({
