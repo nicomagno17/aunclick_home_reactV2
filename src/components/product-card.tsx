@@ -20,8 +20,16 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const [showModal, setShowModal] = useState(false)
 
+  const handleCardClick = () => {
+    setShowModal(true)
+  }
+
   return (
-    <Card className="group h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-border hover:border-primary/50 bg-card">
+    <>
+      <Card 
+        className="group h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-border hover:border-primary/50 bg-card cursor-pointer"
+        onClick={handleCardClick}
+      >
       <div className="p-0">
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden bg-muted">
@@ -126,5 +134,12 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
     </Card>
+    
+    <ImageModal 
+      product={product}
+      isOpen={showModal}
+      onClose={() => setShowModal(false)}
+    />
+    </>
   )
 }

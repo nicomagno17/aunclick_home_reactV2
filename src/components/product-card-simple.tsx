@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Heart } from 'lucide-react'
 import { Product } from '@/types/product'
+import { ImageModal } from '@/components/image-modal'
 
 interface ProductCardProps {
   product: Product
@@ -10,6 +11,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const [isFlipped, setIsFlipped] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const discountPercentage = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
@@ -19,8 +21,16 @@ export function ProductCard({ product }: ProductCardProps) {
     setIsFlipped(!isFlipped)
   }
 
+  const handleCardClick = () => {
+    setShowModal(true)
+  }
+
   return (
-    <div className="group h-full bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col min-w-[160px] sm:min-w-[200px] md:min-w-[240px] cursor-pointer">
+    <>
+      <div 
+        className="group h-full bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col min-w-[160px] sm:min-w-[200px] md:min-w-[240px] cursor-pointer"
+        onClick={handleCardClick}
+      >
       {/* Parte Superior - Imagen más grande para touch */}
       <div className="relative aspect-[4/3] sm:aspect-[3/3] overflow-hidden bg-white">
         <img
@@ -100,7 +110,10 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {/* Botón de Información de la Tienda */}
             <button 
-              onClick={handleFlip}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleFlip(e)
+              }}
               className="w-full bg-gradient-to-r from-purple-900 via-purple-800 via-purple-700 via-purple-600 to-purple-500 text-white text-[10px] sm:text-xs font-medium py-1 sm:py-1.5 rounded-md hover:opacity-90 transition-opacity duration-200"
             >
               Información de la Tienda
@@ -150,7 +163,10 @@ export function ProductCard({ product }: ProductCardProps) {
                 {/* Botón de volver - Justo debajo de los horarios */}
                 <div className="mt-1 sm:mt-2">
                   <button 
-                    onClick={handleFlip}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleFlip(e)
+                    }}
                     className="w-full bg-gradient-to-r from-purple-900 via-purple-800 via-purple-700 via-purple-600 to-purple-500 text-white text-[10px] sm:text-xs font-medium py-1 sm:py-1.5 rounded-md hover:opacity-90 transition-opacity duration-200"
                   >
                     Volver
@@ -162,5 +178,12 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
     </div>
+    
+    <ImageModal 
+      product={product}
+      isOpen={showModal}
+      onClose={() => setShowModal(false)}
+    />
+    </>
   )
 }

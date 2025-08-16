@@ -1,4 +1,4 @@
-import { api } from './api';
+import api from './api';
 import { BaseService } from './base-service';
 
 export interface DashboardStats {
