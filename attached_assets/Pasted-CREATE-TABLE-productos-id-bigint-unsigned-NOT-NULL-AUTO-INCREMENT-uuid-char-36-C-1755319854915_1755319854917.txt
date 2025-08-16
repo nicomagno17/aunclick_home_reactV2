@@ -1,0 +1,85 @@
+CREATE TABLE `productos` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT(uuid()),
+    `negocio_id` bigint unsigned NOT NULL,
+    `categoria_id` mediumint unsigned NOT NULL,
+    `nombre` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `slug` varchar(220) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `descripcion` text COLLATE utf8mb4_unicode_ci,
+    `descripcion_corta` varchar(300) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `precio` decimal(12, 2) NOT NULL DEFAULT '0.00',
+    `precio_antes` decimal(12, 2) DEFAULT NULL COMMENT 'Precio anterior para mostrar descuentos',
+    `moneda` char(3) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'COP' COMMENT 'Código ISO 4217',
+    `sku` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Stock Keeping Unit',
+    `stock_disponible` mediumint unsigned DEFAULT '0',
+    `maneja_stock` tinyint(1) NOT NULL DEFAULT '0',
+    `stock_minimo` smallint unsigned DEFAULT '0',
+    `peso` decimal(8, 3) DEFAULT NULL COMMENT 'Peso en kilogramos',
+    `dimensiones` json DEFAULT NULL COMMENT 'Largo, ancho, alto en centímetros',
+    `estado` enum(
+        'borrador',
+        'activo',
+        'inactivo',
+        'agotado',
+        'eliminado'
+    ) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'borrador',
+    `destacado` tinyint(1) NOT NULL DEFAULT '0',
+    `permite_personalizacion` tinyint(1) NOT NULL DEFAULT '0',
+    `total_vistas` int unsigned NOT NULL DEFAULT '0',
+    `total_consultas` int unsigned NOT NULL DEFAULT '0',
+    `seo_title` varchar(70) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `seo_description` varchar(160) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `seo_keywords` varchar(300) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `atributos` json DEFAULT NULL COMMENT 'Atributos específicos del producto',
+    `opciones_personalizacion` json DEFAULT NULL COMMENT 'Opciones de personalización disponibles',
+    `metadata` json DEFAULT NULL,
+    `fecha_disponibilidad` date DEFAULT NULL COMMENT 'Fecha desde cuando está disponible',
+    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uuid` (`uuid`),
+    KEY `idx_productos_negocio` (`negocio_id`),
+    KEY `idx_productos_categoria` (`categoria_id`),
+    KEY `idx_productos_slug_negocio` (`slug`, `negocio_id`),
+    KEY `idx_productos_estado` (`estado`),
+    KEY `idx_productos_destacado` (`destacado`),
+    KEY `idx_productos_precio` (`precio`),
+    KEY `idx_productos_precio_rango` (`precio`, `estado`),
+    KEY `idx_productos_sku` (`sku`),
+    KEY `idx_productos_stock` (`stock_disponible`),
+    KEY `idx_productos_vistas` (`total_vistas` DESC),
+    KEY `idx_productos_created_at` (`created_at` DESC),
+    KEY `idx_productos_soft_delete` (`deleted_at`),
+    KEY `idx_productos_negocio_estado_destacado` (
+        `negocio_id`,
+        `estado`,
+        `destacado`
+    ),
+    KEY `idx_productos_categoria_estado_precio` (
+        `categoria_id`,
+        `estado`,
+        `precio`
+    ),
+    KEY `idx_productos_busqueda` (
+        `negocio_id`,
+        `categoria_id`,
+        `estado`
+    ),
+    CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`negocio_id`) REFERENCES `negocios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `productos_ibfk_2` FOREIGN KEY (`categoria_id`) REFERENCES `categorias_productos` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT `chk_productos_peso` CHECK (
+        (
+            (`peso` is null)
+            or (`peso` >= 0)
+        )
+    ),
+    CONSTRAINT `chk_productos_precio` CHECK ((`precio` >= 0)),
+    CONSTRAINT `chk_productos_precio_antes` CHECK (
+        (
+            (`precio_antes` is null)
+            or (`precio_antes` >= 0)
+        )
+    ),
+    CONSTRAINT `chk_productos_stock` CHECK ((`stock_disponible` >= 0))
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'Catálogo de productos con gestión de inventario y precios'
