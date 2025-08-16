@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { ShoppingCart, Heart, ExternalLink, Eye } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import { Product } from '@/types/product'
-import { ImageModal } from '@/components/image-modal'
 
 interface ProductCardProps {
   product: Product
@@ -11,17 +10,17 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const [isFlipped, setIsFlipped] = useState(false)
-  const [showModal, setShowModal] = useState(false) // State to control the modal visibility
   const discountPercentage = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
 
-  const handleFlip = () => {
+  const handleFlip = (e: React.MouseEvent) => {
+    e.stopPropagation() // Evita que el clic se propague al contenedor principal
     setIsFlipped(!isFlipped)
   }
 
   return (
-    <div className="group h-full bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col min-w-[160px] sm:min-w-[200px] md:min-w-[240px]">
+    <div className="group h-full bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col min-w-[160px] sm:min-w-[200px] md:min-w-[240px] cursor-pointer">
       {/* Parte Superior - Imagen más grande para touch */}
       <div className="relative aspect-[4/3] sm:aspect-[3/3] overflow-hidden bg-white">
         <img
@@ -46,29 +45,12 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Action buttons overlay - Only visible on hover for desktop */}
         <div className="absolute top-1 sm:top-2 right-1 sm:right-2 flex flex-col gap-1 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
-          <button className="bg-white/90 backdrop-blur-sm p-1.5 sm:p-2 rounded-full hover:bg-white transition-colors shadow-sm">
+          <button 
+            onClick={(e) => e.stopPropagation()} 
+            className="bg-white/90 backdrop-blur-sm p-1.5 sm:p-2 rounded-full hover:bg-white transition-colors shadow-sm"
+          >
             <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
           </button>
-          <ImageModal 
-            imageSrc={product.image} 
-            imageAlt={product.name}
-            productName={product.name}
-            isOpen={showModal}
-            onClose={() => setShowModal(false)}
-          >
-            {/* Icono de vista de imagen */}
-            <button 
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                setShowModal(true)
-              }}
-              className="absolute top-2 right-2 p-2 bg-black/50 backdrop-blur-sm rounded-full hover:bg-black/70 transition-colors z-10"
-              aria-label="Ver imagen completa"
-            >
-              <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
-            </button>
-          </ImageModal>
         </div>
 
         {/* Source Badge */}

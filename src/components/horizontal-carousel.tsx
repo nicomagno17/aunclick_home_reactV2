@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { ProductCard } from './product-card-simple'
 import { Product } from '@/types/product'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ImageModal } from './image-modal'
 
 interface HorizontalCarouselProps {
   title: string
@@ -21,6 +22,18 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
   const restartAutoPlayRef = useRef<NodeJS.Timeout | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleCardClick = (product: Product) => {
+    setSelectedProduct(product)
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setSelectedProduct(null)
+  }
 
   // Configuración responsive
   const getViewportConfig = () => {
@@ -183,88 +196,91 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
   }
 
   return (
-    <section className="mb-12">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
-        <p className="text-sm text-muted-foreground">{subtitle}</p>
-      </div>
-      
-      <div className="relative">
-        {/* Container con scroll horizontal */}
-        <div 
-          ref={scrollContainerRef}
-          className="overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          onTouchStart={(e) => handleStart(e.touches[0].clientX)}
-          onTouchMove={(e) => handleMove(e.touches[0].clientX)}
-          onTouchEnd={handleEnd}
-          onMouseDown={(e) => {
-            e.preventDefault()
-            handleStart(e.clientX)
-          }}
-          onMouseMove={(e) => isDragging && handleMove(e.clientX)}
-          onMouseUp={handleEnd}
-          onMouseLeave={handleEnd}
-        >
-          <div 
-            className="flex gap-3 sm:gap-4 md:gap-5 pb-2"
-            style={{
-              width: `${products.length * (config.width + config.gap) - config.gap}px`
-            }}
-          >
-            {products.map((product) => (
-              <div 
-                key={`${cardKeyPrefix}-${product.id}`}
-                className="flex-shrink-0"
-                style={{ width: config.width }}
-                onClick={() => handleUserInteraction()}
-              >
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
+    <>
+      <section className="mb-12">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
         
-        {/* Flechas de navegación - Solo en desktop */}
-        {currentIndex > 0 && (
-          <button
-            onClick={handlePrevious}
-            className="hidden sm:flex absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-gradient-to-r from-purple-900 to-purple-500 border border-yellow-400 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 touch-none items-center justify-center"
-            aria-label="Ver productos anteriores"
+        <div className="relative">
+          {/* Container con scroll horizontal */}
+          <div 
+            ref={scrollContainerRef}
+            className="overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+            onTouchMove={(e) => handleMove(e.touches[0].clientX)}
+            onTouchEnd={handleEnd}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              handleStart(e.clientX)
+            }}
+            onMouseMove={(e) => isDragging && handleMove(e.clientX)}
+            onMouseUp={handleEnd}
+            onMouseLeave={handleEnd}
           >
-            <ChevronLeft className="h-5 w-5 text-yellow-300" />
-          </button>
-        )}
-
-        {currentIndex < maxIndex && (
-          <button
-            onClick={handleNext}
-            className="hidden sm:flex absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-gradient-to-r from-purple-900 to-purple-500 border border-yellow-400 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 touch-none items-center justify-center"
-            aria-label="Ver más productos"
-          >
-            <ChevronRight className="h-5 w-5 text-yellow-300" />
-          </button>
-        )}
-
-        {/* Indicadores de posición (opcional, para móvil) */}
-        {products.length > Math.floor(config.visible) && (
-          <div className="flex justify-center mt-4 gap-1 md:hidden">
-            {Array.from({ length: maxIndex + 1 }, (_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setCurrentIndex(index)
-                  handleUserInteraction()
-                }}
-                className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                  index === currentIndex ? 'bg-purple-500' : 'bg-gray-300'
-                }`}
-                aria-label={`Ir a posición ${index + 1}`}
-              />
-            ))}
+            <div 
+              className="flex gap-3 sm:gap-4 md:gap-5 pb-2"
+              style={{
+                width: `${products.length * (config.width + config.gap) - config.gap}px`
+              }}
+            >
+              {products.map((product) => (
+                <div 
+                  key={`${cardKeyPrefix}-${product.id}`}
+                  className="flex-shrink-0"
+                  style={{ width: config.width }}
+                  onClick={() => handleCardClick(product)}
+                >
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
           </div>
-        )}
-      </div>
-    </section>
+          
+          {/* Flechas de navegación - Solo en desktop */}
+          {currentIndex > 0 && (
+            <button
+              onClick={handlePrevious}
+              className="hidden sm:flex absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-gradient-to-r from-purple-900 to-purple-500 border border-yellow-400 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 touch-none items-center justify-center"
+              aria-label="Ver productos anteriores"
+            >
+              <ChevronLeft className="h-5 w-5 text-yellow-300" />
+            </button>
+          )}
+
+          {currentIndex < maxIndex && (
+            <button
+              onClick={handleNext}
+              className="hidden sm:flex absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-gradient-to-r from-purple-900 to-purple-500 border border-yellow-400 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 touch-none items-center justify-center"
+              aria-label="Ver más productos"
+            >
+              <ChevronRight className="h-5 w-5 text-yellow-300" />
+            </button>
+          )}
+
+          {/* Indicadores de posición (opcional, para móvil) */}
+          {products.length > Math.floor(config.visible) && (
+            <div className="flex justify-center mt-4 gap-1 md:hidden">
+              {Array.from({ length: maxIndex + 1 }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setCurrentIndex(index)
+                    handleUserInteraction()
+                  }}
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                    index === currentIndex ? 'bg-purple-500' : 'bg-gray-300'
+                  }`}
+                  aria-label={`Ir a posición ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+      <ImageModal isOpen={isModalOpen} onClose={closeModal} product={selectedProduct} />
+    </>
   )
 }
