@@ -1,21 +1,34 @@
-// API Base service
-import axios from 'axios';
+import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: '',
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
-});
+})
 
-// Interceptor para manejo global de errores
-api.interceptors.response.use(
-  (response) => response,
+// Interceptor para requests
+api.interceptors.request.use(
+  (config) => {
+    // Aquí puedes agregar tokens de autenticación, etc.
+    return config
+  },
   (error) => {
-    // Aquí podríamos implementar lógica global de manejo de errores
-    // Por ejemplo, mostrar notificaciones o redireccionar en caso de error 401
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
-export default api;
+// Interceptor para responses
+api.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  (error) => {
+    // Manejo de errores globales
+    console.error('API Error:', error)
+    return Promise.reject(error)
+  }
+)
+
+export default api
