@@ -282,8 +282,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    console.error('Error detallado al crear producto:', error)
+    
+    // Manejo más detallado del error para ayudar en depuración
     return NextResponse.json(
-      { error: 'Error al crear el producto' },
+      { 
+        error: 'Error al crear el producto', 
+        details: error instanceof Error ? error.message : 'Error desconocido',
+        code: (error as any).code || 'UNKNOWN_ERROR'
+      },
       { status: 500 }
     )
   } finally {

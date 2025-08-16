@@ -43,7 +43,19 @@ class ProductosService extends BaseService<Producto> {
     if (typeof data.categoria_id === 'string') {
       data.categoria_id = parseInt(data.categoria_id);
     }
-
+    
+    // Convertir booleanos a valores que la BD espera
+    if (data.maneja_stock !== undefined) {
+      data.maneja_stock = !!data.maneja_stock; // Asegurar que sea boolean
+    }
+    if (data.destacado !== undefined) {
+      data.destacado = !!data.destacado; // Asegurar que sea boolean
+    }
+    if (data.permite_personalizacion !== undefined) {
+      data.permite_personalizacion = !!data.permite_personalizacion; // Asegurar que sea boolean
+    }
+    
+    console.log('Datos procesados antes de enviar:', data);
     return super.create(data);
   }
 }

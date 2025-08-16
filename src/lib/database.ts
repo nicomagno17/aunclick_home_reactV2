@@ -10,9 +10,8 @@ const mysqlConfig = {
   database: process.env.DB_NAME || 'aunClick_prod',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0,
-  acquireTimeout: 60000,
-  timeout: 60000,
+  queueLimit: 0
+  // No usar acquireTimeout o timeout ya que no son compatibles con mysql2/promise
 }
 
 // Pool de conexiones MySQL

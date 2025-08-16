@@ -201,33 +201,60 @@ export default function ProductoModal({
         return
       }
 
-      // Formatear datos con JSON
+      // Formatear datos con JSON (con manejo de errores mejorado)
+      let dimensiones, atributos, opcionesPersonalizacion, metadataJson;
+      
+      try {
+        dimensiones = JSON.parse(values.dimensiones || '{}')
+        atributos = JSON.parse(values.atributos || '{}')
+        opcionesPersonalizacion = JSON.parse(values.opciones_personalizacion || '{}')
+        metadataJson = JSON.parse(values.metadata || '{}')
+      } catch (jsonError) {
+        console.error('Error al parsear JSON:', jsonError)
+        toast({
+          title: "Error de formato",
+          description: "Hay un error en el formato JSON de alguno de los campos",
+          variant: "destructive",
+        })
+        return
+      }
+      
       const formattedData = {
         ...values,
-        dimensiones: JSON.parse(values.dimensiones || '{}'),
-        atributos: JSON.parse(values.atributos || '{}'),
-        opciones_personalizacion: JSON.parse(values.opciones_personalizacion || '{}'),
-        metadata: JSON.parse(values.metadata || '{}'),
+        dimensiones,
+        atributos,
+        opciones_personalizacion: opcionesPersonalizacion,
+        metadata: metadataJson,
         imagenes // Agregar las imágenes
       }
 
       // Llamar al servicio para crear el producto
-      const newProducto = await productosService.create(formattedData)
+      try {
+        const newProducto = await productosService.create(formattedData)
 
-      toast({
-        title: "¡Éxito!",
-        description: "Producto creado correctamente",
-      })
+        toast({
+          title: "¡Éxito!",
+          description: "Producto creado correctamente",
+        })
 
-      onOpenChange(false)
-      form.reset()
-    } catch (error) {
-      console.error('Error al crear producto:', error)
-      toast({
-        title: "Error",
-        description: "Error al crear el producto. Inténtelo nuevamente.",
-        variant: "destructive",
-      })
+        onOpenChange(false)
+        form.reset()
+      } catch (error: any) {
+        console.error('Error al crear producto:', error)
+        // Intentar extraer mensaje de error de la respuesta de la API
+        let errorMessage = "Error al crear el producto. Inténtelo nuevamente.";
+        
+        if (error.response && error.response.data) {
+          const apiError = error.response.data;
+          errorMessage = apiError.error || apiError.details || errorMessage;
+        }
+        
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        })
+      }
     } finally {
       setIsLoading(false)
     }
