@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -16,50 +16,53 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, PlusCircle, MinusCircle, Upload } from 'lucide-react'
 import { format } from 'date-fns'
 import ModalWrapper from './modal-wrapper'
+import { useToast } from '@/hooks/use-toast'
+import { productosService } from '@/services'
+
 
 // Esquema de validación para el formulario
 const formSchema = z.object({
   // Relaciones
   negocio_id: z.string().min(1, 'Debe seleccionar un negocio'),
   categoria_id: z.string().min(1, 'Debe seleccionar una categoría'),
-  
+
   // Información básica
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   slug: z.string().min(2, 'El slug debe tener al menos 2 caracteres')
     .regex(/^[a-z0-9-]+$/, 'El slug solo puede contener letras minúsculas, números y guiones'),
   descripcion: z.string().optional(),
   descripcion_corta: z.string().max(300, 'La descripción corta no puede exceder los 300 caracteres').optional(),
-  
+
   // Información de precios
   precio: z.coerce.number().min(0, 'El precio debe ser mayor o igual a 0'),
   precio_antes: z.coerce.number().min(0, 'El precio debe ser mayor o igual a 0').optional(),
   moneda: z.string().default('COP'),
-  
+
   // Información de inventario
   sku: z.string().optional(),
   stock_disponible: z.coerce.number().int().min(0, 'El stock debe ser mayor o igual a 0').default(0),
   maneja_stock: z.boolean().default(false),
   stock_minimo: z.coerce.number().int().min(0, 'El stock mínimo debe ser mayor o igual a 0').default(0),
-  
+
   // Características del producto
   peso: z.coerce.number().min(0, 'El peso debe ser mayor o igual a 0').optional(),
   dimensiones: z.string().optional(),
-  
+
   // Estado y configuración
   estado: z.enum(['borrador', 'activo', 'inactivo', 'agotado', 'eliminado']).default('borrador'),
   destacado: z.boolean().default(false),
   permite_personalizacion: z.boolean().default(false),
-  
+
   // SEO y marketing
   seo_title: z.string().max(70, 'El título SEO no debe exceder los 70 caracteres').optional(),
   seo_description: z.string().max(160, 'La descripción SEO no debe exceder los 160 caracteres').optional(),
   seo_keywords: z.string().max(300, 'Las keywords SEO no deben exceder los 300 caracteres').optional(),
-  
+
   // Datos adicionales
   atributos: z.string().optional(),
   opciones_personalizacion: z.string().optional(),
   metadata: z.string().optional(),
-  
+
   // Fechas
   fecha_disponibilidad: z.date().optional(),
 })
@@ -77,55 +80,52 @@ interface ProductoModalProps {
 export default function ProductoModal({ 
   open, 
   onOpenChange, 
-  productoToEdit,
-  negociosList = [],
-  categoriasList = []
+  productoToEdit
 }: ProductoModalProps) {
-  const [isSaving, setIsSaving] = useState(false)
-  const [activeTab, setActiveTab] = useState('informacion')
-  const [imagenActual, setImagenActual] = useState<string | null>(null)
-  const [imagenes, setImagenes] = useState<{url: string, esPrincipal: boolean}[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [negociosList, setNegociosList] = useState<any[]>([])
+  const [categoriasList, setCategoriasList] = useState<any[]>([])
+  const { toast } = useToast()
 
-  // Inicializar formulario con valores por defecto o valores para editar
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: productoToEdit || {
       negocio_id: '',
       categoria_id: '',
-      
+
       nombre: '',
       slug: '',
       descripcion: '',
       descripcion_corta: '',
-      
+
       precio: 0,
       precio_antes: undefined,
       moneda: 'COP',
-      
+
       sku: '',
       stock_disponible: 0,
       maneja_stock: false,
       stock_minimo: 0,
-      
+
       peso: undefined,
       dimensiones: JSON.stringify({
         largo: 0,
         ancho: 0,
         alto: 0
       }, null, 2),
-      
+
       estado: 'borrador',
       destacado: false,
       permite_personalizacion: false,
-      
+
       seo_title: '',
       seo_description: '',
       seo_keywords: '',
-      
+
       atributos: JSON.stringify({}, null, 2),
       opciones_personalizacion: JSON.stringify({}, null, 2),
       metadata: JSON.stringify({}, null, 2),
-      
+
       fecha_disponibilidad: undefined,
     }
   })
@@ -149,39 +149,66 @@ export default function ProductoModal({
   const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nombre = e.target.value;
     form.setValue('nombre', nombre);
-    
+
     // Solo actualizar el slug si el usuario no lo ha modificado manualmente
     if (!form.getValues('slug') || form.getValues('slug') === generateSlug(form.getValues('nombre'))) {
       form.setValue('slug', generateSlug(nombre));
     }
   }
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (values: FormValues) => {
     try {
-      setIsSaving(true)
-      console.log('Datos del formulario:', data)
-      
+      setIsLoading(true)
+      console.log('Datos del formulario:', values)
+
+      // Validar que los campos requeridos tengan valor
+      if (!values.negocio_id || values.negocio_id === '') {
+        toast({
+          title: "Error",
+          description: "Debe seleccionar un negocio",
+          variant: "destructive",
+        })
+        return
+      }
+
+      if (!values.categoria_id || values.categoria_id === '') {
+        toast({
+          title: "Error", 
+          description: "Debe seleccionar una categoría",
+          variant: "destructive",
+        })
+        return
+      }
+
       // Formatear datos con JSON
       const formattedData = {
-        ...data,
-        dimensiones: JSON.parse(data.dimensiones || '{}'),
-        atributos: JSON.parse(data.atributos || '{}'),
-        opciones_personalizacion: JSON.parse(data.opciones_personalizacion || '{}'),
-        metadata: JSON.parse(data.metadata || '{}'),
+        ...values,
+        dimensiones: JSON.parse(values.dimensiones || '{}'),
+        atributos: JSON.parse(values.atributos || '{}'),
+        opciones_personalizacion: JSON.parse(values.opciones_personalizacion || '{}'),
+        metadata: JSON.parse(values.metadata || '{}'),
         imagenes // Agregar las imágenes
       }
-      
-      // Aquí iría la lógica para guardar en la base de datos
-      // await createProducto(formattedData) o await updateProducto(formattedData)
-      
-      // Simular una operación asíncrona
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      
-      setIsSaving(false)
+
+      // Llamar al servicio para crear el producto
+      const newProducto = await productosService.create(formattedData)
+
+      toast({
+        title: "¡Éxito!",
+        description: "Producto creado correctamente",
+      })
+
       onOpenChange(false)
+      form.reset()
     } catch (error) {
-      console.error('Error al guardar el producto:', error)
-      setIsSaving(false)
+      console.error('Error al crear producto:', error)
+      toast({
+        title: "Error",
+        description: "Error al crear el producto. Inténtelo nuevamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -192,7 +219,7 @@ export default function ProductoModal({
       url: `https://placehold.co/600x400/purple/white?text=Producto+${imagenes.length + 1}`,
       esPrincipal: imagenes.length === 0 // La primera imagen es la principal por defecto
     }
-    
+
     setImagenes([...imagenes, nuevaImagen])
     setImagenActual(nuevaImagen.url)
   }
@@ -207,17 +234,17 @@ export default function ProductoModal({
 
   const eliminarImagen = (index: number) => {
     const nuevasImagenes = imagenes.filter((_, i) => i !== index)
-    
+
     // Si eliminamos la imagen actual, seleccionamos otra
     if (imagenes[index].url === imagenActual) {
       setImagenActual(nuevasImagenes.length > 0 ? nuevasImagenes[0].url : null)
     }
-    
+
     // Si eliminamos la principal, hacemos la primera como principal
     if (imagenes[index].esPrincipal && nuevasImagenes.length > 0) {
       nuevasImagenes[0].esPrincipal = true
     }
-    
+
     setImagenes(nuevasImagenes)
   }
 
@@ -232,6 +259,37 @@ export default function ProductoModal({
     { value: 'PEN', label: 'Sol Peruano (PEN)' }
   ]
 
+  // Cargar datos para los selects
+  useEffect(() => {
+    if (open) {
+      // Cargar negocios y categorías reales
+      const loadData = async () => {
+        try {
+          const [negociosResponse, categoriasResponse] = await Promise.all([
+            fetch('/api/negocios'),
+            fetch('/api/categorias-productos')
+          ])
+
+          const negociosData = await negociosResponse.json()
+          const categoriasData = await categoriasResponse.json()
+
+          setNegociosList(negociosData.data || [])
+          setCategoriasList(categoriasData.data || [])
+        } catch (error) {
+          console.error('Error al cargar datos:', error)
+          toast({
+            title: "Error",
+            description: "Error al cargar los datos necesarios",
+            variant: "destructive",
+          })
+        }
+      }
+
+      loadData()
+    }
+  }, [open, toast])
+
+
   return (
     <ModalWrapper
       open={open}
@@ -240,7 +298,7 @@ export default function ProductoModal({
       description="Configura los detalles del producto"
       onSave={form.handleSubmit(onSubmit)}
       saveLabel={productoToEdit ? 'Actualizar' : 'Crear'}
-      isSaving={isSaving}
+      isSaving={isLoading}
       maxWidth="md:max-w-4xl"
     >
       <Tabs defaultValue="informacion" className="w-full" onValueChange={setActiveTab} value={activeTab}>
@@ -280,9 +338,6 @@ export default function ProductoModal({
                                 {negocio.nombre}
                               </SelectItem>
                             ))}
-                            {/* Opción dummy para desarrollo */}
-                            <SelectItem value="1">Restaurante Demo</SelectItem>
-                            <SelectItem value="2">Tienda Demo</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -312,10 +367,6 @@ export default function ProductoModal({
                                 {categoria.nombre}
                               </SelectItem>
                             ))}
-                            {/* Opciones dummy para desarrollo */}
-                            <SelectItem value="1">Alimentos y Bebidas</SelectItem>
-                            <SelectItem value="2">Ropa y Accesorios</SelectItem>
-                            <SelectItem value="3">Electrónicos</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -798,7 +849,7 @@ export default function ProductoModal({
                       Subir Imagen
                     </Button>
                   </div>
-                  
+
                   {/* Vista previa de la imagen actual */}
                   {imagenActual ? (
                     <div className="border rounded-md p-2">
@@ -813,7 +864,7 @@ export default function ProductoModal({
                       <p className="text-slate-500 text-sm">No hay imágenes seleccionadas</p>
                     </div>
                   )}
-                  
+
                   {/* Lista de miniaturas */}
                   {imagenes.length > 0 && (
                     <div className="grid grid-cols-4 gap-4 mt-4">
@@ -864,7 +915,7 @@ export default function ProductoModal({
                     </div>
                   )}
                 </div>
-                
+
                 <FormDescription>
                   Sube las imágenes del producto. La imagen marcada como principal se mostrará en listados y búsquedas.
                 </FormDescription>
@@ -877,7 +928,7 @@ export default function ProductoModal({
                 {/* SEO */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Información SEO</h3>
-                  
+
                   {/* SEO Title */}
                   <FormField
                     control={form.control}
