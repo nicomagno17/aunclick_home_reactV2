@@ -10,11 +10,12 @@ interface ModalWrapperProps {
   onOpenChange: (open: boolean) => void
   title: string
   description?: string
-  children: ReactNode
+  children: React.ReactNode
   onSave?: () => void
   saveLabel?: string
   isSaving?: boolean
   maxWidth?: string
+  customFooter?: React.ReactNode
 }
 
 export default function ModalWrapper({
@@ -26,7 +27,8 @@ export default function ModalWrapper({
   onSave,
   saveLabel = "Guardar",
   isSaving = false,
-  maxWidth = "md:max-w-2xl"
+  maxWidth = "md:max-w-2xl",
+  customFooter
 }: ModalWrapperProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,16 +48,23 @@ export default function ModalWrapper({
             <span className="sr-only">Cerrar</span>
           </Button>
         </DialogHeader>
-        
+
         <div className="py-4">{children}</div>
-        
-        {onSave && (
-          <DialogFooter>
-            <Button onClick={onSave} disabled={isSaving}>
-              {isSaving ? "Guardando..." : saveLabel}
-            </Button>
-          </DialogFooter>
-        )}
+
+        <DialogFooter>
+          {customFooter || (
+            <>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancelar
+              </Button>
+              {onSave && (
+                <Button type="submit" onClick={onSave} disabled={isSaving}>
+                  {isSaving ? "Guardando..." : saveLabel}
+                </Button>
+              )}
+            </>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

@@ -90,6 +90,24 @@ export default function ProductoModal({
   const [imagenActual, setImagenActual] = useState<string | null>(null)
   const { toast } = useToast()
 
+  // Configuración de los pasos
+  const steps = ['informacion', 'precios', 'inventario', 'imagenes', 'avanzado']
+  const currentStepIndex = steps.indexOf(activeTab)
+  const isFirstStep = currentStepIndex === 0
+  const isLastStep = currentStepIndex === steps.length - 1
+
+  const goToNextStep = () => {
+    if (!isLastStep) {
+      setActiveTab(steps[currentStepIndex + 1])
+    }
+  }
+
+  const goToPreviousStep = () => {
+    if (!isFirstStep) {
+      setActiveTab(steps[currentStepIndex - 1])
+    }
+  }
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: productoToEdit || {
@@ -298,11 +316,42 @@ export default function ProductoModal({
       open={open}
       onOpenChange={onOpenChange}
       title={productoToEdit ? 'Editar Producto' : 'Crear Producto'}
-      description="Configura los detalles del producto"
-      onSave={form.handleSubmit(onSubmit)}
+      description={`Paso ${currentStepIndex + 1} de ${steps.length}: Configura los detalles del producto`}
+      onSave={isLastStep ? form.handleSubmit(onSubmit) : undefined}
       saveLabel={productoToEdit ? 'Actualizar' : 'Crear'}
       isSaving={isLoading}
       maxWidth="md:max-w-4xl"
+      customFooter={
+        <div className="flex justify-between">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={goToPreviousStep}
+            disabled={isFirstStep}
+          >
+            Anterior
+          </Button>
+          
+          <div className="flex gap-2">
+            {!isLastStep ? (
+              <Button
+                type="button"
+                onClick={goToNextStep}
+              >
+                Siguiente
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                onClick={form.handleSubmit(onSubmit)}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Creando...' : (productoToEdit ? 'Actualizar' : 'Crear')}
+              </Button>
+            )}
+          </div>
+        </div>
+      }
     >
       <Tabs defaultValue="informacion" className="w-full" onValueChange={setActiveTab} value={activeTab}>
         <TabsList className="grid grid-cols-5 mb-6">
