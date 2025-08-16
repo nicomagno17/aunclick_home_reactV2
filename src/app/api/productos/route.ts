@@ -1,33 +1,14 @@
 
 import { NextRequest, NextResponse } from 'next/server'
-import mysql from 'mysql2/promise'
-
-// Configuración de la base de datos
-const dbConfig = {
-  host: process.env.DATABASE_HOST || 'localhost',
-  user: process.env.DATABASE_USER || 'root',
-  password: process.env.DATABASE_PASSWORD || '',
-  database: process.env.DATABASE_NAME || 'marketplace',
-  port: parseInt(process.env.DATABASE_PORT || '3306'),
-}
-
-// Función para crear conexión a la base de datos
-async function getConnection() {
-  try {
-    const connection = await mysql.createConnection(dbConfig)
-    return connection
-  } catch (error) {
-    console.error('Error conectando a la base de datos:', error)
-    throw new Error('Error de conexión a la base de datos')
-  }
-}
+import { getMySQLPool } from '@/lib/database'
 
 // GET /api/productos - Obtener todos los productos
 export async function GET(request: NextRequest) {
   let connection
   
   try {
-    connection = await getConnection()
+    const pool = getMySQLPool()
+    connection = await pool.getConnection()
     
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -107,7 +88,7 @@ export async function GET(request: NextRequest) {
     )
   } finally {
     if (connection) {
-      await connection.end()
+      connection.release()
     }
   }
 }
@@ -157,7 +138,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    connection = await getConnection()
+    const pool = getMySQLPool()
+    connection = await pool.getConnection()
 
     // Verificar que el negocio y categoría existen
     const [negocioCheck] = await connection.execute(
@@ -306,7 +288,7 @@ export async function POST(request: NextRequest) {
     )
   } finally {
     if (connection) {
-      await connection.end()
+      connection.release()
     }
   }
 }
@@ -327,7 +309,8 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await request.json()
-    connection = await getConnection()
+    const pool = getMySQLPool()
+    connection = await pool.getConnection()
 
     // Verificar que el producto existe
     const [productCheck] = await connection.execute(
@@ -414,7 +397,7 @@ export async function PUT(request: NextRequest) {
     )
   } finally {
     if (connection) {
-      await connection.end()
+      connection.release()
     }
   }
 }
@@ -434,7 +417,8 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    connection = await getConnection()
+    const pool = getMySQLPool()
+    connection = await pool.getConnection()
 
     // Verificar que el producto existe
     const [productCheck] = await connection.execute(
@@ -465,7 +449,7 @@ export async function DELETE(request: NextRequest) {
     )
   } finally {
     if (connection) {
-      await connection.end()
+      connection.release()
     }
   }
 }
