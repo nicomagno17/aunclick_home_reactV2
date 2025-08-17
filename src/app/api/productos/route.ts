@@ -100,6 +100,13 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json()
     console.log('Creando producto:', data)
+    
+    // Loguear los valores recibidos para debugging
+    console.log('Valores para debugging:')
+    console.log('- negocio_id:', data.negocio_id, typeof data.negocio_id)
+    console.log('- categoria_id:', data.categoria_id, typeof data.categoria_id)
+    console.log('- nombre:', data.nombre)
+    console.log('- slug:', data.slug)
 
     // Validaciones básicas con mensajes más específicos
     if (!data.nombre) {
@@ -298,29 +305,58 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error al crear producto:', error)
     
+    // Extraer toda la información del error que podamos
+    const errorObj = error as any
+    
     // Manejo específico de errores de MySQL
-    if ((error as any).code === 'ER_DUP_ENTRY') {
+    if (errorObj.code === 'ER_DUP_ENTRY') {
       return NextResponse.json(
-        { error: 'Ya existe un producto con estos datos únicos' },
+        { 
+          error: 'Ya existe un producto con estos datos únicos',
+          details: errorObj.message || '',
+          code: errorObj.code
+        },
         { status: 400 }
       )
     }
     
-    if ((error as any).code === 'ER_NO_REFERENCED_ROW_2') {
+    if (errorObj.code === 'ER_NO_REFERENCED_ROW_2') {
       return NextResponse.json(
-        { error: 'Referencia inválida a negocio o categoría' },
+        { 
+          error: 'Referencia inválida a negocio o categoría',
+          details: errorObj.message || '',
+          code: errorObj.code
+        },
         { status: 400 }
       )
     }
+    
+    // Si es un error de conexión
+    if (errorObj.code === 'ECONNREFUSED' || errorObj.errno === 'ECONNREFUSED') {
+      return NextResponse.json(
+        { 
+          error: 'Error de conexión a la base de datos',
+          details: 'No se pudo establecer conexión con el servidor MySQL',
+          code: errorObj.code || errorObj.errno
+        },
+        { status: 500 }
+      )
+    }
 
+    // Error detallado para debugging
     console.error('Error detallado al crear producto:', error)
+    console.error('Error stack:', errorObj.stack || 'No stack available')
+    console.error('Error code:', errorObj.code || errorObj.errno || 'No code available')
+    console.error('Error message:', errorObj.message || 'No message available')
     
     // Manejo más detallado del error para ayudar en depuración
     return NextResponse.json(
       { 
         error: 'Error al crear el producto', 
-        details: error instanceof Error ? error.message : 'Error desconocido',
-        code: (error as any).code || 'UNKNOWN_ERROR'
+        details: errorObj.message || (error instanceof Error ? error.message : 'Error desconocido'),
+        code: errorObj.code || errorObj.errno || 'UNKNOWN_ERROR',
+        sqlState: errorObj.sqlState || null,
+        sqlMessage: errorObj.sqlMessage || null
       },
       { status: 500 }
     )

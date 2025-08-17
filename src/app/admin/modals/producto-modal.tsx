@@ -233,15 +233,54 @@ export default function ProductoModal({
         // Imprime los datos que se envían a la API para diagnosticar
         console.log('Datos enviados a la API:', JSON.stringify(formattedData, null, 2))
         
-        const newProducto = await productosService.create(formattedData)
+        // Log de valores clave para verificar el tipo de datos
+        console.log('Verificando tipos de datos clave:')
+        console.log('- negocio_id:', formattedData.negocio_id, typeof formattedData.negocio_id)
+        console.log('- categoria_id:', formattedData.categoria_id, typeof formattedData.categoria_id)
+        console.log('- maneja_stock:', formattedData.maneja_stock, typeof formattedData.maneja_stock)
+        console.log('- destacado:', formattedData.destacado, typeof formattedData.destacado)
+        console.log('- dimensiones:', formattedData.dimensiones, typeof formattedData.dimensiones)
+        
+        // Alternativa: usar fetch directamente en lugar de axios para debugging
+        try {
+          const response = await fetch('/api/productos', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formattedData),
+          })
+          
+          // Log de la respuesta completa
+          console.log('Status:', response.status)
+          console.log('Status text:', response.statusText)
+          
+          const responseData = await response.json()
+          console.log('Response data:', responseData)
+          
+          if (!response.ok) {
+            // Si hay un error, lanzamos una excepción con los detalles
+            throw {
+              response: {
+                status: response.status,
+                data: responseData
+              }
+            }
+          }
+          
+          // Si llega aquí, fue exitoso
+          toast({
+            title: "¡Éxito!",
+            description: "Producto creado correctamente",
+          })
 
-        toast({
-          title: "¡Éxito!",
-          description: "Producto creado correctamente",
-        })
-
-        onOpenChange(false)
-        form.reset()
+          onOpenChange(false)
+          form.reset()
+          
+        } catch (fetchError: any) {
+          // Re-lanzar el error para que lo maneje el catch externo
+          throw fetchError
+        }
       } catch (error: any) {
         console.error('Error al crear producto:', error)
         
