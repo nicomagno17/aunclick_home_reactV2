@@ -101,13 +101,35 @@ export async function POST(request: NextRequest) {
     const data = await request.json()
     console.log('Creando producto:', data)
 
-    // Validaciones básicas
-    if (!data.nombre || !data.negocio_id || !data.categoria_id) {
+    // Validaciones básicas con mensajes más específicos
+    if (!data.nombre) {
       return NextResponse.json(
-        { error: 'Los campos nombre, negocio_id y categoria_id son requeridos' },
+        { error: 'Validación fallida', details: 'El campo nombre es requerido' },
         { status: 400 }
       )
     }
+    
+    if (!data.negocio_id) {
+      return NextResponse.json(
+        { error: 'Validación fallida', details: 'El campo negocio_id es requerido' },
+        { status: 400 }
+      )
+    }
+    
+    if (!data.categoria_id) {
+      return NextResponse.json(
+        { error: 'Validación fallida', details: 'El campo categoria_id es requerido' },
+        { status: 400 }
+      )
+    }
+    
+    // Log para diagnóstico
+    console.log('Datos recibidos en API:', {
+      negocio_id: data.negocio_id,
+      categoria_id: data.categoria_id,
+      nombre: data.nombre,
+      slug: data.slug
+    })
 
     // Validaciones de tipos y rangos
     if (data.precio < 0) {
@@ -149,7 +171,10 @@ export async function POST(request: NextRequest) {
     
     if ((negocioCheck as any[]).length === 0) {
       return NextResponse.json(
-        { error: 'El negocio especificado no existe' },
+        { 
+          error: 'Validación fallida', 
+          details: `El negocio con ID ${data.negocio_id} no existe o está eliminado` 
+        },
         { status: 400 }
       )
     }
@@ -161,7 +186,10 @@ export async function POST(request: NextRequest) {
     
     if ((categoriaCheck as any[]).length === 0) {
       return NextResponse.json(
-        { error: 'La categoría especificada no existe' },
+        { 
+          error: 'Validación fallida', 
+          details: `La categoría con ID ${data.categoria_id} no existe` 
+        },
         { status: 400 }
       )
     }
@@ -174,7 +202,10 @@ export async function POST(request: NextRequest) {
     
     if ((slugCheck as any[]).length > 0) {
       return NextResponse.json(
-        { error: 'Ya existe un producto con este slug en el negocio' },
+        { 
+          error: 'Validación fallida', 
+          details: `Ya existe un producto con el slug "${data.slug}" en el negocio ID ${data.negocio_id}` 
+        },
         { status: 400 }
       )
     }

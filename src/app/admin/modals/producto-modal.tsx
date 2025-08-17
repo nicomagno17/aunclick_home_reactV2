@@ -230,6 +230,9 @@ export default function ProductoModal({
 
       // Llamar al servicio para crear el producto
       try {
+        // Imprime los datos que se envían a la API para diagnosticar
+        console.log('Datos enviados a la API:', JSON.stringify(formattedData, null, 2))
+        
         const newProducto = await productosService.create(formattedData)
 
         toast({
@@ -241,17 +244,26 @@ export default function ProductoModal({
         form.reset()
       } catch (error: any) {
         console.error('Error al crear producto:', error)
+        
         // Intentar extraer mensaje de error de la respuesta de la API
         let errorMessage = "Error al crear el producto. Inténtelo nuevamente.";
+        let errorDetails = "";
         
         if (error.response && error.response.data) {
           const apiError = error.response.data;
-          errorMessage = apiError.error || apiError.details || errorMessage;
+          console.log('Detalles del error:', apiError)
+          errorMessage = apiError.error || errorMessage;
+          errorDetails = apiError.details || apiError.message || '';
+          
+          // Mostrar los detalles del error en la consola para diagnóstico
+          console.error('Código de estado:', error.response.status);
+          console.error('Mensaje de error:', errorMessage);
+          console.error('Detalles:', errorDetails);
         }
         
         toast({
           title: "Error",
-          description: errorMessage,
+          description: errorDetails ? `${errorMessage}: ${errorDetails}` : errorMessage,
           variant: "destructive",
         })
       }

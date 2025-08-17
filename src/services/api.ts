@@ -27,6 +27,18 @@ api.interceptors.response.use(
   (error) => {
     // Manejo de errores globales
     console.error('API Error:', error)
+    
+    // Mejorar el log del error para incluir detalles de la respuesta
+    if (error.response) {
+      console.error('Error data:', error.response.data)
+      console.error('Error status:', error.response.status)
+      console.error('Error headers:', error.response.headers)
+    } else if (error.request) {
+      console.error('No se recibió respuesta:', error.request)
+    } else {
+      console.error('Error de configuración:', error.message)
+    }
+    
     return Promise.reject(error)
   }
 )
