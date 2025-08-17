@@ -1,20 +1,29 @@
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getMySQLPool } from '@/lib/database'
 
 // GET /api/negocios - Obtener todos los negocios
 export async function GET(request: NextRequest) {
   try {
-    // Simulando datos de negocios por ahora
-    const negocios = [
-      { id: 1, nombre: 'Negocio Demo 1' },
-      { id: 2, nombre: 'Negocio Demo 2' },
-      { id: 3, nombre: 'Negocio Demo 3' }
-    ]
-
-    return NextResponse.json({
-      data: negocios,
-      total: negocios.length
-    })
+    // Obtener datos reales de la base de datos
+    const pool = getMySQLPool()
+    const connection = await pool.getConnection()
+    
+    try {
+      const [rows] = await connection.execute(`
+        SELECT id, nombre, slug, descripcion_corta, estado 
+        FROM negocios 
+        WHERE deleted_at IS NULL
+        ORDER BY nombre
+      `)
+      
+      return NextResponse.json({
+        data: rows,
+        total: (rows as any[]).length
+      })
+    } finally {
+      connection.release()
+    }
   } catch (error) {
     console.error('Error al obtener negocios:', error)
     return NextResponse.json(

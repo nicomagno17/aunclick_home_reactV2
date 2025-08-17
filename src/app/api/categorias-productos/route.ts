@@ -1,22 +1,29 @@
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getMySQLPool } from '@/lib/database'
 
 // GET /api/categorias-productos - Obtener todas las categorías de productos
 export async function GET(request: NextRequest) {
   try {
-    // Simulando datos de categorías por ahora
-    const categorias = [
-      { id: 1, nombre: 'Electrónicos' },
-      { id: 2, nombre: 'Ropa y Accesorios' },
-      { id: 3, nombre: 'Hogar y Jardín' },
-      { id: 4, nombre: 'Deportes' },
-      { id: 5, nombre: 'Libros' }
-    ]
-
-    return NextResponse.json({
-      data: categorias,
-      total: categorias.length
-    })
+    // Obtener datos reales de la base de datos
+    const pool = getMySQLPool()
+    const connection = await pool.getConnection()
+    
+    try {
+      const [rows] = await connection.execute(`
+        SELECT id, nombre, slug, descripcion 
+        FROM categorias_productos 
+        WHERE activo = 1
+        ORDER BY orden, nombre
+      `)
+      
+      return NextResponse.json({
+        data: rows,
+        total: (rows as any[]).length
+      })
+    } finally {
+      connection.release()
+    }
   } catch (error) {
     console.error('Error al obtener categorías de productos:', error)
     return NextResponse.json(

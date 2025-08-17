@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
 // POST /api/productos - Crear nuevo producto
 export async function POST(request: NextRequest) {
   // Definir modo desarrollo globalmente para este endpoint
-  const MODO_DESARROLLO = false; // Ya está configurado para usar la BD real
+  const MODO_DESARROLLO = false; // Usando BD real con datos insertados
   
   let connection
   
