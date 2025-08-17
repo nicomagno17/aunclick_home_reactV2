@@ -5,7 +5,7 @@ import mysql from 'mysql2/promise'
 const mysqlConfig = {
   host: process.env.DB_HOST || '45.236.129.200',
   port: parseInt(process.env.DB_PORT || '3306'),
-  user: process.env.DB_USER || 'pcornej0',
+  user: process.env.DB_USER || 'pcornejo',
   password: process.env.DB_PASSWORD || 'Pcornejo@2025',
   database: process.env.DB_NAME || 'aunClick_prod',
   waitForConnections: true,

@@ -95,6 +95,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/productos - Crear nuevo producto
 export async function POST(request: NextRequest) {
+  // Definir modo desarrollo globalmente para este endpoint
+  const MODO_DESARROLLO = false; // Ya está configurado para usar la BD real
+  
   let connection
   
   try {
@@ -176,58 +179,106 @@ export async function POST(request: NextRequest) {
     
     console.log('IDs convertidos:', { negocio_id, categoria_id });
     
-    // Verificar que el negocio y categoría existen
-    const [negocioCheck] = await connection.execute(
-      'SELECT id FROM negocios WHERE id = ? AND deleted_at IS NULL',
-      [negocio_id]
-    )
+    // NOTA: Durante el desarrollo, usamos validación simulada para permitir la creación de productos
+    // sin requerir una base de datos real con negocios y categorías.
     
-    if ((negocioCheck as any[]).length === 0) {
-      return NextResponse.json(
-        { 
-          error: 'Validación fallida', 
-          details: `El negocio con ID ${negocio_id} no existe o está eliminado` 
-        },
-        { status: 400 }
+    if (MODO_DESARROLLO) {
+      console.log('Ejecutando en modo desarrollo - saltando validaciones de BD real');
+      
+      // Simulando datos de negocios
+      const negociosSimulados = [{ id: 1 }, { id: 2 }, { id: 3 }];
+      const categoriasSimuladas = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }];
+      const productosSimulados: any[] = []; // Simular que no hay productos con el mismo slug
+      
+      // Verificar negocio
+      const negocioExiste = negociosSimulados.some(n => n.id === negocio_id);
+      if (!negocioExiste) {
+        return NextResponse.json(
+          { 
+            error: 'Validación fallida', 
+            details: `El negocio con ID ${negocio_id} no existe (simulado)` 
+          },
+          { status: 400 }
+        );
+      }
+      
+      // Verificar categoría
+      const categoriaExiste = categoriasSimuladas.some(c => c.id === categoria_id);
+      if (!categoriaExiste) {
+        return NextResponse.json(
+          { 
+            error: 'Validación fallida', 
+            details: `La categoría con ID ${categoria_id} no existe (simulada)` 
+          },
+          { status: 400 }
+        );
+      }
+      
+      // Verificar slug único
+      const slugExiste = productosSimulados.some(p => p.slug === data.slug && p.negocio_id === negocio_id);
+      if (slugExiste) {
+        return NextResponse.json(
+          { 
+            error: 'Validación fallida', 
+            details: `Ya existe un producto con el slug "${data.slug}" en el negocio ID ${negocio_id} (simulado)` 
+          },
+          { status: 400 }
+        );
+      }
+    } else {
+      // Código original para validación con base de datos real
+      const [negocioCheck] = await connection.execute(
+        'SELECT id FROM negocios WHERE id = ? AND deleted_at IS NULL',
+        [negocio_id]
       )
-    }
-    
-    // Log detallado para verificar las filas retornadas
-    console.log('Negocio encontrado:', negocioCheck);
-
-    const [categoriaCheck] = await connection.execute(
-      'SELECT id FROM categorias_productos WHERE id = ?',
-      [categoria_id]
-    )
-    
-    console.log('Categoria check result:', categoriaCheck);
-    
-    if ((categoriaCheck as any[]).length === 0) {
-      return NextResponse.json(
-        { 
-          error: 'Validación fallida', 
-          details: `La categoría con ID ${categoria_id} no existe` 
-        },
-        { status: 400 }
+      
+      if ((negocioCheck as any[]).length === 0) {
+        return NextResponse.json(
+          { 
+            error: 'Validación fallida', 
+            details: `El negocio con ID ${negocio_id} no existe o está eliminado` 
+          },
+          { status: 400 }
+        )
+      }
+      
+      // Log detallado para verificar las filas retornadas
+      console.log('Negocio encontrado:', negocioCheck);
+  
+      const [categoriaCheck] = await connection.execute(
+        'SELECT id FROM categorias_productos WHERE id = ?',
+        [categoria_id]
       )
-    }
-
-    // Verificar que el slug es único para este negocio
-    const [slugCheck] = await connection.execute(
-      'SELECT id FROM productos WHERE slug = ? AND negocio_id = ? AND deleted_at IS NULL',
-      [data.slug, negocio_id]
-    )
-    
-    console.log('Slug check result:', slugCheck);
-    
-    if ((slugCheck as any[]).length > 0) {
-      return NextResponse.json(
-        { 
-          error: 'Validación fallida', 
-          details: `Ya existe un producto con el slug "${data.slug}" en el negocio ID ${negocio_id}` 
-        },
-        { status: 400 }
+      
+      console.log('Categoria check result:', categoriaCheck);
+      
+      if ((categoriaCheck as any[]).length === 0) {
+        return NextResponse.json(
+          { 
+            error: 'Validación fallida', 
+            details: `La categoría con ID ${categoria_id} no existe` 
+          },
+          { status: 400 }
+        )
+      }
+  
+      // Verificar que el slug es único para este negocio
+      const [slugCheck] = await connection.execute(
+        'SELECT id FROM productos WHERE slug = ? AND negocio_id = ? AND deleted_at IS NULL',
+        [data.slug, negocio_id]
       )
+      
+      console.log('Slug check result:', slugCheck);
+      
+      if ((slugCheck as any[]).length > 0) {
+        return NextResponse.json(
+          { 
+            error: 'Validación fallida', 
+            details: `Ya existe un producto con el slug "${data.slug}" en el negocio ID ${negocio_id}` 
+          },
+          { status: 400 }
+        )
+      }
     }
 
     // Preparar datos para inserción
@@ -298,22 +349,67 @@ export async function POST(request: NextRequest) {
       insertData.fecha_disponibilidad
     ]
 
-    const [result] = await connection.execute(insertQuery, insertValues)
-    const insertId = (result as any).insertId
+    // En modo desarrollo, simulamos la inserción
+    let insertId;
+    if (MODO_DESARROLLO) {
+      // Simular inserción exitosa
+      console.log('Simulando inserción en modo desarrollo');
+      insertId = Date.now(); // Usar timestamp como ID único
+    } else {
+      // Inserción real en la base de datos
+      const [result] = await connection.execute(insertQuery, insertValues)
+      insertId = (result as any).insertId
+    }
 
     // Obtener el producto creado con información adicional
-    const [newProduct] = await connection.execute(`
-      SELECT 
-        p.*,
-        n.nombre as negocio_nombre,
-        c.nombre as categoria_nombre
-      FROM productos p
-      LEFT JOIN negocios n ON p.negocio_id = n.id
-      LEFT JOIN categorias_productos c ON p.categoria_id = c.id
-      WHERE p.id = ?
-    `, [insertId])
+    let newProduct;
+    if (MODO_DESARROLLO) {
+      // Simular producto creado
+      console.log('Simulando obtención de producto creado');
+      const negociosSimulados = [
+        { id: 1, nombre: 'Negocio Demo 1' },
+        { id: 2, nombre: 'Negocio Demo 2' },
+        { id: 3, nombre: 'Negocio Demo 3' }
+      ];
+      const categoriasSimuladas = [
+        { id: 1, nombre: 'Electrónicos' },
+        { id: 2, nombre: 'Ropa y Accesorios' },
+        { id: 3, nombre: 'Hogar y Jardín' },
+        { id: 4, nombre: 'Deportes' },
+        { id: 5, nombre: 'Libros' }
+      ];
+      
+      const negocio = negociosSimulados.find(n => n.id === negocio_id) || { nombre: 'Negocio Desconocido' };
+      const categoria = categoriasSimuladas.find(c => c.id === categoria_id) || { nombre: 'Categoría Desconocida' };
+      
+      newProduct = [{
+        id: insertId,
+        ...insertData,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        negocio_nombre: negocio.nombre,
+        categoria_nombre: categoria.nombre
+      }];
+    } else {
+      // Obtención real desde la base de datos
+      [newProduct] = await connection.execute(`
+        SELECT 
+          p.*,
+          n.nombre as negocio_nombre,
+          c.nombre as categoria_nombre
+        FROM productos p
+        LEFT JOIN negocios n ON p.negocio_id = n.id
+        LEFT JOIN categorias_productos c ON p.categoria_id = c.id
+        WHERE p.id = ?
+      `, [insertId])
+    }
 
-    return NextResponse.json((newProduct as any[])[0], { status: 201 })
+    // Regresar el producto creado
+    if (MODO_DESARROLLO) {
+      return NextResponse.json(newProduct[0], { status: 201 })
+    } else {
+      return NextResponse.json((newProduct as any[])[0], { status: 201 })
+    }
 
   } catch (error) {
     console.error('Error al crear producto:', error)
