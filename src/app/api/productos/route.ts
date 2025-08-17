@@ -170,32 +170,43 @@ export async function POST(request: NextRequest) {
     const pool = getMySQLPool()
     connection = await pool.getConnection()
 
+    // Convertir los IDs a números si vienen como strings
+    const negocio_id = typeof data.negocio_id === 'string' ? parseInt(data.negocio_id, 10) : data.negocio_id;
+    const categoria_id = typeof data.categoria_id === 'string' ? parseInt(data.categoria_id, 10) : data.categoria_id;
+    
+    console.log('IDs convertidos:', { negocio_id, categoria_id });
+    
     // Verificar que el negocio y categoría existen
     const [negocioCheck] = await connection.execute(
       'SELECT id FROM negocios WHERE id = ? AND deleted_at IS NULL',
-      [data.negocio_id]
+      [negocio_id]
     )
     
     if ((negocioCheck as any[]).length === 0) {
       return NextResponse.json(
         { 
           error: 'Validación fallida', 
-          details: `El negocio con ID ${data.negocio_id} no existe o está eliminado` 
+          details: `El negocio con ID ${negocio_id} no existe o está eliminado` 
         },
         { status: 400 }
       )
     }
+    
+    // Log detallado para verificar las filas retornadas
+    console.log('Negocio encontrado:', negocioCheck);
 
     const [categoriaCheck] = await connection.execute(
       'SELECT id FROM categorias_productos WHERE id = ?',
-      [data.categoria_id]
+      [categoria_id]
     )
+    
+    console.log('Categoria check result:', categoriaCheck);
     
     if ((categoriaCheck as any[]).length === 0) {
       return NextResponse.json(
         { 
           error: 'Validación fallida', 
-          details: `La categoría con ID ${data.categoria_id} no existe` 
+          details: `La categoría con ID ${categoria_id} no existe` 
         },
         { status: 400 }
       )
@@ -204,14 +215,16 @@ export async function POST(request: NextRequest) {
     // Verificar que el slug es único para este negocio
     const [slugCheck] = await connection.execute(
       'SELECT id FROM productos WHERE slug = ? AND negocio_id = ? AND deleted_at IS NULL',
-      [data.slug, data.negocio_id]
+      [data.slug, negocio_id]
     )
+    
+    console.log('Slug check result:', slugCheck);
     
     if ((slugCheck as any[]).length > 0) {
       return NextResponse.json(
         { 
           error: 'Validación fallida', 
-          details: `Ya existe un producto con el slug "${data.slug}" en el negocio ID ${data.negocio_id}` 
+          details: `Ya existe un producto con el slug "${data.slug}" en el negocio ID ${negocio_id}` 
         },
         { status: 400 }
       )
@@ -219,8 +232,8 @@ export async function POST(request: NextRequest) {
 
     // Preparar datos para inserción
     const insertData = {
-      negocio_id: data.negocio_id,
-      categoria_id: data.categoria_id,
+      negocio_id: negocio_id,
+      categoria_id: categoria_id,
       nombre: data.nombre,
       slug: data.slug,
       descripcion: data.descripcion || null,
