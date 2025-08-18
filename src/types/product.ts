@@ -11,4 +11,6 @@ export interface Product {
   reviews: number
   inStock: boolean
   discount?: number
+  whatsappNumber?: string
+  address?: string
 }

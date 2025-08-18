@@ -14,7 +14,9 @@ export const mockProducts: Product[] = [
     rating: 4.8,
     reviews: 1245,
     inStock: true,
-    discount: 8
+    discount: 8,
+    whatsappNumber: '+1234567890',
+    address: '1600 Amphitheatre Parkway, Mountain View, CA'
   },
   {
     id: 'elec-002',
@@ -28,7 +30,9 @@ export const mockProducts: Product[] = [
     rating: 4.9,
     reviews: 890,
     inStock: true,
-    discount: 7
+    discount: 7,
+    whatsappNumber: '+0987654321',
+    address: '1 Infinite Loop, Cupertino, CA'
   },
   {
     id: 'elec-003',

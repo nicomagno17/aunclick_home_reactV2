@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Heart } from 'lucide-react'
+import { Heart, MessageCircle, MapPin } from 'lucide-react'
 import { Product } from '@/types/product'
 
 interface ProductCardProps {
@@ -100,6 +100,32 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
                 <span className="text-xs sm:text-sm text-gray-500 line-through">
                   ${product.originalPrice.toLocaleString('es-CL')}
                 </span>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 mt-2 mb-2">
+              {product.whatsappNumber && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(`https://wa.me/${product.whatsappNumber}`, '_blank');
+                  }}
+                  className="flex-1 bg-green-500 text-white p-2 rounded-md flex items-center justify-center gap-1 hover:bg-green-600 transition-colors"
+                >
+                  <MessageCircle size={16} />
+                </button>
+              )}
+              {product.address && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(product.address!)}`, '_blank');
+                  }}
+                  className="flex-1 bg-blue-500 text-white p-2 rounded-md flex items-center justify-center gap-1 hover:bg-blue-600 transition-colors"
+                >
+                  <MapPin size={16} />
+                </button>
               )}
             </div>
 
