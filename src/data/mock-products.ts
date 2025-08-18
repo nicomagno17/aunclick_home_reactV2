@@ -46,7 +46,9 @@ export const mockProducts: Product[] = [
     rating: 4.7,
     reviews: 672,
     inStock: true,
-    discount: 8
+    discount: 8,
+    whatsappNumber: '+1122334455',
+    address: 'Samsung Electronics HQ, Suwon, South Korea'
   },
   {
     id: 'elec-004',
@@ -60,7 +62,9 @@ export const mockProducts: Product[] = [
     rating: 4.6,
     reviews: 2103,
     inStock: true,
-    discount: 14
+    discount: 14,
+    whatsappNumber: '+13344556677',
+    address: 'Audio Center Store, Downtown, Cityville'
   },
   {
     id: 'elec-005',
@@ -68,13 +72,15 @@ export const mockProducts: Product[] = [
     description: 'Consola de videojuegos de última generación con procesador AMD Ryzen Zen 2 y gráficos 4K.',
     price: 399000,
     originalPrice: 449000,
-    image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1606813907201-d725c8471325?w=400&h=300&fit=crop',
     category: 'electronica',
     source: 'GameWorld',
     rating: 4.8,
     reviews: 1567,
     inStock: false,
-    discount: 11
+    discount: 11,
+    whatsappNumber: '+14455667788',
+    address: 'GameWorld Outlet, Gaming District'
   },
 
   // Ropa y Moda
@@ -90,7 +96,9 @@ export const mockProducts: Product[] = [
     rating: 4.5,
     reviews: 834,
     inStock: true,
-    discount: 18
+    discount: 18,
+    whatsappNumber: '+15566778899',
+    address: 'Nike Store, Fashion Avenue'
   },
   {
     id: 'ropa-002',
@@ -104,7 +112,9 @@ export const mockProducts: Product[] = [
     rating: 4.3,
     reviews: 456,
     inStock: true,
-    discount: 18
+    discount: 18,
+    whatsappNumber: '+16677889900',
+    address: 'Adidas Originals Store, Style Street'
   },
   {
     id: 'ropa-003',
@@ -118,7 +128,9 @@ export const mockProducts: Product[] = [
     rating: 4.6,
     reviews: 1203,
     inStock: true,
-    discount: 20
+    discount: 20,
+    whatsappNumber: '+17788990011',
+    address: 'Levi\'s Flagship, Denim Way'
   },
 
   // Hogar y Jardín
@@ -134,7 +146,9 @@ export const mockProducts: Product[] = [
     rating: 4.4,
     reviews: 789,
     inStock: true,
-    discount: 15
+    discount: 15,
+    whatsappNumber: '+18899001122',
+    address: 'Smart Home Store, Tech Avenue'
   },
   {
     id: 'hogar-002',
@@ -148,7 +162,9 @@ export const mockProducts: Product[] = [
     rating: 4.7,
     reviews: 1456,
     inStock: true,
-    discount: 14
+    discount: 14,
+    whatsappNumber: '+19900112233',
+    address: 'Kitchen World Showroom, Culinary Plaza'
   },
 
   // Deportes
@@ -164,7 +180,9 @@ export const mockProducts: Product[] = [
     rating: 4.5,
     reviews: 234,
     inStock: true,
-    discount: 13
+    discount: 13,
+    whatsappNumber: '+10011223344',
+    address: 'Bike Center Store, Sports Boulevard'
   },
   {
     id: 'deportes-002',
@@ -172,13 +190,15 @@ export const mockProducts: Product[] = [
     description: 'Set completo de pesas desde 2.5kg hasta 25kg por mancuerna, ahorra espacio.',
     price: 159000,
     originalPrice: 189000,
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f991b28b?w=400&h=300&fit=crop',
     category: 'deportes',
     source: 'FitLife Store',
     rating: 4.6,
     reviews: 567,
     inStock: true,
-    discount: 16
+    discount: 16,
+    whatsappNumber: '+11122334455',
+    address: 'FitLife Gym Gear, Fitness Row'
   },
 
   // Belleza
@@ -194,7 +214,9 @@ export const mockProducts: Product[] = [
     rating: 4.8,
     reviews: 923,
     inStock: true,
-    discount: 18
+    discount: 18,
+    whatsappNumber: '+12233445566',
+    address: 'K-Beauty Boutique, Glamour Lane'
   },
   {
     id: 'belleza-002',
@@ -206,7 +228,9 @@ export const mockProducts: Product[] = [
     source: 'Perfume Palace',
     rating: 4.9,
     reviews: 1834,
-    inStock: true
+    inStock: true,
+    whatsappNumber: '+13344556677',
+    address: 'Perfume Palace, Elegance Square'
   },
 
   // Libros
@@ -222,7 +246,9 @@ export const mockProducts: Product[] = [
     rating: 4.7,
     reviews: 2456,
     inStock: true,
-    discount: 21
+    discount: 21,
+    whatsappNumber: '+14455667788',
+    address: 'Librería Central, Bookworm Alley'
   },
   {
     id: 'libros-002',
@@ -236,7 +262,9 @@ export const mockProducts: Product[] = [
     rating: 4.9,
     reviews: 3421,
     inStock: true,
-    discount: 17
+    discount: 17,
+    whatsappNumber: '+15566778899',
+    address: 'Books & More, Storyteller Street'
   },
 
   // Productos adicionales para búsqueda
@@ -252,7 +280,9 @@ export const mockProducts: Product[] = [
     rating: 4.6,
     reviews: 1567,
     inStock: true,
-    discount: 11
+    discount: 11,
+    whatsappNumber: '+16677889900',
+    address: 'Wearable Tech Store, Smart City'
   },
   {
     id: 'misc-002',
@@ -266,7 +296,9 @@ export const mockProducts: Product[] = [
     rating: 4.4,
     reviews: 345,
     inStock: true,
-    discount: 17
+    discount: 17,
+    whatsappNumber: '+17788990011',
+    address: 'Office Furniture Hub, Work Place Ave'
   },
   {
     id: 'misc-003',
@@ -280,7 +312,9 @@ export const mockProducts: Product[] = [
     rating: 4.5,
     reviews: 1123,
     inStock: true,
-    discount: 19
+    discount: 19,
+    whatsappNumber: '+18899001122',
+    address: 'Gaming Store Central, eSports Arena'
   },
   {
     id: 'misc-004',
@@ -294,6 +328,8 @@ export const mockProducts: Product[] = [
     rating: 4.3,
     reviews: 678,
     inStock: true,
-    discount: 14
+    discount: 14,
+    whatsappNumber: '+19900112233',
+    address: 'Gaming Furniture Emporium, Comfort Zone'
   }
 ]
