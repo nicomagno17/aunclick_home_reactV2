@@ -231,9 +231,8 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
                   key={`${cardKeyPrefix}-${product.id}`}
                   className="flex-shrink-0"
                   style={{ width: config.width }}
-                  onClick={() => handleCardClick(product)}
                 >
-                  <ProductCard product={product} />
+                  <ProductCard product={product} onClick={() => handleCardClick(product)} />
                 </div>
               ))}
             </div>
