@@ -77,10 +77,6 @@ export function ImageModal({ product, isOpen, onClose }: ImageModalProps) {
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cerrar</Button>
-          <Button disabled={!product.inStock}>
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            {product.inStock ? 'Añadir al carrito' : 'No disponible'}
-          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

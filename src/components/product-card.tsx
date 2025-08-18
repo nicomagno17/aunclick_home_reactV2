@@ -59,29 +59,10 @@ export function ProductCard({ product }: ProductCardProps) {
               size="sm"
               variant="secondary"
               className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm hover:bg-background"
+              onClick={(e) => e.stopPropagation()}
             >
               <Heart className="h-4 w-4" />
             </Button>
-            <ImageModal
-              imageSrc={product.image}
-              imageAlt={product.name}
-              productName={product.name}
-              isOpen={showModal}
-              onClose={() => setShowModal(false)}
-            >
-              {/* Icono de vista de imagen */}
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setShowModal(true)
-                }}
-                className="absolute top-2 right-2 p-2 bg-black/50 backdrop-blur-sm rounded-full hover:bg-black/70 transition-colors z-10"
-                aria-label="Ver imagen completa"
-              >
-                <Eye className="h-4 w-4 text-white" />
-              </button>
-            </ImageModal>
           </div>
 
           {/* Source Badge */}
@@ -123,14 +104,7 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
           </div>
 
-          {/* Action Button */}
-          <Button
-            className="w-full bg-purple-700 hover:bg-purple-800 text-white mt-auto"
-            disabled={!product.inStock}
-          >
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            {product.inStock ? 'Añadir al carrito' : 'No disponible'}
-          </Button>
+          
         </div>
       </div>
     </Card>
