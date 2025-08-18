@@ -5,7 +5,7 @@ import { Product } from '@/types/product'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Star, Tag, ShoppingCart, Info } from 'lucide-react'
+import { Star, Tag, ShoppingCart, Info, MessageCircle, MapPin } from 'lucide-react'
 
 interface ImageModalProps {
   product: Product | null
@@ -72,10 +72,30 @@ export function ImageModal({ product, isOpen, onClose }: ImageModalProps) {
                 <span className="font-semibold">Agotado</span>
               </div>
             )}
+
+            {/* Contact Buttons */}
+            <div className="pt-4 flex space-x-3">
+              {product.whatsappNumber && (
+                <Button
+                  className="flex-1 bg-green-500 hover:bg-green-600"
+                  onClick={() => window.open(`https://wa.me/${product.whatsappNumber}`, '_blank')}
+                >
+                  <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
+                </Button>
+              )}
+              {product.address && (
+                <Button
+                  className="flex-1"
+                  onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(product.address!)}`, '_blank')}
+                >
+                  <MapPin className="mr-2 h-4 w-4" /> Dirección
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="mt-4">
           <Button variant="outline" onClick={onClose}>Cerrar</Button>
         </DialogFooter>
       </DialogContent>
