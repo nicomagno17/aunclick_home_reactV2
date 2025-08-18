@@ -74,23 +74,31 @@ export function ImageModal({ product, isOpen, onClose }: ImageModalProps) {
             )}
 
             {/* Contact Buttons */}
-            <div className="pt-4 flex space-x-3">
-              {product.whatsappNumber && (
-                <Button
-                  className="flex-1 bg-green-500 hover:bg-green-600"
-                  onClick={() => window.open(`https://wa.me/${product.whatsappNumber}`, '_blank')}
-                >
-                  <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
-                </Button>
-              )}
-              {product.address && (
-                <Button
-                  className="flex-1"
-                  onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(product.address!)}`, '_blank')}
-                >
-                  <MapPin className="mr-2 h-4 w-4" /> Dirección
-                </Button>
-              )}
+            <div className="pt-4 space-y-2">
+              {/* Debug info - remove this later */}
+              <div className="text-xs text-gray-500">
+                WhatsApp: {product.whatsappNumber || 'No disponible'} | 
+                Dirección: {product.address || 'No disponible'}
+              </div>
+              
+              <div className="flex space-x-3">
+                {product.whatsappNumber && (
+                  <Button
+                    className="flex-1 bg-green-500 hover:bg-green-600"
+                    onClick={() => window.open(`https://wa.me/${product.whatsappNumber}`, '_blank')}
+                  >
+                    <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
+                  </Button>
+                )}
+                {product.address && (
+                  <Button
+                    className="flex-1"
+                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(product.address!)}`, '_blank')}
+                  >
+                    <MapPin className="mr-2 h-4 w-4" /> Dirección
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>

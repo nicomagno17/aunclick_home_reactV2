@@ -86,19 +86,19 @@ export const mockProducts: Product[] = [
   // Ropa y Moda
   {
     id: 'ropa-001',
-    name: 'Nike Air Max 270 React',
-    description: 'Zapatillas deportivas con tecnología Air Max y suela React para máxima comodidad.',
-    price: 89000,
-    originalPrice: 109000,
+    name: 'Zapatillas Nike Air Max',
+    description: 'Comodidad y estilo en cada paso con tecnología Air Max',
+    price: 89990,
+    originalPrice: 119990,
     image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop',
     category: 'ropa',
     source: 'Nike Store',
-    rating: 4.5,
-    reviews: 834,
+    rating: 4.6,
+    reviews: 856,
     inStock: true,
-    discount: 18,
+    discount: 25,
     whatsappNumber: '+15566778899',
-    address: 'Nike Store, Fashion Avenue'
+    address: 'Nike Store, Fashion Avenue, Centro Comercial'
   },
   {
     id: 'ropa-002',
