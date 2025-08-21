@@ -14,10 +14,314 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedSection, setSelectedSection] = useState('')
+  const [opcionesProducto, setOpcionesProducto] = useState({
+    tallas: false,
+    genero: false,
+    medidas: false
+  })
+  const [descripcion, setDescripcion] = useState('')
+  
+  // Estados para los campos del formulario
+  const [productoData, setProductoData] = useState({
+    tipoNegocio: '',
+    categoria: '',
+    subcategoria: '',
+    nombre: '',
+    tallas: '',
+    genero: '',
+    medidas: '',
+    unidadMedida: 'cm',
+    precioActual: '',
+    precioAnterior: ''
+  })
+
+  // Estados para almacenar los productos agregados en cada sección
+  const [productos, setProductos] = useState({
+    destacados: [],
+    ofertas: [],
+    novedades: [],
+    tendencias: [],
+    'no-te-lo-pierdas': [],
+    liquidaciones: []
+  })
+
+  // Estado para la imagen cargada
+  const [imagenProducto, setImagenProducto] = useState<string | null>(null)
   
   const openModal = (section: string) => {
     setSelectedSection(section)
+    // Limpiar todos los campos al abrir el modal
+    setProductoData({
+      tipoNegocio: '',
+      categoria: '',
+      subcategoria: '',
+      nombre: '',
+      tallas: '',
+      genero: '',
+      medidas: '',
+      unidadMedida: 'cm',
+      precioActual: '',
+      precioAnterior: ''
+    })
+    setDescripcion('')
+    setImagenProducto(null)
+    setOpcionesProducto({
+      tallas: false,
+      genero: false,
+      medidas: false
+    })
     setIsModalOpen(true)
+  }
+
+  // Función para manejar cambios en los campos del formulario
+  const handleProductoDataChange = (field: string, value: string) => {
+    setProductoData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+
+  // Función de autollenado con datos de ejemplo
+  const autollenarCampos = () => {
+    const ejemplos = {
+      destacados: {
+        tipoNegocio: 'productos',
+        categoria: 'electronica',
+        subcategoria: 'smartphones',
+        nombre: 'iPhone 15 Pro Max',
+        tallas: 'No aplica',
+        genero: 'generico',
+        medidas: '159.9',
+        unidadMedida: 'mm',
+        precioActual: '1299.99',
+        precioAnterior: '1499.99',
+        descripcion: 'El último iPhone con cámara profesional de 48MP y chip A17 Pro. Diseño en titanio con pantalla Super Retina XDR de 6.7 pulgadas.',
+        imagen: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop'
+      },
+      ofertas: {
+        tipoNegocio: 'productos',
+        categoria: 'ropa',
+        subcategoria: 'hombre',
+        nombre: 'Camisa Formal Premium',
+        tallas: 'L, XL, XXL',
+        genero: 'hombre',
+        medidas: '',
+        unidadMedida: 'cm',
+        precioActual: '29.99',
+        precioAnterior: '59.99',
+        descripcion: 'Camisa formal de algodón premium con corte moderno. Ideal para ocasiones especiales y entorno laboral profesional.',
+        imagen: 'https://images.unsplash.com/photo-1596755094512-f2912cd5b9e3?w=400&h=300&fit=crop'
+      },
+      novedades: {
+        tipoNegocio: 'servicios',
+        categoria: 'profesionales',
+        subcategoria: 'consultoria',
+        nombre: 'Consultoría Digital Empresarial',
+        tallas: 'No aplica',
+        genero: 'generico',
+        medidas: '',
+        unidadMedida: 'cm',
+        precioActual: '150.00',
+        precioAnterior: '',
+        descripcion: 'Servicio de consultoría para transformación digital de empresas. Incluye análisis, estrategia e implementación de soluciones tecnológicas.',
+        imagen: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop'
+      },
+      tendencias: {
+        tipoNegocio: 'arriendos',
+        categoria: 'vehiculos',
+        subcategoria: 'autos',
+        nombre: 'Tesla Model 3 2024',
+        tallas: 'No aplica',
+        genero: 'generico',
+        medidas: '469.4',
+        unidadMedida: 'cm',
+        precioActual: '89.99',
+        precioAnterior: '99.99',
+        descripcion: 'Vehículo eléctrico de última generación con autonomía de 500km. Tecnología de punta y experiencia de conducción premium.',
+        imagen: 'https://images.unsplash.com/photo-1554224712-d8560f709cbe?w=400&h=300&fit=crop'
+      },
+      'no-te-lo-pierdas': {
+        tipoNegocio: 'productos',
+        categoria: 'hogar',
+        subcategoria: 'cocina',
+        nombre: 'Set de Ollas Premium 6 piezas',
+        tallas: 'No aplica',
+        genero: 'generico',
+        medidas: '',
+        unidadMedida: 'cm',
+        precioActual: '199.99',
+        precioAnterior: '299.99',
+        descripcion: 'Juego de ollas de acero inoxidable con distribución de calor uniforme. Incluye tapas de vidrio templado y mangos ergonómicos.',
+        imagen: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop'
+      },
+      liquidaciones: {
+        tipoNegocio: 'productos',
+        categoria: 'deportes',
+        subcategoria: 'fitness',
+        nombre: 'Bicicleta Estática Profesional',
+        tallas: 'No aplica',
+        genero: 'generico',
+        medidas: '120',
+        unidadMedida: 'cm',
+        precioActual: '399.99',
+        precioAnterior: '799.99',
+        descripcion: 'Bicicleta estática con resistencia magnética, monitor de ritmo cardíaco y programas de entrenamiento personalizados.',
+        imagen: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop'
+      }
+    }
+
+    const ejemplo = ejemplos[selectedSection as keyof typeof ejemplos] || ejemplos.destacados
+    
+    setProductoData({
+      tipoNegocio: ejemplo.tipoNegocio,
+      categoria: ejemplo.categoria,
+      subcategoria: ejemplo.subcategoria,
+      nombre: ejemplo.nombre,
+      tallas: ejemplo.tallas,
+      genero: ejemplo.genero,
+      medidas: ejemplo.medidas,
+      unidadMedida: ejemplo.unidadMedida,
+      precioActual: ejemplo.precioActual,
+      precioAnterior: ejemplo.precioAnterior
+    })
+    
+    setDescripcion(ejemplo.descripcion)
+    setImagenProducto(ejemplo.imagen)
+    
+    // Activar opciones según el ejemplo
+    setOpcionesProducto({
+      tallas: ejemplo.tallas !== 'No aplica',
+      genero: ejemplo.genero !== 'generico',
+      medidas: ejemplo.medidas !== ''
+    })
+  }
+
+  // Función para agregar un producto
+  const agregarProducto = () => {
+    if (!productoData.nombre || !imagenProducto) {
+      alert('Por favor completa al menos el nombre del producto y carga una imagen')
+      return
+    }
+
+    const nuevoProducto = {
+      id: Date.now(), // ID único basado en timestamp
+      ...productoData,
+      descripcion,
+      imagen: imagenProducto
+    }
+
+    setProductos(prev => ({
+      ...prev,
+      [selectedSection]: [...prev[selectedSection as keyof typeof prev], nuevoProducto]
+    }))
+
+    // Cerrar el modal y limpiar campos
+    setIsModalOpen(false)
+    setImagenProducto(null)
+  }
+
+  // Función para obtener la etiqueta de categoría
+  const getCategoriaLabel = (categoriaValue: string) => {
+    const allCategories = [
+      ...categories.productos,
+      ...categories.servicios,
+      ...categories.arriendos
+    ]
+    const categoria = allCategories.find(cat => cat.value === categoriaValue)
+    return categoria ? categoria.label : categoriaValue
+  }
+
+  // Función para obtener la etiqueta de subcategoría
+  const getSubcategoriaLabel = (subcategoriaValue: string) => {
+    const allSubcategories = Object.values(subcategories).flat()
+    const subcategoria = allSubcategories.find(sub => sub.value === subcategoriaValue)
+    return subcategoria ? subcategoria.label : subcategoriaValue
+  }
+
+  // Componente de tarjeta de producto
+  const ProductoCard = ({ producto }: { producto: any }) => {
+    return (
+      <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow w-44 h-60">
+        {/* Parte superior con imagen - más compacta */}
+        <div className="h-40 bg-white flex items-center justify-center p-1">
+          <img 
+            src={producto.imagen} 
+            alt={producto.nombre}
+            className="max-w-full max-h-full object-contain"
+          />
+        </div>
+        
+        {/* Parte inferior con información - ultra compacta */}
+        <div className="p-1.5">
+          {/* Fila con categoría y subcategoría centradas */}
+          <div className="flex items-center justify-center text-[10px] text-gray-400 mb-0.5">
+            <span className="text-center truncate max-w-[35%]">{getCategoriaLabel(producto.categoria)}</span>
+            <span className="mx-0.5">/</span>
+            <span className="text-center truncate max-w-[35%]">{getSubcategoriaLabel(producto.subcategoria)}</span>
+          </div>
+          
+          {/* Nombre del producto */}
+          <div className="mb-1">
+            <h3 className="text-[10px] font-semibold text-gray-100 leading-tight line-clamp-2 text-center">
+              {producto.nombre}
+            </h3>
+          </div>
+          
+          {/* Fila con precios */}
+          <div className="flex items-center justify-between mb-1">
+            {/* Precio actual */}
+            <div className="text-purple-400 font-bold text-xs">
+              ${producto.precioActual}
+            </div>
+            
+            {/* Precio anterior tachado */}
+            {producto.precioAnterior && (
+              <div className="relative">
+                <span className="text-gray-400 line-through text-[9px]">
+                  ${producto.precioAnterior}
+                </span>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-full h-px bg-red-500"></div>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Botón +Información */}
+          <button className="w-full bg-gray-700 hover:bg-gray-600 text-white py-0.5 px-1 rounded transition-colors text-[9px] font-medium">
+            +Información
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const toggleOpcion = (opcion: keyof typeof opcionesProducto) => {
+    setOpcionesProducto(prev => ({
+      ...prev,
+      [opcion]: !prev[opcion]
+    }))
+  }
+
+  const contarPalabras = (texto: string) => {
+    // Eliminar espacios extra y dividir en palabras
+    const palabras = texto.trim().split(/\s+/).filter(palabra => palabra.length > 0)
+    return palabras.length
+  }
+
+  const handleDescripcionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const texto = e.target.value
+    const palabras = contarPalabras(texto)
+    
+    // Limitar a 50 palabras
+    if (palabras <= 50) {
+      setDescripcion(texto)
+    } else {
+      // Si excede 50 palabras, cortar el texto
+      const palabrasArray = texto.trim().split(/\s+/)
+      const textoLimitado = palabrasArray.slice(0, 50).join(' ')
+      setDescripcion(textoLimitado)
+    }
   }
 
   // Categorías y subcategorías de ejemplo
@@ -307,7 +611,31 @@ export default function AdminPage() {
         </div>
 
         {/* Modal para agregar producto */}
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <Dialog open={isModalOpen} onOpenChange={(open) => {
+          if (!open) {
+            // Limpiar todos los campos al cerrar el modal
+            setProductoData({
+              tipoNegocio: '',
+              categoria: '',
+              subcategoria: '',
+              nombre: '',
+              tallas: '',
+              genero: '',
+              medidas: '',
+              unidadMedida: 'cm',
+              precioActual: '',
+              precioAnterior: ''
+            })
+            setDescripcion('')
+            setImagenProducto(null)
+            setOpcionesProducto({
+              tallas: false,
+              genero: false,
+              medidas: false
+            })
+          }
+          setIsModalOpen(open)
+        }}>
           <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold">
@@ -334,8 +662,10 @@ export default function AdminPage() {
                         reader.onload = (e) => {
                           const container = document.getElementById('imagen-container');
                           if (container && e.target?.result) {
+                            const imageUrl = e.target.result as string;
+                            setImagenProducto(imageUrl);
                             container.innerHTML = `
-                              <img src="${e.target.result}" alt="Producto" class="w-full h-full object-contain" />
+                              <img src="${imageUrl}" alt="Producto" class="w-full h-full object-contain" />
                             `;
                           }
                         };
@@ -360,7 +690,7 @@ export default function AdminPage() {
                   <Label htmlFor="tipo-negocio" className="text-gray-300 mb-2 block">
                     Tipo de Negocio
                   </Label>
-                  <Select>
+                  <Select value={productoData.tipoNegocio} onValueChange={(value) => handleProductoDataChange('tipoNegocio', value)}>
                     <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
                       <SelectValue placeholder="Seleccionar" />
                     </SelectTrigger>
@@ -377,7 +707,7 @@ export default function AdminPage() {
                   <Label htmlFor="categoria" className="text-gray-300 mb-2 block">
                     Categoría
                   </Label>
-                  <Select>
+                  <Select value={productoData.categoria} onValueChange={(value) => handleProductoDataChange('categoria', value)}>
                     <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
                       <SelectValue placeholder="Seleccionar" />
                     </SelectTrigger>
@@ -396,7 +726,7 @@ export default function AdminPage() {
                   <Label htmlFor="subcategoria" className="text-gray-300 mb-2 block">
                     Subcategoría
                   </Label>
-                  <Select>
+                  <Select value={productoData.subcategoria} onValueChange={(value) => handleProductoDataChange('subcategoria', value)}>
                     <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
                       <SelectValue placeholder="Seleccionar" />
                     </SelectTrigger>
@@ -418,9 +748,275 @@ export default function AdminPage() {
                 </Label>
                 <Input 
                   id="producto-nombre"
+                  value={productoData.nombre}
+                  onChange={(e) => handleProductoDataChange('nombre', e.target.value)}
                   placeholder="Ingresa el nombre del producto"
                   className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                 />
+              </div>
+
+              {/* Opciones de características del producto */}
+              <div>
+                <Label className="text-gray-300 mb-3 block">
+                  Tu producto necesita mostrar:
+                </Label>
+                <div className="flex flex-wrap gap-6">
+                  {/* Opción Tallas */}
+                  <div className="flex items-center space-x-2">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        id="opcion-tallas"
+                        className="sr-only"
+                        checked={opcionesProducto.tallas}
+                        onChange={() => toggleOpcion('tallas')}
+                      />
+                      <label 
+                        htmlFor="opcion-tallas"
+                        className={`flex items-center justify-center w-5 h-5 border-2 rounded-full cursor-pointer transition-colors ${
+                          opcionesProducto.tallas 
+                            ? 'bg-blue-500 border-blue-500' 
+                            : 'border-gray-400 hover:border-gray-300'
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toggleOpcion('tallas');
+                        }}
+                      >
+                        {opcionesProducto.tallas && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                      </label>
+                    </div>
+                    <label htmlFor="opcion-tallas" className="text-gray-300 cursor-pointer">
+                      Tallas
+                    </label>
+                  </div>
+
+                  {/* Opción Género */}
+                  <div className="flex items-center space-x-2">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        id="opcion-genero"
+                        className="sr-only"
+                        checked={opcionesProducto.genero}
+                        onChange={() => toggleOpcion('genero')}
+                      />
+                      <label 
+                        htmlFor="opcion-genero"
+                        className={`flex items-center justify-center w-5 h-5 border-2 rounded-full cursor-pointer transition-colors ${
+                          opcionesProducto.genero 
+                            ? 'bg-blue-500 border-blue-500' 
+                            : 'border-gray-400 hover:border-gray-300'
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toggleOpcion('genero');
+                        }}
+                      >
+                        {opcionesProducto.genero && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                      </label>
+                    </div>
+                    <label htmlFor="opcion-genero" className="text-gray-300 cursor-pointer">
+                      Género
+                    </label>
+                  </div>
+
+                  {/* Opción Medidas */}
+                  <div className="flex items-center space-x-2">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        id="opcion-medidas"
+                        className="sr-only"
+                        checked={opcionesProducto.medidas}
+                        onChange={() => toggleOpcion('medidas')}
+                      />
+                      <label 
+                        htmlFor="opcion-medidas"
+                        className={`flex items-center justify-center w-5 h-5 border-2 rounded-full cursor-pointer transition-colors ${
+                          opcionesProducto.medidas 
+                            ? 'bg-blue-500 border-blue-500' 
+                            : 'border-gray-400 hover:border-gray-300'
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toggleOpcion('medidas');
+                        }}
+                      >
+                        {opcionesProducto.medidas && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                      </label>
+                    </div>
+                    <label htmlFor="opcion-medidas" className="text-gray-300 cursor-pointer">
+                      Medidas
+                    </label>
+                  </div>
+                </div>
+
+                {/* Campos dinámicos según opciones seleccionadas */}
+                <div className="mt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    {/* Campo de Tallas */}
+                    {opcionesProducto.tallas && (
+                      <div className="md:col-span-3">
+                        <Label htmlFor="tallas" className="text-gray-300 mb-2 block">
+                          Tallas
+                        </Label>
+                        <Select value={productoData.tallas} onValueChange={(value) => handleProductoDataChange('tallas', value)}>
+                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
+                            <SelectValue placeholder="Seleccionar talla" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-700 border-gray-600">
+                            <SelectItem value="xs">XS</SelectItem>
+                            <SelectItem value="s">S</SelectItem>
+                            <SelectItem value="m">M</SelectItem>
+                            <SelectItem value="l">L</SelectItem>
+                            <SelectItem value="xl">XL</SelectItem>
+                            <SelectItem value="xxl">XXL</SelectItem>
+                            <SelectItem value="xxxl">XXXL</SelectItem>
+                            <SelectItem value="unica">Talla Única</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {/* Campo de Género */}
+                    {opcionesProducto.genero && (
+                      <div className="md:col-span-3">
+                        <Label htmlFor="genero" className="text-gray-300 mb-2 block">
+                          Género
+                        </Label>
+                        <Select value={productoData.genero} onValueChange={(value) => handleProductoDataChange('genero', value)}>
+                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
+                            <SelectValue placeholder="Seleccionar género" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-700 border-gray-600">
+                            <SelectItem value="hombre">Hombre</SelectItem>
+                            <SelectItem value="mujer">Mujer</SelectItem>
+                            <SelectItem value="niño">Niño</SelectItem>
+                            <SelectItem value="niña">Niña</SelectItem>
+                            <SelectItem value="generico">Genérico</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {/* Campo de Medidas */}
+                    {opcionesProducto.medidas && (
+                      <div className="md:col-span-6">
+                        <Label className="text-gray-300 mb-2 block">
+                          Medidas
+                        </Label>
+                        <div className="flex items-center gap-2">
+                          <Input 
+                            id="medidas"
+                            type="number"
+                            value={productoData.medidas}
+                            onChange={(e) => handleProductoDataChange('medidas', e.target.value)}
+                            placeholder="0"
+                            className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 flex-1"
+                          />
+                          <Select value={productoData.unidadMedida} onValueChange={(value) => handleProductoDataChange('unidadMedida', value)}>
+                            <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-20">
+                              <SelectValue placeholder="cm" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-700 border-gray-600">
+                              <SelectItem value="cm">cm</SelectItem>
+                              <SelectItem value="m">m</SelectItem>
+                              <SelectItem value="mm">mm</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Campos de Precio */}
+              <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Precio Actual */}
+                  <div>
+                    <Label htmlFor="precio-actual" className="text-gray-300 mb-2 block">
+                      Precio Actual
+                    </Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+                      <Input 
+                        id="precio-actual"
+                        type="number"
+                        value={productoData.precioActual}
+                        onChange={(e) => handleProductoDataChange('precioActual', e.target.value)}
+                        placeholder="0.00"
+                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-8"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Precio Anterior */}
+                  <div>
+                    <Label htmlFor="precio-anterior" className="text-gray-300 mb-2 block">
+                      Precio Anterior
+                    </Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+                      <Input 
+                        id="precio-anterior"
+                        type="number"
+                        value={productoData.precioAnterior}
+                        onChange={(e) => handleProductoDataChange('precioAnterior', e.target.value)}
+                        placeholder="0.00"
+                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-8"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Campo de Descripción */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label htmlFor="descripcion" className="text-gray-300">
+                    Descripción
+                  </Label>
+                  <span className={`text-sm ${
+                    contarPalabras(descripcion) > 45 
+                      ? 'text-yellow-400' 
+                      : contarPalabras(descripcion) > 48 
+                        ? 'text-red-400' 
+                        : 'text-gray-400'
+                  }`}>
+                    {contarPalabras(descripcion)}/50 palabras
+                  </span>
+                </div>
+                <Textarea
+                  id="descripcion"
+                  value={descripcion}
+                  onChange={handleDescripcionChange}
+                  placeholder="Escribe una descripción detallada del producto..."
+                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 resize-none"
+                  rows={4}
+                />
+                <div className="mt-1">
+                  <div className="w-full bg-gray-600 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        contarPalabras(descripcion) > 48 
+                          ? 'bg-red-500' 
+                          : contarPalabras(descripcion) > 45 
+                            ? 'bg-yellow-500' 
+                            : 'bg-blue-500'
+                      }`}
+                      style={{ width: `${(contarPalabras(descripcion) / 50) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
               </div>
 
               {/* Botones de acción */}
@@ -432,7 +1028,14 @@ export default function AdminPage() {
                 >
                   Cancelar
                 </Button>
-                <Button className="bg-gray-700 hover:bg-gray-600 text-white">
+                <Button 
+                  variant="outline" 
+                  onClick={autollenarCampos}
+                  className="border-blue-600 text-blue-300 hover:bg-blue-700 hover:text-white"
+                >
+                  Autollenado
+                </Button>
+                <Button onClick={agregarProducto} className="bg-gray-700 hover:bg-gray-600 text-white">
                   Agregar Producto
                 </Button>
               </div>
@@ -498,21 +1101,27 @@ export default function AdminPage() {
                 <h2 className="text-xl font-semibold text-white mb-4">Sección: Destacados</h2>
                 <p className="text-gray-400 mb-6">Los productos más populares del momento</p>
                 
-                {/* Tarjeta con botón agregar */}
-                <div className="grid grid-cols-5 gap-4">
+                {/* Grid de productos */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
+                  {/* Tarjeta con botón agregar - siempre primera */}
                   <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-6 hover:border-gray-500 transition-colors cursor-pointer"
-                    onClick={() => openModal('Destacados')}
+                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
+                    onClick={() => openModal('destacados')}
                   >
-                    <div className="flex flex-col items-center justify-center space-y-4 h-full">
-                      <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-6 h-6 text-gray-300" />
+                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
+                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
+                        <Plus className="w-4 h-4 text-gray-300" />
                       </div>
-                      <p className="text-gray-400 text-xs text-center">
+                      <p className="text-gray-400 text-[10px] text-center leading-tight">
                         Añadir productos a la sección Destacados
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Tarjetas de productos existentes */}
+                  {productos.destacados.map((producto) => (
+                    <ProductoCard key={producto.id} producto={producto} />
+                  ))}
                 </div>
               </div>
             </TabsContent>
@@ -523,21 +1132,27 @@ export default function AdminPage() {
                 <h2 className="text-xl font-semibold text-white mb-4">Sección: Ofertas</h2>
                 <p className="text-gray-400 mb-6">Descuentos exclusivos por tiempo limitado</p>
                 
-                {/* Tarjeta con botón agregar */}
-                <div className="grid grid-cols-5 gap-4">
+                {/* Grid de productos */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
+                  {/* Tarjeta con botón agregar - siempre primera */}
                   <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-6 hover:border-gray-500 transition-colors cursor-pointer"
-                    onClick={() => openModal('Ofertas')}
+                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
+                    onClick={() => openModal('ofertas')}
                   >
-                    <div className="flex flex-col items-center justify-center space-y-4 h-full">
-                      <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-6 h-6 text-gray-300" />
+                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
+                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
+                        <Plus className="w-4 h-4 text-gray-300" />
                       </div>
-                      <p className="text-gray-400 text-xs text-center">
+                      <p className="text-gray-400 text-[10px] text-center leading-tight">
                         Añadir productos con descuento a la sección Ofertas
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Tarjetas de productos existentes */}
+                  {productos.ofertas.map((producto) => (
+                    <ProductoCard key={producto.id} producto={producto} />
+                  ))}
                 </div>
               </div>
             </TabsContent>
@@ -548,21 +1163,27 @@ export default function AdminPage() {
                 <h2 className="text-xl font-semibold text-white mb-4">Sección: Novedades</h2>
                 <p className="text-gray-400 mb-6">Los últimos lanzamientos del mercado</p>
                 
-                {/* Tarjeta con botón agregar */}
-                <div className="grid grid-cols-5 gap-4">
+                {/* Grid de productos */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
+                  {/* Tarjeta con botón agregar - siempre primera */}
                   <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-6 hover:border-gray-500 transition-colors cursor-pointer"
-                    onClick={() => openModal('Novedades')}
+                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
+                    onClick={() => openModal('novedades')}
                   >
-                    <div className="flex flex-col items-center justify-center space-y-4 h-full">
-                      <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-6 h-6 text-gray-300" />
+                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
+                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
+                        <Plus className="w-4 h-4 text-gray-300" />
                       </div>
-                      <p className="text-gray-400 text-xs text-center">
+                      <p className="text-gray-400 text-[10px] text-center leading-tight">
                         Añadir productos nuevos a la sección Novedades
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Tarjetas de productos existentes */}
+                  {productos.novedades.map((producto) => (
+                    <ProductoCard key={producto.id} producto={producto} />
+                  ))}
                 </div>
               </div>
             </TabsContent>
@@ -573,21 +1194,27 @@ export default function AdminPage() {
                 <h2 className="text-xl font-semibold text-white mb-4">Sección: Tendencias</h2>
                 <p className="text-gray-400 mb-6">Lo más buscado y deseado actualmente</p>
                 
-                {/* Tarjeta con botón agregar */}
-                <div className="grid grid-cols-5 gap-4">
+                {/* Grid de productos */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
+                  {/* Tarjeta con botón agregar - siempre primera */}
                   <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-6 hover:border-gray-500 transition-colors cursor-pointer"
-                    onClick={() => openModal('Tendencias')}
+                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
+                    onClick={() => openModal('tendencias')}
                   >
-                    <div className="flex flex-col items-center justify-center space-y-4 h-full">
-                      <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-6 h-6 text-gray-300" />
+                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
+                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
+                        <Plus className="w-4 h-4 text-gray-300" />
                       </div>
-                      <p className="text-gray-400 text-xs text-center">
+                      <p className="text-gray-400 text-[10px] text-center leading-tight">
                         Añadir productos populares a la sección Tendencias
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Tarjetas de productos existentes */}
+                  {productos.tendencias.map((producto) => (
+                    <ProductoCard key={producto.id} producto={producto} />
+                  ))}
                 </div>
               </div>
             </TabsContent>
@@ -598,21 +1225,27 @@ export default function AdminPage() {
                 <h2 className="text-xl font-semibold text-white mb-4">Sección: ¡No te lo Pierdas!</h2>
                 <p className="text-gray-400 mb-6">Oportunidades únicas que no puedes dejar pasar</p>
                 
-                {/* Tarjeta con botón agregar */}
-                <div className="grid grid-cols-5 gap-4">
+                {/* Grid de productos */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
+                  {/* Tarjeta con botón agregar - siempre primera */}
                   <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-6 hover:border-gray-500 transition-colors cursor-pointer"
-                    onClick={() => openModal('¡No te lo Pierdas!')}
+                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
+                    onClick={() => openModal('no-te-lo-pierdas')}
                   >
-                    <div className="flex flex-col items-center justify-center space-y-4 h-full">
-                      <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-6 h-6 text-gray-300" />
+                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
+                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
+                        <Plus className="w-4 h-4 text-gray-300" />
                       </div>
-                      <p className="text-gray-400 text-xs text-center">
+                      <p className="text-gray-400 text-[10px] text-center leading-tight">
                         Añadir productos especiales a la sección ¡No te lo Pierdas!
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Tarjetas de productos existentes */}
+                  {productos['no-te-lo-pierdas'].map((producto) => (
+                    <ProductoCard key={producto.id} producto={producto} />
+                  ))}
                 </div>
               </div>
             </TabsContent>
@@ -623,21 +1256,27 @@ export default function AdminPage() {
                 <h2 className="text-xl font-semibold text-white mb-4">Sección: Liquidaciones</h2>
                 <p className="text-gray-400 mb-6">Precios increíbles en productos seleccionados</p>
                 
-                {/* Tarjeta con botón agregar */}
-                <div className="grid grid-cols-5 gap-4">
+                {/* Grid de productos */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
+                  {/* Tarjeta con botón agregar - siempre primera */}
                   <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-6 hover:border-gray-500 transition-colors cursor-pointer"
-                    onClick={() => openModal('Liquidaciones')}
+                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
+                    onClick={() => openModal('liquidaciones')}
                   >
-                    <div className="flex flex-col items-center justify-center space-y-4 h-full">
-                      <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-6 h-6 text-gray-300" />
+                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
+                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
+                        <Plus className="w-4 h-4 text-gray-300" />
                       </div>
-                      <p className="text-gray-400 text-xs text-center">
+                      <p className="text-gray-400 text-[10px] text-center leading-tight">
                         Añadir productos en liquidación a la sección Liquidaciones
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Tarjetas de productos existentes */}
+                  {productos.liquidaciones.map((producto) => (
+                    <ProductoCard key={producto.id} producto={producto} />
+                  ))}
                 </div>
               </div>
             </TabsContent>
