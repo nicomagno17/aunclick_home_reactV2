@@ -23,9 +23,8 @@ export default function AdminPage() {
   const [productoModalOpen, setProductoModalOpen] = useState(false)
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Panel de Administración</h1>
-      <p className="text-gray-500 mb-8">Gestión de entidades del marketplace</p>
+    <div className="py-6">
+      <p className="text-muted-foreground mb-6">Gestión de entidades del marketplace</p>
 
       <Tabs defaultValue="planes" className="w-full">
         <TabsList className="grid grid-cols-6 mb-8">

@@ -233,7 +233,7 @@ function SearchPageContent() {
                             sortBy === 'rating' ? 'text-purple-600 font-medium' : 'text-gray-700'
                           }`}
                         >
-                          Mejor calificados
+                          Mejor calificados coqui
                         </button>
                       </div>
                     </div>
