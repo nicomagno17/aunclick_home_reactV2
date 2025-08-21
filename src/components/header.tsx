@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { SearchBar } from '@/components/search-bar'
 import { FloatingSearchBar } from '@/components/floating-search-bar'
-import { ChevronDown, Menu, ArrowLeft } from 'lucide-react'
+import { ChevronDown, Menu, ArrowLeft, Home, User, LogOut } from 'lucide-react'
 import Link from 'next/link'
 
 interface HeaderProps {
@@ -33,12 +33,16 @@ export function Header({
   // Estado para la barra de búsqueda flotante
   const [showFloatingSearchBar, setShowFloatingSearchBar] = useState(false)
 
+  // Estado para el menú de usuario
+  const [showUserMenu, setShowUserMenu] = useState(false)
+
   // Función para cerrar todos los modales
   const closeAllModals = () => {
     setShowCategorias(false)
     setShowArriendos(false)
     setShowServicios(false)
     setShowMobileMenu(false)
+    setShowUserMenu(false)
   }
 
   // Función para toggle de categorías (cierra otros modales)
@@ -81,11 +85,21 @@ export function Header({
     }
   }
 
+  // Función para toggle del menú de usuario (cierra otros modales)
+  const toggleUserMenu = () => {
+    if (showUserMenu) {
+      setShowUserMenu(false)
+    } else {
+      closeAllModals()
+      setShowUserMenu(true)
+    }
+  }
+
   // Efecto para cerrar modales al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // Si algún modal está abierto y el clic fue fuera de los modales
-      if ((showCategorias || showArriendos || showServicios || showMobileMenu) && 
+      if ((showCategorias || showArriendos || showServicios || showMobileMenu || showUserMenu) && 
           !(event.target as Element).closest('.modal-container')) {
         closeAllModals()
       }
@@ -98,7 +112,7 @@ export function Header({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [showCategorias, showArriendos, showServicios, showMobileMenu])
+  }, [showCategorias, showArriendos, showServicios, showMobileMenu, showUserMenu])
 
   // Efecto para detectar scroll y mostrar/ocultar barra de búsqueda flotante
   useEffect(() => {
@@ -137,104 +151,99 @@ export function Header({
       <header className="relative text-white shadow-2xl" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
         <div className="container mx-auto relative z-10">
           {/* Versión Desktop */}
-          <div className="hidden sm:block py-6 px-6">
+          <div className="hidden sm:block py-8 px-6">
             <div className="flex items-center justify-between">
-              {/* Logo/Título - Dos filas a la izquierda */}
-              <div className="flex flex-col items-start cursor-pointer" onClick={() => router.push('/')}>
-                <h1 className="text-xl font-bold leading-tight text-white">Solo a</h1>
-                <h1 className="text-4xl font-bold leading-tight text-yellow-300">un CLICK</h1>
+              {/* Icono de Home en el extremo izquierdo */}
+              <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
+                <Home className="h-6 w-6 text-white hover:text-yellow-300 transition-colors" />
               </div>
 
-              {/* Buscador en el centro */}
-              <div className="flex-1 max-w-lg mx-8">
+              {/* Título centrado y más grande */}
+              <div className="flex flex-col items-center cursor-pointer flex-1" onClick={() => router.push('/')}>
+                <h1 className="text-2xl font-bold leading-tight text-white">Solo a</h1>
+                <h1 className="text-5xl font-bold leading-tight text-yellow-300">un CLICK</h1>
+              </div>
+
+              {/* Sección de usuario en el extremo derecho */}
+              <div className="flex items-center space-x-3">
+                <div className="relative modal-container">
+                  <button 
+                    onClick={toggleUserMenu}
+                    className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <User className="h-5 w-5" />
+                    <span className="text-sm font-medium">Usuario</span>
+                  </button>
+
+                  {/* Menú desplegable de usuario */}
+                  {showUserMenu && (
+                    <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                      <div className="py-1">
+                        <div className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                          <LogOut className="w-4 h-4" />
+                          <span>Cerrar sesión</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Buscador debajo del título */}
+            <div className="flex justify-center mt-6">
+              <div className="max-w-lg w-full">
                 <SearchBar 
                   value={searchTerm} 
                   onChange={onSearchTermChange}
                   placeholder="Buscar productos, tiendas, categorías..."
                 />
               </div>
-
-              {/* Botón volver o Espacio publicitario */}
-              {showBackButton ? (
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => router.back()}
-                    className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-purple-600/50 hover:bg-purple-600/70 px-4 py-2 rounded-lg backdrop-blur-sm border border-purple-300/30"
-                  >
-                    <ArrowLeft className="h-5 w-5" />
-                    <span className="text-sm">Volver</span>
-                  </button>
-                </div>
-              ) : (
-                /* Espacio publicitario a la derecha */
-                <div className="group w-56 h-16 bg-gradient-to-br from-purple-700/80 via-purple-600/70 to-purple-500/60 border-2 border-purple-300/60 rounded-xl flex items-center justify-center p-3 hover:shadow-xl hover:shadow-purple-400/40 transition-all duration-500 hover:scale-105 backdrop-blur-sm relative overflow-hidden">
-                  {/* Efecto de brillo */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-
-                  {/* Icono decorativo */}
-                  <div className="absolute top-1 right-2">
-                    <svg className="w-3 h-3 text-white/60" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8 2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                  </div>
-
-                  <div className="text-center relative z-10">
-                    <div className="text-[9px] font-extrabold text-white leading-tight tracking-wider uppercase">Espacio Premium</div>
-                    <div className="text-xs font-bold text-white leading-tight tracking-wide">Publicitario</div>
-                    <div className="text-[9px] text-purple-200 leading-tight mt-0.5">• Disponible •</div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
           {/* Versión Móvil */}
           <div className="sm:hidden w-full">
-            {/* Primera fila: Título, banner publicitario y botón volver */}
-            <div className="flex items-center justify-between px-4 py-3 gap-3">
-              {/* Logo/Título - Más pequeño y a la izquierda */}
-              <div className="flex flex-col items-start cursor-pointer flex-shrink-0" onClick={() => router.push('/')}>
-                <h1 className="text-sm font-bold leading-tight text-white">Solo a</h1>
-                <h1 className="text-lg font-bold leading-tight text-yellow-300">un CLICK</h1>
+            {/* Primera fila: Icono home, título centrado y usuario */}
+            <div className="flex items-center justify-between px-4 py-4">
+              {/* Icono de Home en el extremo izquierdo */}
+              <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
+                <Home className="h-5 w-5 text-white hover:text-yellow-300 transition-colors" />
               </div>
 
-              {/* Banner publicitario en el centro (solo si no hay botón volver) */}
-              {!showBackButton && (
-                <div className="flex-1 max-w-[180px]">
-                  <div className="group w-full h-12 bg-gradient-to-br from-purple-700/80 via-purple-600/70 to-purple-500/60 border-2 border-purple-300/60 rounded-lg flex items-center justify-center p-2 hover:shadow-lg hover:shadow-purple-400/40 transition-all duration-500 backdrop-blur-sm relative overflow-hidden">
-                    {/* Efecto de brillo */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              {/* Título centrado */}
+              <div className="flex flex-col items-center cursor-pointer flex-1" onClick={() => router.push('/')}>
+                <h1 className="text-lg font-bold leading-tight text-white">Solo a</h1>
+                <h1 className="text-2xl font-bold leading-tight text-yellow-300">un CLICK</h1>
+              </div>
 
-                    {/* Icono decorativo */}
-                    <div className="absolute top-1 right-2">
-                      <svg className="w-2 h-2 text-white/60" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8 2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                      </svg>
-                    </div>
+              {/* Sección de usuario en el extremo derecho */}
+              <div className="flex items-center">
+                <div className="relative modal-container">
+                  <button 
+                    onClick={toggleUserMenu}
+                    className="flex items-center text-white/90 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <User className="h-5 w-5" />
+                  </button>
 
-                    <div className="text-center relative z-10">
-                      <div className="text-[8px] font-extrabold text-white leading-tight tracking-wider uppercase">Espacio Premium</div>
-                      <div className="text-[10px] font-bold text-white leading-tight tracking-wide">Publicitario</div>
-                      <div className="text-[8px] text-purple-200 leading-tight mt-0.5">• Disponible •</div>
+                  {/* Menú desplegable de usuario */}
+                  {showUserMenu && (
+                    <div className="absolute top-full right-0 mt-2 w-36 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                      <div className="py-1">
+                        <div className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                          <LogOut className="w-4 h-4" />
+                          <span>Cerrar sesión</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
-
-              {/* Botón volver si es necesario */}
-              {showBackButton && (
-                <button
-                  onClick={() => router.back()}
-                  className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-purple-600/50 hover:bg-purple-600/70 px-3 py-2 rounded-lg backdrop-blur-sm border border-purple-300/30 flex-shrink-0"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span className="text-xs">Volver</span>
-                </button>
-              )}
+              </div>
             </div>
 
             {/* Segunda fila: Buscador (siempre presente) */}
-            <div className="px-4 pb-3">
+            <div className="px-4 pb-4">
               <SearchBar 
                 value={searchTerm} 
                 onChange={onSearchTermChange}
