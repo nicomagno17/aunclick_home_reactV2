@@ -1,5 +1,5 @@
 import { Inter } from 'next/font/google'
-import './globals.css'
+import '../globals.css'
 import { AdminHeader } from '@/components/admin/header'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -12,9 +12,9 @@ export default function AdminLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-gray-900">
           <AdminHeader />
-          <main className="container mx-auto py-6 px-4">
+          <main className="w-full">
             {children}
           </main>
         </div>
