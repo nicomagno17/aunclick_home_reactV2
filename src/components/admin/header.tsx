@@ -13,7 +13,7 @@ export function AdminHeader() {
   const userName = 'Admin User' // Replace with actual user name from your auth context
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b shadow-2xl text-white" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
+    <header className="sticky top-0 z-50 w-full border-b shadow-2xl text-white" style={{ background: 'linear-gradient(90deg, #1e3a8a 0%, #1e40af 20%, #2563eb 40%, #60a5fa 100%)' }}>
       <div className="flex h-16 items-center justify-between px-6 w-full">
         {/* Left side - Home link */}
         <Link 
