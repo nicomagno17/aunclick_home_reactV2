@@ -26,6 +26,7 @@ export function AdminProductCarousel({
   // Configuración fija: 6 cards por vista (incluyendo el botón agregar)
   const CARDS_PER_VIEW = 6
   const CARD_WIDTH = 176 // w-44 = 11rem = 176px
+  const CARD_HEIGHT = 288 // h-72 = 18rem = 288px
   const GAP = 12 // gap-3 = 0.75rem = 12px
   
   // Total de elementos: productos + 1 (botón agregar)
@@ -77,11 +78,10 @@ export function AdminProductCarousel({
         {/* Container con scroll horizontal */}
         <div 
           ref={scrollContainerRef}
-          className="overflow-x-auto scrollbar-hide"
+          className="overflow-x-auto scrollbar-hide scroll-smooth"
           style={{ 
             scrollbarWidth: 'none', 
-            msOverflowStyle: 'none',
-            WebkitScrollbar: { display: 'none' }
+            msOverflowStyle: 'none'
           }}
         >
           <div 
@@ -92,7 +92,7 @@ export function AdminProductCarousel({
           >
             {/* Tarjeta con botón agregar - siempre primera */}
             <div 
-              className="flex-shrink-0 bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
+              className="flex-shrink-0 bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-72 flex flex-col justify-center"
               onClick={onAgregarProducto}
             >
               <div className="flex flex-col items-center justify-center space-y-2 h-full">

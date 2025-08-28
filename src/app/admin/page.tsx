@@ -242,7 +242,7 @@ export default function AdminPage() {
   // Componente de tarjeta de producto
   const ProductoCard = ({ producto }: { producto: any }) => {
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow w-44 h-60">
+      <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow w-44 h-72">
         {/* Parte superior con imagen - más compacta */}
         <div className="h-40 bg-white flex items-center justify-center p-1">
           <img 
