@@ -16,7 +16,8 @@ export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedSection, setSelectedSection] = useState('')
   const [opcionesProducto, setOpcionesProducto] = useState({
-    tallas: false,
+    tallasCalzado: false,
+    tallasRopa: false,
     genero: false,
     medidas: false
   })
@@ -28,7 +29,8 @@ export default function AdminPage() {
     categoria: '',
     subcategoria: '',
     nombre: '',
-    tallas: '',
+    tallasCalzado: [] as string[],
+    tallasRopa: [] as string[],
     genero: '',
     medidas: '',
     unidadMedida: 'cm',
@@ -60,7 +62,8 @@ export default function AdminPage() {
       categoria: '',
       subcategoria: '',
       nombre: '',
-      tallas: '',
+      tallasCalzado: [],
+      tallasRopa: [],
       genero: '',
       medidas: '',
       unidadMedida: 'cm',
@@ -70,7 +73,8 @@ export default function AdminPage() {
     setDescripcion('')
     setImagenProducto(null)
     setOpcionesProducto({
-      tallas: false,
+      tallasCalzado: false,
+      tallasRopa: false,
       genero: false,
       medidas: false
     })
@@ -83,6 +87,28 @@ export default function AdminPage() {
       ...prev,
       [field]: value
     }))
+  }
+
+  // Función para manejar selección múltiple de tallas
+  const handleTallaToggle = (tipo: 'tallasCalzado' | 'tallasRopa', talla: string) => {
+    setProductoData(prev => {
+      const currentTallas = prev[tipo]
+      const isSelected = currentTallas.includes(talla)
+      
+      if (isSelected) {
+        // Remover talla si ya está seleccionada
+        return {
+          ...prev,
+          [tipo]: currentTallas.filter(t => t !== talla)
+        }
+      } else {
+        // Agregar talla si no está seleccionada
+        return {
+          ...prev,
+          [tipo]: [...currentTallas, talla]
+        }
+      }
+    })
   }
 
   // Función de autollenado con datos de ejemplo
@@ -181,7 +207,8 @@ export default function AdminPage() {
       categoria: ejemplo.categoria,
       subcategoria: ejemplo.subcategoria,
       nombre: ejemplo.nombre,
-      tallas: ejemplo.tallas,
+      tallasCalzado: ejemplo.tallas === 'No aplica' ? [] : ejemplo.categoria === 'ropa' && ejemplo.subcategoria === 'calzado' ? ejemplo.tallas.split(', ') : [],
+      tallasRopa: ejemplo.tallas === 'No aplica' ? [] : ejemplo.categoria === 'ropa' && ejemplo.subcategoria !== 'calzado' ? ejemplo.tallas.split(', ') : [],
       genero: ejemplo.genero,
       medidas: ejemplo.medidas,
       unidadMedida: ejemplo.unidadMedida,
@@ -194,7 +221,8 @@ export default function AdminPage() {
     
     // Activar opciones según el ejemplo
     setOpcionesProducto({
-      tallas: ejemplo.tallas !== 'No aplica',
+      tallasCalzado: ejemplo.tallas !== 'No aplica' && ejemplo.categoria === 'ropa' && ejemplo.subcategoria === 'calzado',
+      tallasRopa: ejemplo.tallas !== 'No aplica' && ejemplo.categoria === 'ropa' && ejemplo.subcategoria !== 'calzado',
       genero: ejemplo.genero !== 'generico',
       medidas: ejemplo.medidas !== ''
     })
@@ -626,7 +654,8 @@ export default function AdminPage() {
               categoria: '',
               subcategoria: '',
               nombre: '',
-              tallas: '',
+              tallasCalzado: [],
+              tallasRopa: [],
               genero: '',
               medidas: '',
               unidadMedida: 'cm',
@@ -636,7 +665,8 @@ export default function AdminPage() {
             setDescripcion('')
             setImagenProducto(null)
             setOpcionesProducto({
-              tallas: false,
+              tallasCalzado: false,
+              tallasRopa: false,
               genero: false,
               medidas: false
             })
@@ -768,35 +798,67 @@ export default function AdminPage() {
                   Tu producto necesita mostrar:
                 </Label>
                 <div className="flex flex-wrap gap-6">
-                  {/* Opción Tallas */}
+                  {/* Opción Talla de Calzado */}
                   <div className="flex items-center space-x-2">
                     <div className="relative">
                       <input
                         type="checkbox"
-                        id="opcion-tallas"
+                        id="opcion-tallas-calzado"
                         className="sr-only"
-                        checked={opcionesProducto.tallas}
-                        onChange={() => toggleOpcion('tallas')}
+                        checked={opcionesProducto.tallasCalzado}
+                        onChange={() => toggleOpcion('tallasCalzado')}
                       />
                       <label 
-                        htmlFor="opcion-tallas"
+                        htmlFor="opcion-tallas-calzado"
                         className={`flex items-center justify-center w-5 h-5 border-2 rounded-full cursor-pointer transition-colors ${
-                          opcionesProducto.tallas 
+                          opcionesProducto.tallasCalzado 
                             ? 'bg-blue-500 border-blue-500' 
                             : 'border-gray-400 hover:border-gray-300'
                         }`}
                         onClick={(e) => {
                           e.preventDefault();
-                          toggleOpcion('tallas');
+                          toggleOpcion('tallasCalzado');
                         }}
                       >
-                        {opcionesProducto.tallas && (
+                        {opcionesProducto.tallasCalzado && (
                           <div className="w-2 h-2 bg-white rounded-full"></div>
                         )}
                       </label>
                     </div>
-                    <label htmlFor="opcion-tallas" className="text-gray-300 cursor-pointer">
-                      Tallas
+                    <label htmlFor="opcion-tallas-calzado" className="text-gray-300 cursor-pointer">
+                      Talla de Calzado
+                    </label>
+                  </div>
+
+                  {/* Opción Talla de Ropa */}
+                  <div className="flex items-center space-x-2">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        id="opcion-tallas-ropa"
+                        className="sr-only"
+                        checked={opcionesProducto.tallasRopa}
+                        onChange={() => toggleOpcion('tallasRopa')}
+                      />
+                      <label 
+                        htmlFor="opcion-tallas-ropa"
+                        className={`flex items-center justify-center w-5 h-5 border-2 rounded-full cursor-pointer transition-colors ${
+                          opcionesProducto.tallasRopa 
+                            ? 'bg-blue-500 border-blue-500' 
+                            : 'border-gray-400 hover:border-gray-300'
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toggleOpcion('tallasRopa');
+                        }}
+                      >
+                        {opcionesProducto.tallasRopa && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                      </label>
+                    </div>
+                    <label htmlFor="opcion-tallas-ropa" className="text-gray-300 cursor-pointer">
+                      Talla de Ropa
                     </label>
                   </div>
 
@@ -868,33 +930,69 @@ export default function AdminPage() {
                 {/* Campos dinámicos según opciones seleccionadas */}
                 <div className="mt-6">
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                    {/* Campo de Tallas */}
-                    {opcionesProducto.tallas && (
-                      <div className="md:col-span-3">
-                        <Label htmlFor="tallas" className="text-gray-300 mb-2 block">
-                          Tallas
+                    {/* Campo de Tallas de Calzado */}
+                    {opcionesProducto.tallasCalzado && (
+                      <div className="md:col-span-6">
+                        <Label className="text-gray-300 mb-2 block">
+                          Tallas de Calzado (selecciona todas las que apliquen)
                         </Label>
-                        <Select value={productoData.tallas} onValueChange={(value) => handleProductoDataChange('tallas', value)}>
-                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
-                            <SelectValue placeholder="Seleccionar talla" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-gray-700 border-gray-600">
-                            <SelectItem value="xs">XS</SelectItem>
-                            <SelectItem value="s">S</SelectItem>
-                            <SelectItem value="m">M</SelectItem>
-                            <SelectItem value="l">L</SelectItem>
-                            <SelectItem value="xl">XL</SelectItem>
-                            <SelectItem value="xxl">XXL</SelectItem>
-                            <SelectItem value="xxxl">XXXL</SelectItem>
-                            <SelectItem value="unica">Talla Única</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="grid grid-cols-4 gap-2 p-3 bg-gray-700 rounded-lg border border-gray-600">
+                          {['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'].map((talla) => (
+                            <button
+                              key={talla}
+                              type="button"
+                              onClick={() => handleTallaToggle('tallasCalzado', talla)}
+                              className={`px-2 py-1 text-xs rounded transition-colors ${
+                                productoData.tallasCalzado.includes(talla)
+                                  ? 'bg-blue-500 text-white'
+                                  : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                              }`}
+                            >
+                              {talla}
+                            </button>
+                          ))}
+                        </div>
+                        {productoData.tallasCalzado.length > 0 && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            Seleccionadas: {productoData.tallasCalzado.join(', ')}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Campo de Tallas de Ropa */}
+                    {opcionesProducto.tallasRopa && (
+                      <div className="md:col-span-6">
+                        <Label className="text-gray-300 mb-2 block">
+                          Tallas de Ropa (selecciona todas las que apliquen)
+                        </Label>
+                        <div className="grid grid-cols-4 gap-2 p-3 bg-gray-700 rounded-lg border border-gray-600">
+                          {['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'Talla Única'].map((talla) => (
+                            <button
+                              key={talla}
+                              type="button"
+                              onClick={() => handleTallaToggle('tallasRopa', talla)}
+                              className={`px-2 py-1 text-xs rounded transition-colors ${
+                                productoData.tallasRopa.includes(talla)
+                                  ? 'bg-blue-500 text-white'
+                                  : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                              }`}
+                            >
+                              {talla}
+                            </button>
+                          ))}
+                        </div>
+                        {productoData.tallasRopa.length > 0 && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            Seleccionadas: {productoData.tallasRopa.join(', ')}
+                          </p>
+                        )}
                       </div>
                     )}
 
                     {/* Campo de Género */}
                     {opcionesProducto.genero && (
-                      <div className="md:col-span-3">
+                      <div className="md:col-span-6">
                         <Label htmlFor="genero" className="text-gray-300 mb-2 block">
                           Género
                         </Label>
@@ -1238,11 +1336,19 @@ export default function AdminPage() {
                 {/* Información adicional del producto - sin título y más pequeña */}
                 <div className="space-y-2 pt-3 border-t border-gray-700">
                   <div className="space-y-1 text-xs">
-                    {/* Tallas */}
-                    {selectedProducto.tallas && selectedProducto.tallas !== 'No aplica' && (
+                    {/* Tallas de Calzado */}
+                    {selectedProducto.tallasCalzado && selectedProducto.tallasCalzado.length > 0 && (
                       <div className="flex items-start gap-2">
-                        <span className="text-gray-400 min-w-[60px]">Tallas:</span>
-                        <span className="text-gray-300">{selectedProducto.tallas}</span>
+                        <span className="text-gray-400 min-w-[80px]">Tallas Calzado:</span>
+                        <span className="text-gray-300">{selectedProducto.tallasCalzado.join(', ')}</span>
+                      </div>
+                    )}
+                    
+                    {/* Tallas de Ropa */}
+                    {selectedProducto.tallasRopa && selectedProducto.tallasRopa.length > 0 && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-gray-400 min-w-[80px]">Tallas Ropa:</span>
+                        <span className="text-gray-300">{selectedProducto.tallasRopa.join(', ')}</span>
                       </div>
                     )}
                     
