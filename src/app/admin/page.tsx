@@ -247,7 +247,7 @@ export default function AdminPage() {
     return (
       <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow w-44 h-64">
         {/* Parte superior con imagen - ocupa todo el espacio */}
-        <div className="h-40 bg-white flex items-center justify-center overflow-hidden">
+        <div className="h-40 bg-white overflow-hidden">
           <img 
             src={producto.imagen} 
             alt={producto.nombre}
