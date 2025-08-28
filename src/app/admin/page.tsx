@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Clock, Calendar } from 'lucide-react'
+import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AdminProductCarousel } from '@/components/admin/admin-product-carousel'
 
 export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -1097,192 +1098,192 @@ export default function AdminPage() {
           <div className="px-6">
             {/* Tab Destacados */}
             <TabsContent value="destacados" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Sección: Destacados</h2>
-                <p className="text-gray-400 mb-6">Los productos más populares del momento</p>
-                
-                {/* Grid de productos */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
-                  {/* Tarjeta con botón agregar - siempre primera */}
-                  <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
-                    onClick={() => openModal('destacados')}
-                  >
-                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
-                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-4 h-4 text-gray-300" />
-                      </div>
-                      <p className="text-gray-400 text-[10px] text-center leading-tight">
-                        Añadir productos a la sección Destacados
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Tarjetas de productos existentes */}
-                  {productos.destacados.map((producto) => (
-                    <ProductoCard key={producto.id} producto={producto} />
-                  ))}
-                </div>
-              </div>
+              <AdminProductCarousel
+                titulo="Sección: Destacados"
+                descripcion="Los productos más populares del momento"
+                productos={productos.destacados}
+                onAgregarProducto={() => openModal('destacados')}
+                textoBotonAgregar="Añadir productos a la sección Destacados"
+                ProductoCard={ProductoCard}
+              />
             </TabsContent>
 
             {/* Tab Ofertas */}
             <TabsContent value="ofertas" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Sección: Ofertas</h2>
-                <p className="text-gray-400 mb-6">Descuentos exclusivos por tiempo limitado</p>
-                
-                {/* Grid de productos */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
-                  {/* Tarjeta con botón agregar - siempre primera */}
-                  <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
-                    onClick={() => openModal('ofertas')}
-                  >
-                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
-                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-4 h-4 text-gray-300" />
-                      </div>
-                      <p className="text-gray-400 text-[10px] text-center leading-tight">
-                        Añadir productos con descuento a la sección Ofertas
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Tarjetas de productos existentes */}
-                  {productos.ofertas.map((producto) => (
-                    <ProductoCard key={producto.id} producto={producto} />
-                  ))}
-                </div>
-              </div>
+              <AdminProductCarousel
+                titulo="Sección: Ofertas"
+                descripcion="Descuentos exclusivos por tiempo limitado"
+                productos={productos.ofertas}
+                onAgregarProducto={() => openModal('ofertas')}
+                textoBotonAgregar="Añadir productos con descuento a la sección Ofertas"
+                ProductoCard={ProductoCard}
+              />
             </TabsContent>
 
             {/* Tab Novedades */}
             <TabsContent value="novedades" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Sección: Novedades</h2>
-                <p className="text-gray-400 mb-6">Los últimos lanzamientos del mercado</p>
-                
-                {/* Grid de productos */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
-                  {/* Tarjeta con botón agregar - siempre primera */}
-                  <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
-                    onClick={() => openModal('novedades')}
-                  >
-                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
-                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-4 h-4 text-gray-300" />
-                      </div>
-                      <p className="text-gray-400 text-[10px] text-center leading-tight">
-                        Añadir productos nuevos a la sección Novedades
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Tarjetas de productos existentes */}
-                  {productos.novedades.map((producto) => (
-                    <ProductoCard key={producto.id} producto={producto} />
-                  ))}
-                </div>
-              </div>
+              <AdminProductCarousel
+                titulo="Sección: Novedades"
+                descripcion="Los últimos lanzamientos del mercado"
+                productos={productos.novedades}
+                onAgregarProducto={() => openModal('novedades')}
+                textoBotonAgregar="Añadir productos nuevos a la sección Novedades"
+                ProductoCard={ProductoCard}
+              />
             </TabsContent>
 
             {/* Tab Tendencias */}
             <TabsContent value="tendencias" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Sección: Tendencias</h2>
-                <p className="text-gray-400 mb-6">Lo más buscado y deseado actualmente</p>
-                
-                {/* Grid de productos */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
-                  {/* Tarjeta con botón agregar - siempre primera */}
-                  <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
-                    onClick={() => openModal('tendencias')}
-                  >
-                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
-                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-4 h-4 text-gray-300" />
-                      </div>
-                      <p className="text-gray-400 text-[10px] text-center leading-tight">
-                        Añadir productos populares a la sección Tendencias
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Tarjetas de productos existentes */}
-                  {productos.tendencias.map((producto) => (
-                    <ProductoCard key={producto.id} producto={producto} />
-                  ))}
-                </div>
-              </div>
+              <AdminProductCarousel
+                titulo="Sección: Tendencias"
+                descripcion="Lo más buscado y deseado actualmente"
+                productos={productos.tendencias}
+                onAgregarProducto={() => openModal('tendencias')}
+                textoBotonAgregar="Añadir productos populares a la sección Tendencias"
+                ProductoCard={ProductoCard}
+              />
             </TabsContent>
 
             {/* Tab ¡No te lo Pierdas! */}
             <TabsContent value="no-te-lo-pierdas" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Sección: ¡No te lo Pierdas!</h2>
-                <p className="text-gray-400 mb-6">Oportunidades únicas que no puedes dejar pasar</p>
-                
-                {/* Grid de productos */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
-                  {/* Tarjeta con botón agregar - siempre primera */}
-                  <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
-                    onClick={() => openModal('no-te-lo-pierdas')}
-                  >
-                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
-                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-4 h-4 text-gray-300" />
-                      </div>
-                      <p className="text-gray-400 text-[10px] text-center leading-tight">
-                        Añadir productos especiales a la sección ¡No te lo Pierdas!
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Tarjetas de productos existentes */}
-                  {productos['no-te-lo-pierdas'].map((producto) => (
-                    <ProductoCard key={producto.id} producto={producto} />
-                  ))}
-                </div>
-              </div>
+              <AdminProductCarousel
+                titulo="Sección: ¡No te lo Pierdas!"
+                descripcion="Oportunidades únicas que no puedes dejar pasar"
+                productos={productos['no-te-lo-pierdas']}
+                onAgregarProducto={() => openModal('no-te-lo-pierdas')}
+                textoBotonAgregar="Añadir productos especiales a la sección ¡No te lo Pierdas!"
+                ProductoCard={ProductoCard}
+              />
             </TabsContent>
 
             {/* Tab Liquidaciones */}
             <TabsContent value="liquidaciones" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Sección: Liquidaciones</h2>
-                <p className="text-gray-400 mb-6">Precios increíbles en productos seleccionados</p>
-                
-                {/* Grid de productos */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 justify-items-center">
-                  {/* Tarjeta con botón agregar - siempre primera */}
-                  <div 
-                    className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-60 flex flex-col justify-center"
-                    onClick={() => openModal('liquidaciones')}
-                  >
-                    <div className="flex flex-col items-center justify-center space-y-2 h-full">
-                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                        <Plus className="w-4 h-4 text-gray-300" />
-                      </div>
-                      <p className="text-gray-400 text-[10px] text-center leading-tight">
-                        Añadir productos en liquidación a la sección Liquidaciones
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Tarjetas de productos existentes */}
-                  {productos.liquidaciones.map((producto) => (
-                    <ProductoCard key={producto.id} producto={producto} />
-                  ))}
-                </div>
-              </div>
+              <AdminProductCarousel
+                titulo="Sección: Liquidaciones"
+                descripcion="Precios increíbles en productos seleccionados"
+                productos={productos.liquidaciones}
+                onAgregarProducto={() => openModal('liquidaciones')}
+                textoBotonAgregar="Añadir productos en liquidación a la sección Liquidaciones"
+                ProductoCard={ProductoCard}
+              />
             </TabsContent>
           </div>
         </Tabs>
       </div>
+
+      {/* Footer */}
+      <footer className="relative text-white py-8 px-6 mt-12 shadow-2xl" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
+        <div className="container mx-auto">
+          {/* Fila superior - 2 filas de 2 columnas en móvil, 4 columnas en desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mb-8">
+
+            {/* Primera fila en móvil: Logo y Contacto */}
+            <div className="grid grid-cols-2 gap-6 md:gap-8 md:col-span-2">
+
+              {/* Columna 1 - Logo y descripción */}
+              <div className="text-left">
+                <div className="mb-3 md:mb-4">
+                  <h2 className="text-lg md:text-2xl font-bold text-white mb-0.5">Solo a un</h2>
+                  <h2 className="text-xl md:text-3xl font-bold text-yellow-300">CLICK</h2>
+                </div>
+                <p className="text-primary-foreground/80 text-xs md:text-sm leading-relaxed">
+                  Tu guía completa de comercios, servicios y eventos.
+                </p>
+                <p className="text-primary-foreground/80 text-xs md:text-sm leading-relaxed">
+                  Descubre todo lo que tu ciudad tiene para ofrecer.
+                </p>
+              </div>
+
+              {/* Columna 2 - Avisos Legales (intercambiado con Contacto) */}
+              <div className="text-left">
+                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
+                  Avisos Legales
+                </h3>
+                <div className="space-y-1 md:space-y-2">
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Privacidad
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <Cookie className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Cookies
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <RefreshCw className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Reembolso
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Seguridad
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <FileText className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Condiciones y términos
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Segunda fila en móvil: Información y Contacto */}
+            <div className="grid grid-cols-2 gap-6 md:gap-8 md:col-span-2">
+
+              {/* Columna 3 - Información */}
+              <div className="text-left">
+                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
+                  Información
+                </h3>
+                <div className="space-y-1 md:space-y-2">
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <Users className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Sobre Nosotros
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <Store className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Registra tu Negocio
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <HelpCircle className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Preguntas
+                  </a>
+                </div>
+              </div>
+
+              {/* Columna 4 - Contacto (intercambiado con Avisos Legales) */}
+              <div className="text-left">
+                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
+                  Contacto
+                </h3>
+                <div className="space-y-2 md:space-y-3">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <Mail className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    <span className="text-primary-foreground/80 text-xs">soloaunclick@gmail.com</span>
+                  </div>
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <Phone className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    <span className="text-primary-foreground/80 text-xs">+1 234 567 890</span>
+                  </div>
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    <span className="text-primary-foreground/80 text-xs">+1 234 567 891</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Fila inferior - Copyright */}
+          <div className="border-t border-primary-foreground/20 pt-4 md:pt-6">
+            <div className="text-center">
+              <p className="text-primary-foreground/90 text-xs md:text-sm mb-1 md:mb-2">
+                © 2025 Solo a un CLICK. Todos los derechos reservados.
+              </p>
+              <p className="text-primary-foreground/70 text-[10px] md:text-xs leading-relaxed max-w-2xl mx-auto">
+                Solo a un CLICK es una plataforma de exhibición. Los productos publicados son responsabilidad exclusiva de la tienda que los ofrece.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
