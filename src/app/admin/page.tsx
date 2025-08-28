@@ -1534,26 +1534,32 @@ export default function AdminPage() {
                 {(businessInfo.horarios.lunesViernes.inicio || businessInfo.horarios.sabado.inicio || businessInfo.horarios.domingo.inicio) && (
                   <div className="mt-3">
                     <h5 className="text-xs font-medium text-gray-400 mb-2">Horarios:</h5>
-                    <div className="flex gap-3 text-xs">
+                    <div className="flex gap-6 text-xs">
                       {businessInfo.horarios.lunesViernes.inicio && businessInfo.horarios.lunesViernes.fin && (
-                        <div>
-                          <span className="text-gray-300 font-medium text-[10px]">
-                            L-V {businessInfo.horarios.lunesViernes.inicio}-{businessInfo.horarios.lunesViernes.fin}
-                          </span>
+                        <div className="text-center">
+                          <div className="text-gray-300 font-medium text-[10px] mb-1">L-V</div>
+                          <div className="flex gap-1 text-gray-400 text-[9px]">
+                            <span>{businessInfo.horarios.lunesViernes.inicio}</span>
+                            <span>{businessInfo.horarios.lunesViernes.fin}</span>
+                          </div>
                         </div>
                       )}
                       {businessInfo.horarios.sabado.inicio && businessInfo.horarios.sabado.fin && (
-                        <div>
-                          <span className="text-gray-300 font-medium text-[10px]">
-                            S {businessInfo.horarios.sabado.inicio}-{businessInfo.horarios.sabado.fin}
-                          </span>
+                        <div className="text-center">
+                          <div className="text-gray-300 font-medium text-[10px] mb-1">S</div>
+                          <div className="flex gap-1 text-gray-400 text-[9px]">
+                            <span>{businessInfo.horarios.sabado.inicio}</span>
+                            <span>{businessInfo.horarios.sabado.fin}</span>
+                          </div>
                         </div>
                       )}
                       {businessInfo.horarios.domingo.inicio && businessInfo.horarios.domingo.fin && (
-                        <div>
-                          <span className="text-gray-300 font-medium text-[10px]">
-                            D {businessInfo.horarios.domingo.inicio}-{businessInfo.horarios.domingo.fin}
-                          </span>
+                        <div className="text-center">
+                          <div className="text-gray-300 font-medium text-[10px] mb-1">D</div>
+                          <div className="flex gap-1 text-gray-400 text-[9px]">
+                            <span>{businessInfo.horarios.domingo.inicio}</span>
+                            <span>{businessInfo.horarios.domingo.fin}</span>
+                          </div>
                         </div>
                       )}
                     </div>
