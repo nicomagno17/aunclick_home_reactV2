@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, X } from 'lucide-react'
+import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, X, MapPin } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminProductCarousel } from '@/components/admin/admin-product-carousel'
@@ -147,6 +147,23 @@ export default function AdminPage() {
           ...prev,
           [tipo]: [...currentTallas, talla]
         }
+      }
+    })
+  }
+
+  // Función de autollenado para información del negocio
+  const autollenarNegocio = () => {
+    setBusinessInfo({
+      nombre: 'Tienda Digital Premium',
+      direccion: 'Av. Principal 1234, Centro Comercial Plaza Norte, Local 15',
+      telefono: '+1 234 567 8900',
+      whatsapp: '+1 234 567 8901',
+      email: 'contacto@tiendadigital.com',
+      responsable: 'María José García Martínez',
+      horarios: {
+        lunesViernes: { inicio: '09:00', fin: '19:00' },
+        sabado: { inicio: '10:00', fin: '18:00' },
+        domingo: { inicio: '11:00', fin: '16:00' }
       }
     })
   }
@@ -546,7 +563,15 @@ export default function AdminPage() {
         <div className="px-6">
           <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 max-w-4xl mx-auto">
             <h2 className="text-xl font-semibold text-white mb-4">Información General</h2>
-            <p className="text-gray-400 mb-6">Ingresa los datos básicos del negocio</p>
+            <div className="flex justify-between items-center mb-6">
+              <p className="text-gray-400">Ingresa los datos básicos del negocio</p>
+              <Button 
+                onClick={autollenarNegocio}
+                className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 text-sm"
+              >
+                Auto Llenar Datos
+              </Button>
+            </div>
             
             {/* Formulario único */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1369,124 +1394,105 @@ export default function AdminPage() {
                   />
                 </div>
 
-                {/* Información del Negocio */}
+                {/* Información del Negocio - SIN TÍTULO */}
                 <div className="bg-gray-700 rounded-lg p-4 space-y-3">
-                  <h3 className="text-sm font-semibold text-white border-b border-gray-600 pb-2">
-                    Información del Negocio
-                  </h3>
-
-                  {/* Nombre del Negocio */}
-                  {businessInfo.nombre && (
-                    <div>
-                      <h4 className="text-sm font-medium text-white">{businessInfo.nombre}</h4>
-                    </div>
-                  )}
-
-                  {/* Teléfono y WhatsApp en la misma fila */}
-                  {(businessInfo.telefono || businessInfo.whatsapp) && (
-                    <div className="flex gap-4">
+                  {/* Iconos de Contacto Clickeables en una sola línea */}
+                  {(businessInfo.telefono || businessInfo.whatsapp || businessInfo.email || businessInfo.direccion) && (
+                    <div className="flex gap-3 justify-center">
+                      {/* Icono de Teléfono Clickeable */}
                       {businessInfo.telefono && (
-                        <div className="flex items-center gap-1">
-                          <Phone className="w-3 h-3 text-yellow-400" />
-                          <span className="text-xs text-gray-300">{businessInfo.telefono}</span>
-                        </div>
+                        <a 
+                          href={`tel:${businessInfo.telefono}`}
+                          className="flex items-center justify-center w-8 h-8 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors cursor-pointer"
+                          title={`Llamar a ${businessInfo.telefono}`}
+                        >
+                          <Phone className="w-4 h-4 text-white" />
+                        </a>
                       )}
+                      
+                      {/* Icono de WhatsApp Clickeable */}
                       {businessInfo.whatsapp && (
-                        <div className="flex items-center gap-1">
-                          <MessageCircle className="w-3 h-3 text-green-400" />
-                          <span className="text-xs text-gray-300">{businessInfo.whatsapp}</span>
-                        </div>
+                        <a 
+                          href={`https://wa.me/${businessInfo.whatsapp.replace(/\D/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center w-8 h-8 bg-green-600 hover:bg-green-500 rounded-full transition-colors cursor-pointer"
+                          title={`Enviar WhatsApp a ${businessInfo.whatsapp}`}
+                        >
+                          <MessageCircle className="w-4 h-4 text-white" />
+                        </a>
                       )}
-                    </div>
-                  )}
-
-                  {/* Dirección */}
-                  {businessInfo.direccion && (
-                    <div className="flex items-start gap-1">
-                      <span className="text-xs text-gray-300">
-                        📍 {businessInfo.direccion}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Email */}
-                  {businessInfo.email && (
-                    <div className="flex items-center gap-1">
-                      <Mail className="w-3 h-3 text-blue-400" />
-                      <span className="text-xs text-gray-300">{businessInfo.email}</span>
-                    </div>
-                  )}
-
-                  {/* Horarios de Atención */}
-                  {(businessInfo.horarios.lunesViernes.inicio || businessInfo.horarios.sabado.inicio || businessInfo.horarios.domingo.inicio) && (
-                    <div>
-                      <h5 className="text-xs font-medium text-gray-400 mb-1">Horarios de Atención:</h5>
-                      <div className="space-y-1">
-                        {businessInfo.horarios.lunesViernes.inicio && businessInfo.horarios.lunesViernes.fin && (
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-gray-400" />
-                            <span className="text-xs text-gray-300">
-                              Lun-Vie: {businessInfo.horarios.lunesViernes.inicio} - {businessInfo.horarios.lunesViernes.fin}
-                            </span>
-                          </div>
-                        )}
-                        {businessInfo.horarios.sabado.inicio && businessInfo.horarios.sabado.fin && (
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-gray-400" />
-                            <span className="text-xs text-gray-300">
-                              Sábado: {businessInfo.horarios.sabado.inicio} - {businessInfo.horarios.sabado.fin}
-                            </span>
-                          </div>
-                        )}
-                        {businessInfo.horarios.domingo.inicio && businessInfo.horarios.domingo.fin && (
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-gray-400" />
-                            <span className="text-xs text-gray-300">
-                              Domingo: {businessInfo.horarios.domingo.inicio} - {businessInfo.horarios.domingo.fin}
-                            </span>
-                          </div>
-                        )}
-                      </div>
+                      
+                      {/* Icono de Email Clickeable */}
+                      {businessInfo.email && (
+                        <a 
+                          href={`mailto:${businessInfo.email}`}
+                          className="flex items-center justify-center w-8 h-8 bg-purple-600 hover:bg-purple-500 rounded-full transition-colors cursor-pointer"
+                          title={`Enviar email a ${businessInfo.email}`}
+                        >
+                          <Mail className="w-4 h-4 text-white" />
+                        </a>
+                      )}
+                      
+                      {/* Icono de Ubicación Clickeable */}
+                      {businessInfo.direccion && (
+                        <a 
+                          href={`https://www.mapcity.com/search?q=${encodeURIComponent(businessInfo.direccion)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center w-8 h-8 bg-red-600 hover:bg-red-500 rounded-full transition-colors cursor-pointer"
+                          title={`Ver ubicación: ${businessInfo.direccion}`}
+                        >
+                          <MapPin className="w-4 h-4 text-white" />
+                        </a>
+                      )}
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Columna Derecha - Información (50%) */}
-              <div className="col-span-1 space-y-3">
-                {/* Título del producto - más pequeño */}
-                <h2 className="text-lg font-bold text-white leading-tight">
+              <div className="col-span-1 space-y-2">
+                {/* Nombre del Negocio - ARRIBA DEL PRODUCTO CON SUBRAYADO */}
+                {businessInfo.nombre && (
+                  <h3 className="text-sm font-medium text-gray-300 underline decoration-gray-500">
+                    {businessInfo.nombre}
+                  </h3>
+                )}
+
+                {/* Título del producto */}
+                <h2 className="text-lg font-bold text-white leading-tight mb-1">
                   {selectedProducto.nombre}
                 </h2>
 
-                {/* Categoría y Subcategoría - más pequeño */}
-                <div className="flex items-center gap-2 text-xs text-gray-400">
+                {/* Categoría y Subcategoría - más pequeño y más cerca */}
+                <div className="flex items-center gap-2 text-[10px] text-gray-400 mb-2">
                   <span>{getCategoriaLabel(selectedProducto.categoria)}</span>
                   <span>/</span>
                   <span>{getSubcategoriaLabel(selectedProducto.subcategoria)}</span>
                 </div>
 
-                {/* Descripción */}
-                <div className="space-y-2">
-                  <p className="text-gray-300 text-sm leading-relaxed text-justify">
+                {/* Descripción - más pequeña y líneas más juntas */}
+                <div className="mb-2">
+                  <p className="text-gray-300 text-xs leading-snug text-justify">
                     {selectedProducto.descripcion || 'Sin descripción disponible.'}
                   </p>
                 </div>
 
                 {/* Precios - más pequeños */}
-                <div className="flex items-center gap-3">
-                  <span className="text-lg font-bold text-purple-400">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-base font-bold text-purple-400">
                     ${selectedProducto.precioActual}
                   </span>
                   {selectedProducto.precioAnterior && (
-                    <span className="text-sm text-gray-400 line-through">
+                    <span className="text-xs text-gray-400 line-through">
                       ${selectedProducto.precioAnterior}
                     </span>
                   )}
                 </div>
 
                 {/* Información adicional del producto - sin título y más pequeña */}
-                <div className="space-y-2 pt-3 border-t border-gray-700">
+                <div className="space-y-2 pt-2 border-t border-gray-700">
                   <div className="space-y-1 text-xs">
                     {/* Tallas de Calzado */}
                     {selectedProducto.tallasCalzado && selectedProducto.tallasCalzado.length > 0 && (
@@ -1529,6 +1535,36 @@ export default function AdminPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Horarios de Atención - Movidos a la columna derecha */}
+                {(businessInfo.horarios.lunesViernes.inicio || businessInfo.horarios.sabado.inicio || businessInfo.horarios.domingo.inicio) && (
+                  <div className="mt-3">
+                    <h5 className="text-xs font-medium text-gray-400 mb-2">Horarios:</h5>
+                    <div className="flex gap-3 text-xs">
+                      {businessInfo.horarios.lunesViernes.inicio && businessInfo.horarios.lunesViernes.fin && (
+                        <div>
+                          <span className="text-gray-300 font-medium text-[10px]">
+                            L-V {businessInfo.horarios.lunesViernes.inicio}-{businessInfo.horarios.lunesViernes.fin}
+                          </span>
+                        </div>
+                      )}
+                      {businessInfo.horarios.sabado.inicio && businessInfo.horarios.sabado.fin && (
+                        <div>
+                          <span className="text-gray-300 font-medium text-[10px]">
+                            S {businessInfo.horarios.sabado.inicio}-{businessInfo.horarios.sabado.fin}
+                          </span>
+                        </div>
+                      )}
+                      {businessInfo.horarios.domingo.inicio && businessInfo.horarios.domingo.fin && (
+                        <div>
+                          <span className="text-gray-300 font-medium text-[10px]">
+                            D {businessInfo.horarios.domingo.inicio}-{businessInfo.horarios.domingo.fin}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
