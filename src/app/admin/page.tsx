@@ -54,6 +54,21 @@ export default function AdminPage() {
   // Estado para el popup de información del producto
   const [selectedProducto, setSelectedProducto] = useState<any | null>(null)
   
+  // Estado para información del negocio
+  const [businessInfo, setBusinessInfo] = useState({
+    nombre: '',
+    direccion: '',
+    telefono: '',
+    whatsapp: '',
+    email: '',
+    responsable: '',
+    horarios: {
+      lunesViernes: { inicio: '', fin: '' },
+      sabado: { inicio: '', fin: '' },
+      domingo: { inicio: '', fin: '' }
+    }
+  })
+  
   const openModal = (section: string) => {
     setSelectedSection(section)
     // Limpiar todos los campos al abrir el modal
@@ -87,6 +102,31 @@ export default function AdminPage() {
       ...prev,
       [field]: value
     }))
+  }
+
+  // Función para manejar cambios en la información del negocio
+  const handleBusinessInfoChange = (field: string, value: string) => {
+    if (field.includes('.')) {
+      const [parent, child, subfield] = field.split('.')
+      setBusinessInfo(prev => {
+        const newInfo = { ...prev }
+        if (parent === 'horarios') {
+          newInfo.horarios = {
+            ...prev.horarios,
+            [child]: {
+              ...prev.horarios[child as keyof typeof prev.horarios],
+              [subfield]: value
+            }
+          }
+        }
+        return newInfo
+      })
+    } else {
+      setBusinessInfo(prev => ({
+        ...prev,
+        [field]: value
+      }))
+    }
   }
 
   // Función para manejar selección múltiple de tallas
@@ -516,6 +556,8 @@ export default function AdminPage() {
                   <Input 
                     id="entidad-nombre" 
                     placeholder="Ingresa el nombre del negocio"
+                    value={businessInfo.nombre}
+                    onChange={(e) => handleBusinessInfoChange('nombre', e.target.value)}
                     className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                   />
                 </div>
@@ -525,6 +567,8 @@ export default function AdminPage() {
                   <Input 
                     id="entidad-direccion" 
                     placeholder="Ingresa la dirección completa"
+                    value={businessInfo.direccion}
+                    onChange={(e) => handleBusinessInfoChange('direccion', e.target.value)}
                     className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                   />
                 </div>
@@ -536,6 +580,8 @@ export default function AdminPage() {
                     <Input 
                       id="entidad-telefono" 
                       placeholder="Ingresa el número"
+                      value={businessInfo.telefono}
+                      onChange={(e) => handleBusinessInfoChange('telefono', e.target.value)}
                       className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                     />
                   </div>
@@ -545,6 +591,8 @@ export default function AdminPage() {
                     <Input 
                       id="entidad-whatsapp" 
                       placeholder="Ingresa el número"
+                      value={businessInfo.whatsapp}
+                      onChange={(e) => handleBusinessInfoChange('whatsapp', e.target.value)}
                       className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                     />
                   </div>
@@ -556,6 +604,8 @@ export default function AdminPage() {
                     id="entidad-email" 
                     type="email"
                     placeholder="Ingresa el correo electrónico"
+                    value={businessInfo.email}
+                    onChange={(e) => handleBusinessInfoChange('email', e.target.value)}
                     className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                   />
                 </div>
@@ -567,6 +617,8 @@ export default function AdminPage() {
                   <Input 
                     id="entidad-responsable" 
                     placeholder="Ingresa el nombre del responsable del negocio"
+                    value={businessInfo.responsable}
+                    onChange={(e) => handleBusinessInfoChange('responsable', e.target.value)}
                     className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                   />
                 </div>
@@ -586,12 +638,16 @@ export default function AdminPage() {
                         <Input 
                           id="horario-lv-inicio"
                           type="time"
+                          value={businessInfo.horarios.lunesViernes.inicio}
+                          onChange={(e) => handleBusinessInfoChange('horarios.lunesViernes.inicio', e.target.value)}
                           className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
                         />
                         <span className="text-gray-400">a</span>
                         <Input 
                           id="horario-lv-fin"
                           type="time"
+                          value={businessInfo.horarios.lunesViernes.fin}
+                          onChange={(e) => handleBusinessInfoChange('horarios.lunesViernes.fin', e.target.value)}
                           className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
                         />
                       </div>
@@ -604,12 +660,16 @@ export default function AdminPage() {
                         <Input 
                           id="horario-sabado-inicio"
                           type="time"
+                          value={businessInfo.horarios.sabado.inicio}
+                          onChange={(e) => handleBusinessInfoChange('horarios.sabado.inicio', e.target.value)}
                           className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
                         />
                         <span className="text-gray-400">a</span>
                         <Input 
                           id="horario-sabado-fin"
                           type="time"
+                          value={businessInfo.horarios.sabado.fin}
+                          onChange={(e) => handleBusinessInfoChange('horarios.sabado.fin', e.target.value)}
                           className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
                         />
                       </div>
@@ -622,12 +682,16 @@ export default function AdminPage() {
                         <Input 
                           id="horario-domingo-inicio"
                           type="time"
+                          value={businessInfo.horarios.domingo.inicio}
+                          onChange={(e) => handleBusinessInfoChange('horarios.domingo.inicio', e.target.value)}
                           className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
                         />
                         <span className="text-gray-400">a</span>
                         <Input 
                           id="horario-domingo-fin"
                           type="time"
+                          value={businessInfo.horarios.domingo.fin}
+                          onChange={(e) => handleBusinessInfoChange('horarios.domingo.fin', e.target.value)}
                           className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
                         />
                       </div>
@@ -1294,14 +1358,97 @@ export default function AdminPage() {
 
           {selectedProducto && (
             <div className="grid grid-cols-2 gap-6 p-6">
-              {/* Columna Izquierda - Imagen (50%) */}
-              <div className="col-span-1">
+              {/* Columna Izquierda - Imagen y Info del Negocio (50%) */}
+              <div className="col-span-1 space-y-4">
+                {/* Imagen del Producto */}
                 <div className="aspect-square bg-white rounded-lg overflow-hidden">
                   <img
                     src={selectedProducto.imagen}
                     alt={selectedProducto.nombre}
                     className="w-full h-full object-cover"
                   />
+                </div>
+
+                {/* Información del Negocio */}
+                <div className="bg-gray-700 rounded-lg p-4 space-y-3">
+                  <h3 className="text-sm font-semibold text-white border-b border-gray-600 pb-2">
+                    Información del Negocio
+                  </h3>
+
+                  {/* Nombre del Negocio */}
+                  {businessInfo.nombre && (
+                    <div>
+                      <h4 className="text-sm font-medium text-white">{businessInfo.nombre}</h4>
+                    </div>
+                  )}
+
+                  {/* Teléfono y WhatsApp en la misma fila */}
+                  {(businessInfo.telefono || businessInfo.whatsapp) && (
+                    <div className="flex gap-4">
+                      {businessInfo.telefono && (
+                        <div className="flex items-center gap-1">
+                          <Phone className="w-3 h-3 text-yellow-400" />
+                          <span className="text-xs text-gray-300">{businessInfo.telefono}</span>
+                        </div>
+                      )}
+                      {businessInfo.whatsapp && (
+                        <div className="flex items-center gap-1">
+                          <MessageCircle className="w-3 h-3 text-green-400" />
+                          <span className="text-xs text-gray-300">{businessInfo.whatsapp}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Dirección */}
+                  {businessInfo.direccion && (
+                    <div className="flex items-start gap-1">
+                      <span className="text-xs text-gray-300">
+                        📍 {businessInfo.direccion}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Email */}
+                  {businessInfo.email && (
+                    <div className="flex items-center gap-1">
+                      <Mail className="w-3 h-3 text-blue-400" />
+                      <span className="text-xs text-gray-300">{businessInfo.email}</span>
+                    </div>
+                  )}
+
+                  {/* Horarios de Atención */}
+                  {(businessInfo.horarios.lunesViernes.inicio || businessInfo.horarios.sabado.inicio || businessInfo.horarios.domingo.inicio) && (
+                    <div>
+                      <h5 className="text-xs font-medium text-gray-400 mb-1">Horarios de Atención:</h5>
+                      <div className="space-y-1">
+                        {businessInfo.horarios.lunesViernes.inicio && businessInfo.horarios.lunesViernes.fin && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-gray-400" />
+                            <span className="text-xs text-gray-300">
+                              Lun-Vie: {businessInfo.horarios.lunesViernes.inicio} - {businessInfo.horarios.lunesViernes.fin}
+                            </span>
+                          </div>
+                        )}
+                        {businessInfo.horarios.sabado.inicio && businessInfo.horarios.sabado.fin && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-gray-400" />
+                            <span className="text-xs text-gray-300">
+                              Sábado: {businessInfo.horarios.sabado.inicio} - {businessInfo.horarios.sabado.fin}
+                            </span>
+                          </div>
+                        )}
+                        {businessInfo.horarios.domingo.inicio && businessInfo.horarios.domingo.fin && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-gray-400" />
+                            <span className="text-xs text-gray-300">
+                              Domingo: {businessInfo.horarios.domingo.inicio} - {businessInfo.horarios.domingo.fin}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
