@@ -1379,8 +1379,8 @@ export default function AdminPage() {
       </div>
 
       {/* Container Analytics */}
-      <div className="px-6 mb-8">
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+      <div className="px-6 mb-8 relative">
+        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 blur-[2px]">
           {/* Fila Superior - 3 Columnas */}
           <div className="grid grid-cols-3 gap-6 mb-8">
             {/* Columna 1 - 4 KPIs en 2 filas */}
@@ -1546,6 +1546,14 @@ export default function AdminPage() {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+        
+        {/* Overlay Message */}
+        <div className="absolute inset-0 flex items-center justify-center z-10">
+          <div className="bg-white border-2 border-gray-400 rounded-lg px-4 py-4 shadow-lg text-center max-w-xs">
+            <h3 className="text-lg font-bold text-gray-800 mb-2">¡Próximamente!</h3>
+            <p className="text-sm text-gray-600">Panel de análisis avanzado para monitorear el rendimiento y visualización de tus productos en tiempo real.</p>
           </div>
         </div>
       </div>
