@@ -1558,6 +1558,114 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {/* Separador entre secciones */}
+      <div className="border-t border-gray-700 my-8"></div>
+
+      {/* Sección: Banner publicitario */}
+      <div className="px-6 py-8">
+        <h1 className="text-3xl font-bold text-white mb-2">Banner publicitario</h1>
+        <p className="text-gray-400">Gestión de banners promocionales</p>
+      </div>
+
+      {/* Container Banner publicitario */}
+      <div className="px-6 mb-8">
+        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+            {/* Columna 1 - Banner 1 */}
+            <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
+              {/* Número identificador */}
+              <div className="absolute -top-2 -left-2 bg-purple-600 text-white rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold z-10">
+                1
+              </div>
+              
+              {/* Marco rectangular para imagen */}
+              <div className="bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer">
+                <div className="text-center">
+                  <div className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2">+</div>
+                  <p className="text-gray-400 text-xs md:text-sm">Agregar producto</p>
+                </div>
+              </div>
+              
+              {/* Precios y botón responsive */}
+              <div className="space-y-2 md:space-y-0 md:flex md:items-end md:justify-between">
+                {/* Fila de precios */}
+                <div className="flex gap-2 md:gap-4 justify-center md:justify-start">
+                  <div className="text-center">
+                    <label className="block text-xs text-gray-400 mb-1">Precio actual</label>
+                    <input 
+                      type="text" 
+                      placeholder="$0.00" 
+                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <label className="block text-xs text-gray-400 mb-1">Precio anterior</label>
+                    <input 
+                      type="text" 
+                      placeholder="$0.00" 
+                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                    />
+                  </div>
+                </div>
+                
+                {/* Botón debajo en mobile, a la derecha en desktop */}
+                <div className="flex justify-center md:justify-end">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-3 md:px-6 py-1 md:py-2 text-xs md:text-base rounded transition-colors">
+                    Agregar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Columna 2 - Banner 2 */}
+            <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
+              {/* Número identificador */}
+              <div className="absolute -top-2 -left-2 bg-purple-600 text-white rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold z-10">
+                2
+              </div>
+              
+              {/* Marco rectangular para imagen */}
+              <div className="bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer">
+                <div className="text-center">
+                  <div className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2">+</div>
+                  <p className="text-gray-400 text-xs md:text-sm">Agregar producto</p>
+                </div>
+              </div>
+              
+              {/* Precios y botón responsive */}
+              <div className="space-y-2 md:space-y-0 md:flex md:items-end md:justify-between">
+                {/* Fila de precios */}
+                <div className="flex gap-2 md:gap-4 justify-center md:justify-start">
+                  <div className="text-center">
+                    <label className="block text-xs text-gray-400 mb-1">Precio actual</label>
+                    <input 
+                      type="text" 
+                      placeholder="$0.00" 
+                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <label className="block text-xs text-gray-400 mb-1">Precio anterior</label>
+                    <input 
+                      type="text" 
+                      placeholder="$0.00" 
+                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                    />
+                  </div>
+                </div>
+                
+                {/* Botón debajo en mobile, a la derecha en desktop */}
+                <div className="flex justify-center md:justify-end">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-3 md:px-6 py-1 md:py-2 text-xs md:text-base rounded transition-colors">
+                    Agregar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Popup de Información del Producto */}
       <Dialog open={selectedProducto !== null} onOpenChange={(open) => !open && setSelectedProducto(null)}>
         <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700 text-white">
