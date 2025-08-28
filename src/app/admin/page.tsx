@@ -246,12 +246,12 @@ export default function AdminPage() {
   const ProductoCard = ({ producto }: { producto: any }) => {
     return (
       <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow w-44 h-64">
-        {/* Parte superior con imagen - más compacta */}
-        <div className="h-40 bg-white flex items-center justify-center p-1">
+        {/* Parte superior con imagen - ocupa todo el espacio */}
+        <div className="h-40 bg-white flex items-center justify-center overflow-hidden">
           <img 
             src={producto.imagen} 
             alt={producto.nombre}
-            className="max-w-full max-h-full object-contain"
+            className="w-full h-full object-cover"
           />
         </div>
         
@@ -1193,11 +1193,11 @@ export default function AdminPage() {
             <div className="grid grid-cols-2 gap-6 p-6">
               {/* Columna Izquierda - Imagen (50%) */}
               <div className="col-span-1">
-                <div className="aspect-square bg-white rounded-lg flex items-center justify-center p-4">
+                <div className="aspect-square bg-white rounded-lg overflow-hidden">
                   <img
                     src={selectedProducto.imagen}
                     alt={selectedProducto.nombre}
-                    className="max-w-full max-h-full object-contain"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </div>
