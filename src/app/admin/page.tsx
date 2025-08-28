@@ -245,7 +245,7 @@ export default function AdminPage() {
   // Componente de tarjeta de producto
   const ProductoCard = ({ producto }: { producto: any }) => {
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow w-44 h-72">
+      <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow w-44 h-64">
         {/* Parte superior con imagen - más compacta */}
         <div className="h-40 bg-white flex items-center justify-center p-1">
           <img 
@@ -1190,9 +1190,9 @@ export default function AdminPage() {
           </button>
 
           {selectedProducto && (
-            <div className="grid grid-cols-5 gap-6 p-6">
-              {/* Columna Izquierda - Imagen (3/5) */}
-              <div className="col-span-3">
+            <div className="grid grid-cols-2 gap-6 p-6">
+              {/* Columna Izquierda - Imagen (50%) */}
+              <div className="col-span-1">
                 <div className="aspect-square bg-white rounded-lg flex items-center justify-center p-4">
                   <img
                     src={selectedProducto.imagen}
@@ -1202,15 +1202,15 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Columna Derecha - Información (2/5) */}
-              <div className="col-span-2 space-y-4">
-                {/* Título del producto */}
-                <h2 className="text-2xl font-bold text-white leading-tight">
+              {/* Columna Derecha - Información (50%) */}
+              <div className="col-span-1 space-y-3">
+                {/* Título del producto - más pequeño */}
+                <h2 className="text-lg font-bold text-white leading-tight">
                   {selectedProducto.nombre}
                 </h2>
 
-                {/* Categoría y Subcategoría */}
-                <div className="flex items-center gap-2 text-sm text-gray-400">
+                {/* Categoría y Subcategoría - más pequeño */}
+                <div className="flex items-center gap-2 text-xs text-gray-400">
                   <span>{getCategoriaLabel(selectedProducto.categoria)}</span>
                   <span>/</span>
                   <span>{getSubcategoriaLabel(selectedProducto.subcategoria)}</span>
@@ -1223,29 +1223,25 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                {/* Precios */}
-                <div className="flex items-center gap-4">
-                  <span className="text-2xl font-bold text-purple-400">
+                {/* Precios - más pequeños */}
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-bold text-purple-400">
                     ${selectedProducto.precioActual}
                   </span>
                   {selectedProducto.precioAnterior && (
-                    <span className="text-lg text-gray-400 line-through">
+                    <span className="text-sm text-gray-400 line-through">
                       ${selectedProducto.precioAnterior}
                     </span>
                   )}
                 </div>
 
-                {/* Información adicional del producto */}
-                <div className="space-y-3 pt-4 border-t border-gray-700">
-                  <h3 className="text-lg font-semibold text-white mb-3">
-                    Tu producto necesita mostrar:
-                  </h3>
-                  
-                  <div className="space-y-2 text-sm">
+                {/* Información adicional del producto - sin título y más pequeña */}
+                <div className="space-y-2 pt-3 border-t border-gray-700">
+                  <div className="space-y-1 text-xs">
                     {/* Tallas */}
                     {selectedProducto.tallas && selectedProducto.tallas !== 'No aplica' && (
                       <div className="flex items-start gap-2">
-                        <span className="text-gray-400 min-w-[80px]">Tallas:</span>
+                        <span className="text-gray-400 min-w-[60px]">Tallas:</span>
                         <span className="text-gray-300">{selectedProducto.tallas}</span>
                       </div>
                     )}
@@ -1253,7 +1249,7 @@ export default function AdminPage() {
                     {/* Género */}
                     {selectedProducto.genero && selectedProducto.genero !== 'generico' && (
                       <div className="flex items-start gap-2">
-                        <span className="text-gray-400 min-w-[80px]">Género:</span>
+                        <span className="text-gray-400 min-w-[60px]">Género:</span>
                         <span className="text-gray-300 capitalize">{selectedProducto.genero}</span>
                       </div>
                     )}
@@ -1261,7 +1257,7 @@ export default function AdminPage() {
                     {/* Medidas */}
                     {selectedProducto.medidas && (
                       <div className="flex items-start gap-2">
-                        <span className="text-gray-400 min-w-[80px]">Medidas:</span>
+                        <span className="text-gray-400 min-w-[60px]">Medidas:</span>
                         <span className="text-gray-300">
                           {selectedProducto.medidas} {selectedProducto.unidadMedida || 'cm'}
                         </span>
@@ -1270,7 +1266,7 @@ export default function AdminPage() {
                     
                     {/* Tipo de Negocio */}
                     <div className="flex items-start gap-2">
-                      <span className="text-gray-400 min-w-[80px]">Tipo:</span>
+                      <span className="text-gray-400 min-w-[60px]">Tipo:</span>
                       <span className="text-gray-300 capitalize">{selectedProducto.tipoNegocio}</span>
                     </div>
                   </div>
