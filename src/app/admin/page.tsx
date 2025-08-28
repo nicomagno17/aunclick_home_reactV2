@@ -1498,7 +1498,7 @@ export default function AdminPage() {
                     {selectedProducto.tallasCalzado && selectedProducto.tallasCalzado.length > 0 && (
                       <div className="flex items-start gap-2">
                         <span className="text-gray-400 min-w-[80px]">Tallas Calzado:</span>
-                        <span className="text-gray-300">{selectedProducto.tallasCalzado.join(', ')}</span>
+                        <span className="text-gray-300 text-[10px]">{selectedProducto.tallasCalzado.join(', ')}</span>
                       </div>
                     )}
                     
@@ -1506,7 +1506,7 @@ export default function AdminPage() {
                     {selectedProducto.tallasRopa && selectedProducto.tallasRopa.length > 0 && (
                       <div className="flex items-start gap-2">
                         <span className="text-gray-400 min-w-[80px]">Tallas Ropa:</span>
-                        <span className="text-gray-300">{selectedProducto.tallasRopa.join(', ')}</span>
+                        <span className="text-gray-300 text-[10px]">{selectedProducto.tallasRopa.join(', ')}</span>
                       </div>
                     )}
                     
@@ -1527,12 +1527,6 @@ export default function AdminPage() {
                         </span>
                       </div>
                     )}
-                    
-                    {/* Tipo de Negocio */}
-                    <div className="flex items-start gap-2">
-                      <span className="text-gray-400 min-w-[60px]">Tipo:</span>
-                      <span className="text-gray-300 capitalize">{selectedProducto.tipoNegocio}</span>
-                    </div>
                   </div>
                 </div>
 
