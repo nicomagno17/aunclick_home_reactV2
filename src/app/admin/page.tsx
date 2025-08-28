@@ -1369,6 +1369,187 @@ export default function AdminPage() {
         </Tabs>
       </div>
 
+      {/* Separador entre secciones */}
+      <div className="border-t border-gray-700 my-8"></div>
+
+      {/* Sección: Analytics Dashboard */}
+      <div className="px-6 py-8">
+        <h1 className="text-3xl font-bold text-white mb-2">Analytics Dashboard</h1>
+        <p className="text-gray-400">Estadísticas y métricas del rendimiento</p>
+      </div>
+
+      {/* Container Analytics */}
+      <div className="px-6 mb-8">
+        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+          {/* Fila Superior - 3 Columnas */}
+          <div className="grid grid-cols-3 gap-6 mb-8">
+            {/* Columna 1 - 4 KPIs en 2 filas */}
+            <div className="space-y-4">
+              {/* Primera fila de KPIs */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Visualizaciones Hoy</h3>
+                  <p className="text-2xl font-bold text-white">1.2K</p>
+                  <p className="text-xs text-green-400">+15% vs ayer</p>
+                </div>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Visitantes</h3>
+                  <p className="text-2xl font-bold text-white">850</p>
+                  <p className="text-xs text-blue-400">+8% vs ayer</p>
+                </div>
+              </div>
+              
+              {/* Segunda fila de KPIs */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Interacciones</h3>
+                  <p className="text-2xl font-bold text-white">156</p>
+                  <p className="text-xs text-green-400">+12% vs ayer</p>
+                </div>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Consultas</h3>
+                  <p className="text-2xl font-bold text-white">43</p>
+                  <p className="text-xs text-green-400">+5% vs ayer</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Columna 2 - KPI con Gráfico de Barras Verticales */}
+            <div className="bg-gray-700 rounded-lg p-4 flex flex-col">
+              <h3 className="text-sm font-medium text-white mb-2">Visualizaciones del Mes</h3>
+              
+              {/* Container del gráfico que ocupa todo el espacio disponible */}
+              <div className="flex-1 flex flex-col justify-end">
+                <div className="flex items-end justify-center space-x-2 h-32">
+                  {/* Barra Semana 1 */}
+                  <div className="flex flex-col items-center h-full justify-end">
+                    <div className="bg-blue-500 w-16 rounded-t-sm flex items-end justify-center pb-1" style={{height: '60%'}}>
+                      <span className="text-white text-xs font-semibold">230</span>
+                    </div>
+                    <span className="text-xs text-gray-300 mt-2">S1</span>
+                  </div>
+                  
+                  {/* Barra Semana 2 */}
+                  <div className="flex flex-col items-center h-full justify-end">
+                    <div className="bg-green-500 w-16 rounded-t-sm flex items-end justify-center pb-1" style={{height: '80%'}}>
+                      <span className="text-white text-xs font-semibold">310</span>
+                    </div>
+                    <span className="text-xs text-gray-300 mt-2">S2</span>
+                  </div>
+                  
+                  {/* Barra Semana 3 */}
+                  <div className="flex flex-col items-center h-full justify-end">
+                    <div className="bg-purple-500 w-16 rounded-t-sm flex items-end justify-center pb-1" style={{height: '100%'}}>
+                      <span className="text-white text-xs font-semibold">380</span>
+                    </div>
+                    <span className="text-xs text-gray-300 mt-2">S3</span>
+                  </div>
+                  
+                  {/* Barra Semana 4 */}
+                  <div className="flex flex-col items-center h-full justify-end">
+                    <div className="bg-orange-500 w-16 rounded-t-sm flex items-end justify-center pb-1" style={{height: '70%'}}>
+                      <span className="text-white text-xs font-semibold">280</span>
+                    </div>
+                    <span className="text-xs text-gray-300 mt-2">S4</span>
+                  </div>
+                </div>
+                
+                {/* Información en la parte inferior */}
+                <div className="text-center mt-3">
+                  <span className="text-xs text-green-400">+22% vs mes anterior</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Columna 3 - 4 KPIs en 2 filas (datos distintos) */}
+            <div className="space-y-4">
+              {/* Primera fila de KPIs */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Productos Mostrados</h3>
+                  <p className="text-2xl font-bold text-white">{Object.values(productos).flat().length}</p>
+                  <p className="text-xs text-blue-400">de 7 máximo</p>
+                </div>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Negocios Registrados</h3>
+                  <p className="text-2xl font-bold text-white">28</p>
+                  <p className="text-xs text-green-400">+3 esta semana</p>
+                </div>
+              </div>
+              
+              {/* Segunda fila de KPIs */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Tiempo Promedio</h3>
+                  <p className="text-2xl font-bold text-white">2.5m</p>
+                  <p className="text-xs text-yellow-400">en vitrina</p>
+                </div>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Alcance</h3>
+                  <p className="text-2xl font-bold text-white">68%</p>
+                  <p className="text-xs text-green-400">+5% vs ayer</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Fila Inferior - 3 Columnas */}
+          <div className="grid grid-cols-3 gap-6">
+            {/* Columna 1 - 3 KPIs de Pestañas (primeras 3) */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
+                <h3 className="text-xs font-medium text-gray-300 mb-2">Destacados</h3>
+                <p className="text-2xl font-bold text-white">{productos.destacados.length}</p>
+              </div>
+              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
+                <h3 className="text-xs font-medium text-gray-300 mb-2">Ofertas</h3>
+                <p className="text-2xl font-bold text-white">{productos.ofertas.length}</p>
+              </div>
+              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
+                <h3 className="text-xs font-medium text-gray-300 mb-2">Novedades</h3>
+                <p className="text-2xl font-bold text-white">{productos.novedades.length}</p>
+              </div>
+            </div>
+
+            {/* Columna 2 - 3 KPIs de Pestañas (siguientes 3) */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
+                <h3 className="text-xs font-medium text-gray-300 mb-2">Tendencias</h3>
+                <p className="text-2xl font-bold text-white">{productos.tendencias.length}</p>
+              </div>
+              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
+                <h3 className="text-xs font-medium text-gray-300 mb-2">No te lo Pierdas</h3>
+                <p className="text-2xl font-bold text-white">{productos['no-te-lo-pierdas'].length}</p>
+              </div>
+              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
+                <h3 className="text-xs font-medium text-gray-300 mb-2">Liquidaciones</h3>
+                <p className="text-2xl font-bold text-white">{productos.liquidaciones.length}</p>
+              </div>
+            </div>
+
+            {/* Columna 3 - KPI Ancho Total de Productos */}
+            <div className="bg-gray-700 rounded-lg p-3">
+              <h3 className="text-sm font-medium text-white mb-2">Total de Productos</h3>
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-300">Progreso</span>
+                  <span className="text-gray-300">{Object.values(productos).flat().length} / 7</span>
+                </div>
+                <div className="w-full bg-gray-600 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-300" 
+                    style={{width: `${Math.min((Object.values(productos).flat().length / 7) * 100, 100)}%`}}
+                  ></div>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">
+                  {Math.round((Object.values(productos).flat().length / 7) * 100)}% completado
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Popup de Información del Producto */}
       <Dialog open={selectedProducto !== null} onOpenChange={(open) => !open && setSelectedProducto(null)}>
         <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700 text-white">
