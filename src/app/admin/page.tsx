@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, X } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminProductCarousel } from '@/components/admin/admin-product-carousel'
 
@@ -48,6 +48,9 @@ export default function AdminPage() {
 
   // Estado para la imagen cargada
   const [imagenProducto, setImagenProducto] = useState<string | null>(null)
+  
+  // Estado para el popup de información del producto
+  const [selectedProducto, setSelectedProducto] = useState<any | null>(null)
   
   const openModal = (section: string) => {
     setSelectedSection(section)
@@ -253,7 +256,7 @@ export default function AdminPage() {
         </div>
         
         {/* Parte inferior con información - ultra compacta */}
-        <div className="p-1.5">
+        <div className="p-1.5 pb-1">
           {/* Fila con categoría y subcategoría centradas */}
           <div className="flex items-center justify-center text-[10px] text-gray-400 mb-0.5">
             <span className="text-center truncate max-w-[35%]">{getCategoriaLabel(producto.categoria)}</span>
@@ -289,7 +292,10 @@ export default function AdminPage() {
           </div>
           
           {/* Botón +Información */}
-          <button className="w-full bg-gray-700 hover:bg-gray-600 text-white py-0.5 px-1 rounded transition-colors text-[9px] font-medium">
+          <button 
+            onClick={() => setSelectedProducto(producto)}
+            className="w-full bg-gray-700 hover:bg-gray-600 text-white py-0.5 px-1 rounded transition-colors text-[9px] font-medium mt-1"
+          >
             +Información
           </button>
         </div>
@@ -1170,6 +1176,110 @@ export default function AdminPage() {
           </div>
         </Tabs>
       </div>
+
+      {/* Popup de Información del Producto */}
+      <Dialog open={selectedProducto !== null} onOpenChange={(open) => !open && setSelectedProducto(null)}>
+        <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700 text-white">
+          {/* Botón cerrar */}
+          <button
+            onClick={() => setSelectedProducto(null)}
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10"
+          >
+            <X className="h-4 w-4 text-gray-400 hover:text-white" />
+            <span className="sr-only">Cerrar</span>
+          </button>
+
+          {selectedProducto && (
+            <div className="grid grid-cols-5 gap-6 p-6">
+              {/* Columna Izquierda - Imagen (3/5) */}
+              <div className="col-span-3">
+                <div className="aspect-square bg-white rounded-lg flex items-center justify-center p-4">
+                  <img
+                    src={selectedProducto.imagen}
+                    alt={selectedProducto.nombre}
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
+              </div>
+
+              {/* Columna Derecha - Información (2/5) */}
+              <div className="col-span-2 space-y-4">
+                {/* Título del producto */}
+                <h2 className="text-2xl font-bold text-white leading-tight">
+                  {selectedProducto.nombre}
+                </h2>
+
+                {/* Categoría y Subcategoría */}
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <span>{getCategoriaLabel(selectedProducto.categoria)}</span>
+                  <span>/</span>
+                  <span>{getSubcategoriaLabel(selectedProducto.subcategoria)}</span>
+                </div>
+
+                {/* Descripción */}
+                <div className="space-y-2">
+                  <p className="text-gray-300 text-sm leading-relaxed text-justify">
+                    {selectedProducto.descripcion || 'Sin descripción disponible.'}
+                  </p>
+                </div>
+
+                {/* Precios */}
+                <div className="flex items-center gap-4">
+                  <span className="text-2xl font-bold text-purple-400">
+                    ${selectedProducto.precioActual}
+                  </span>
+                  {selectedProducto.precioAnterior && (
+                    <span className="text-lg text-gray-400 line-through">
+                      ${selectedProducto.precioAnterior}
+                    </span>
+                  )}
+                </div>
+
+                {/* Información adicional del producto */}
+                <div className="space-y-3 pt-4 border-t border-gray-700">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Tu producto necesita mostrar:
+                  </h3>
+                  
+                  <div className="space-y-2 text-sm">
+                    {/* Tallas */}
+                    {selectedProducto.tallas && selectedProducto.tallas !== 'No aplica' && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-gray-400 min-w-[80px]">Tallas:</span>
+                        <span className="text-gray-300">{selectedProducto.tallas}</span>
+                      </div>
+                    )}
+                    
+                    {/* Género */}
+                    {selectedProducto.genero && selectedProducto.genero !== 'generico' && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-gray-400 min-w-[80px]">Género:</span>
+                        <span className="text-gray-300 capitalize">{selectedProducto.genero}</span>
+                      </div>
+                    )}
+                    
+                    {/* Medidas */}
+                    {selectedProducto.medidas && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-gray-400 min-w-[80px]">Medidas:</span>
+                        <span className="text-gray-300">
+                          {selectedProducto.medidas} {selectedProducto.unidadMedida || 'cm'}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Tipo de Negocio */}
+                    <div className="flex items-start gap-2">
+                      <span className="text-gray-400 min-w-[80px]">Tipo:</span>
+                      <span className="text-gray-300 capitalize">{selectedProducto.tipoNegocio}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer className="relative text-white py-8 px-6 mt-12 shadow-2xl" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
