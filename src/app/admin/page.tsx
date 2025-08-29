@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, X, MapPin, Settings } from 'lucide-react'
+import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, X, MapPin, Settings, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminProductCarousel } from '@/components/admin/admin-product-carousel'
@@ -100,6 +100,8 @@ export default function AdminPage() {
   const [selectedCarouselProduct, setSelectedCarouselProduct] = useState<any | null>(null)
   const [selectedCarouselItemForPopup, setSelectedCarouselItemForPopup] = useState<{type: 'carrusel1' | 'carrusel2', index: number} | null>(null)
   
+
+
   const openModal = (section: string) => {
     setSelectedSection(section)
     // Limpiar todos los campos al abrir el modal
@@ -258,6 +260,7 @@ export default function AdminPage() {
     // Aquí iría la lógica para guardar en la base de datos
     alert(`Cambios guardados para ${carruselType === 'carrusel1' ? 'Carrusel 1' : 'Carrusel 2'}`)
   }
+  
 
   // Función de autollenado para información del negocio
   const autollenarNegocio = () => {
@@ -1498,174 +1501,174 @@ export default function AdminPage() {
 
       {/* Sección: Analytics Dashboard */}
       <div className="px-6 py-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Analytics Dashboard</h1>
-        <p className="text-gray-400">Estadísticas y métricas del rendimiento</p>
+        <h1 className="md:text-3xl text-2xl font-bold text-white mb-2">Analytics Dashboard</h1>
+        <p className="text-gray-400 md:text-base text-sm">Estadísticas y métricas del rendimiento</p>
       </div>
 
       {/* Container Analytics */}
       <div className="px-6 mb-8 relative">
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 blur-[2px]">
-          {/* Fila Superior - 3 Columnas */}
-          <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 blur-[2px]">
+          {/* Fila Superior - 3 Columnas en desktop, apiladas en mobile */}
+          <div className="grid md:grid-cols-3 grid-cols-1 md:gap-6 gap-4 md:mb-8 mb-6">
             {/* Columna 1 - 4 KPIs en 2 filas */}
-            <div className="space-y-4">
+            <div className="md:space-y-4 space-y-3">
               {/* Primera fila de KPIs */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">Visualizaciones Hoy</h3>
-                  <p className="text-2xl font-bold text-white">1.2K</p>
-                  <p className="text-xs text-green-400">+15% vs ayer</p>
+              <div className="grid grid-cols-2 md:gap-4 gap-2">
+                <div className="bg-gray-700 rounded-lg md:p-4 p-2 text-center">
+                  <h3 className="md:text-sm text-xs font-medium text-gray-400 md:mb-2 mb-1">Visualizaciones Hoy</h3>
+                  <p className="md:text-2xl text-lg font-bold text-white">1.2K</p>
+                  <p className="md:text-xs text-[10px] text-green-400">+15% vs ayer</p>
                 </div>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">Visitantes</h3>
-                  <p className="text-2xl font-bold text-white">850</p>
-                  <p className="text-xs text-blue-400">+8% vs ayer</p>
+                <div className="bg-gray-700 rounded-lg md:p-4 p-2 text-center">
+                  <h3 className="md:text-sm text-xs font-medium text-gray-400 md:mb-2 mb-1">Visitantes</h3>
+                  <p className="md:text-2xl text-lg font-bold text-white">850</p>
+                  <p className="md:text-xs text-[10px] text-blue-400">+8% vs ayer</p>
                 </div>
               </div>
               
               {/* Segunda fila de KPIs */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">Interacciones</h3>
-                  <p className="text-2xl font-bold text-white">156</p>
-                  <p className="text-xs text-green-400">+12% vs ayer</p>
+              <div className="grid grid-cols-2 md:gap-4 gap-2">
+                <div className="bg-gray-700 rounded-lg md:p-4 p-2 text-center">
+                  <h3 className="md:text-sm text-xs font-medium text-gray-400 md:mb-2 mb-1">Interacciones</h3>
+                  <p className="md:text-2xl text-lg font-bold text-white">156</p>
+                  <p className="md:text-xs text-[10px] text-green-400">+12% vs ayer</p>
                 </div>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">Consultas</h3>
-                  <p className="text-2xl font-bold text-white">43</p>
-                  <p className="text-xs text-green-400">+5% vs ayer</p>
+                <div className="bg-gray-700 rounded-lg md:p-4 p-2 text-center">
+                  <h3 className="md:text-sm text-xs font-medium text-gray-400 md:mb-2 mb-1">Consultas</h3>
+                  <p className="md:text-2xl text-lg font-bold text-white">43</p>
+                  <p className="md:text-xs text-[10px] text-green-400">+5% vs ayer</p>
                 </div>
               </div>
             </div>
 
             {/* Columna 2 - KPI con Gráfico de Barras Verticales */}
-            <div className="bg-gray-700 rounded-lg p-4 flex flex-col">
-              <h3 className="text-sm font-medium text-white mb-2">Visualizaciones del Mes</h3>
+            <div className="bg-gray-700 rounded-lg md:p-4 p-3 flex flex-col">
+              <h3 className="md:text-sm text-xs font-medium text-white md:mb-2 mb-1">Visualizaciones del Mes</h3>
               
               {/* Container del gráfico que ocupa todo el espacio disponible */}
               <div className="flex-1 flex flex-col justify-end">
-                <div className="flex items-end justify-center space-x-2 h-32">
+                <div className="flex items-end justify-center md:space-x-2 space-x-1 md:h-32 h-20">
                   {/* Barra Semana 1 */}
                   <div className="flex flex-col items-center h-full justify-end">
-                    <div className="bg-blue-500 w-16 rounded-t-sm flex items-end justify-center pb-1" style={{height: '60%'}}>
-                      <span className="text-white text-xs font-semibold">230</span>
+                    <div className="bg-blue-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{height: '60%'}}>
+                      <span className="text-white md:text-xs text-[8px] font-semibold">230</span>
                     </div>
-                    <span className="text-xs text-gray-300 mt-2">S1</span>
+                    <span className="md:text-xs text-[8px] text-gray-300 mt-1">S1</span>
                   </div>
                   
                   {/* Barra Semana 2 */}
                   <div className="flex flex-col items-center h-full justify-end">
-                    <div className="bg-green-500 w-16 rounded-t-sm flex items-end justify-center pb-1" style={{height: '80%'}}>
-                      <span className="text-white text-xs font-semibold">310</span>
+                    <div className="bg-green-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{height: '80%'}}>
+                      <span className="text-white md:text-xs text-[8px] font-semibold">310</span>
                     </div>
-                    <span className="text-xs text-gray-300 mt-2">S2</span>
+                    <span className="md:text-xs text-[8px] text-gray-300 mt-1">S2</span>
                   </div>
                   
                   {/* Barra Semana 3 */}
                   <div className="flex flex-col items-center h-full justify-end">
-                    <div className="bg-purple-500 w-16 rounded-t-sm flex items-end justify-center pb-1" style={{height: '100%'}}>
-                      <span className="text-white text-xs font-semibold">380</span>
+                    <div className="bg-purple-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{height: '100%'}}>
+                      <span className="text-white md:text-xs text-[8px] font-semibold">380</span>
                     </div>
-                    <span className="text-xs text-gray-300 mt-2">S3</span>
+                    <span className="md:text-xs text-[8px] text-gray-300 mt-1">S3</span>
                   </div>
                   
                   {/* Barra Semana 4 */}
                   <div className="flex flex-col items-center h-full justify-end">
-                    <div className="bg-orange-500 w-16 rounded-t-sm flex items-end justify-center pb-1" style={{height: '70%'}}>
-                      <span className="text-white text-xs font-semibold">280</span>
+                    <div className="bg-orange-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{height: '70%'}}>
+                      <span className="text-white md:text-xs text-[8px] font-semibold">280</span>
                     </div>
-                    <span className="text-xs text-gray-300 mt-2">S4</span>
+                    <span className="md:text-xs text-[8px] text-gray-300 mt-1">S4</span>
                   </div>
                 </div>
                 
                 {/* Información en la parte inferior */}
-                <div className="text-center mt-3">
-                  <span className="text-xs text-green-400">+22% vs mes anterior</span>
+                <div className="text-center md:mt-3 mt-2">
+                  <span className="md:text-xs text-[10px] text-green-400">+22% vs mes anterior</span>
                 </div>
               </div>
             </div>
 
             {/* Columna 3 - 4 KPIs en 2 filas (datos distintos) */}
-            <div className="space-y-4">
+            <div className="md:space-y-4 space-y-3">
               {/* Primera fila de KPIs */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">Productos Mostrados</h3>
-                  <p className="text-2xl font-bold text-white">{Object.values(productos).flat().length}</p>
-                  <p className="text-xs text-blue-400">de 7 máximo</p>
+              <div className="grid grid-cols-2 md:gap-4 gap-2">
+                <div className="bg-gray-700 rounded-lg md:p-4 p-2 text-center">
+                  <h3 className="md:text-sm text-xs font-medium text-gray-400 md:mb-2 mb-1">Productos Mostrados</h3>
+                  <p className="md:text-2xl text-lg font-bold text-white">{Object.values(productos).flat().length}</p>
+                  <p className="md:text-xs text-[10px] text-blue-400">de 7 máximo</p>
                 </div>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">Negocios Registrados</h3>
-                  <p className="text-2xl font-bold text-white">28</p>
-                  <p className="text-xs text-green-400">+3 esta semana</p>
+                <div className="bg-gray-700 rounded-lg md:p-4 p-2 text-center">
+                  <h3 className="md:text-sm text-xs font-medium text-gray-400 md:mb-2 mb-1">Negocios Registrados</h3>
+                  <p className="md:text-2xl text-lg font-bold text-white">28</p>
+                  <p className="md:text-xs text-[10px] text-green-400">+3 esta semana</p>
                 </div>
               </div>
               
               {/* Segunda fila de KPIs */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">Tiempo Promedio</h3>
-                  <p className="text-2xl font-bold text-white">2.5m</p>
-                  <p className="text-xs text-yellow-400">en vitrina</p>
+              <div className="grid grid-cols-2 md:gap-4 gap-2">
+                <div className="bg-gray-700 rounded-lg md:p-4 p-2 text-center">
+                  <h3 className="md:text-sm text-xs font-medium text-gray-400 md:mb-2 mb-1">Tiempo Promedio</h3>
+                  <p className="md:text-2xl text-lg font-bold text-white">2.5m</p>
+                  <p className="md:text-xs text-[10px] text-yellow-400">en vitrina</p>
                 </div>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">Alcance</h3>
-                  <p className="text-2xl font-bold text-white">68%</p>
-                  <p className="text-xs text-green-400">+5% vs ayer</p>
+                <div className="bg-gray-700 rounded-lg md:p-4 p-2 text-center">
+                  <h3 className="md:text-sm text-xs font-medium text-gray-400 md:mb-2 mb-1">Alcance</h3>
+                  <p className="md:text-2xl text-lg font-bold text-white">68%</p>
+                  <p className="md:text-xs text-[10px] text-green-400">+5% vs ayer</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Fila Inferior - 3 Columnas */}
-          <div className="grid grid-cols-3 gap-6">
-            {/* Columna 1 - 3 KPIs de Pestañas (primeras 3) */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
-                <h3 className="text-xs font-medium text-gray-300 mb-2">Destacados</h3>
-                <p className="text-2xl font-bold text-white">{productos.destacados.length}</p>
+          {/* Fila Inferior - 3 Columnas en desktop, 3 filas en mobile */}
+          <div className="md:grid md:grid-cols-3 md:gap-6 space-y-4 md:space-y-0">
+            {/* Primera fila responsive: 3 KPIs de Pestañas (primeras 3) */}
+            <div className="grid grid-cols-3 md:gap-4 gap-2">
+              <div className="bg-gray-700 border border-gray-600 rounded-lg md:p-3 p-2 text-center flex flex-col justify-center">
+                <h3 className="md:text-xs text-[10px] font-medium text-gray-300 md:mb-2 mb-1">Destacados</h3>
+                <p className="md:text-2xl text-lg font-bold text-white">{productos.destacados.length}</p>
               </div>
-              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
-                <h3 className="text-xs font-medium text-gray-300 mb-2">Ofertas</h3>
-                <p className="text-2xl font-bold text-white">{productos.ofertas.length}</p>
+              <div className="bg-gray-700 border border-gray-600 rounded-lg md:p-3 p-2 text-center flex flex-col justify-center">
+                <h3 className="md:text-xs text-[10px] font-medium text-gray-300 md:mb-2 mb-1">Ofertas</h3>
+                <p className="md:text-2xl text-lg font-bold text-white">{productos.ofertas.length}</p>
               </div>
-              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
-                <h3 className="text-xs font-medium text-gray-300 mb-2">Novedades</h3>
-                <p className="text-2xl font-bold text-white">{productos.novedades.length}</p>
-              </div>
-            </div>
-
-            {/* Columna 2 - 3 KPIs de Pestañas (siguientes 3) */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
-                <h3 className="text-xs font-medium text-gray-300 mb-2">Tendencias</h3>
-                <p className="text-2xl font-bold text-white">{productos.tendencias.length}</p>
-              </div>
-              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
-                <h3 className="text-xs font-medium text-gray-300 mb-2">No te lo Pierdas</h3>
-                <p className="text-2xl font-bold text-white">{productos['no-te-lo-pierdas'].length}</p>
-              </div>
-              <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-center flex flex-col justify-center">
-                <h3 className="text-xs font-medium text-gray-300 mb-2">Liquidaciones</h3>
-                <p className="text-2xl font-bold text-white">{productos.liquidaciones.length}</p>
+              <div className="bg-gray-700 border border-gray-600 rounded-lg md:p-3 p-2 text-center flex flex-col justify-center">
+                <h3 className="md:text-xs text-[10px] font-medium text-gray-300 md:mb-2 mb-1">Novedades</h3>
+                <p className="md:text-2xl text-lg font-bold text-white">{productos.novedades.length}</p>
               </div>
             </div>
 
-            {/* Columna 3 - KPI Ancho Total de Productos */}
-            <div className="bg-gray-700 rounded-lg p-3">
-              <h3 className="text-sm font-medium text-white mb-2">Total de Productos</h3>
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs">
+            {/* Segunda fila responsive: 3 KPIs de Pestañas (siguientes 3) */}
+            <div className="grid grid-cols-3 md:gap-4 gap-2">
+              <div className="bg-gray-700 border border-gray-600 rounded-lg md:p-3 p-2 text-center flex flex-col justify-center">
+                <h3 className="md:text-xs text-[10px] font-medium text-gray-300 md:mb-2 mb-1">Tendencias</h3>
+                <p className="md:text-2xl text-lg font-bold text-white">{productos.tendencias.length}</p>
+              </div>
+              <div className="bg-gray-700 border border-gray-600 rounded-lg md:p-3 p-2 text-center flex flex-col justify-center">
+                <h3 className="md:text-xs text-[10px] font-medium text-gray-300 md:mb-2 mb-1">No te lo Pierdas</h3>
+                <p className="md:text-2xl text-lg font-bold text-white">{productos['no-te-lo-pierdas'].length}</p>
+              </div>
+              <div className="bg-gray-700 border border-gray-600 rounded-lg md:p-3 p-2 text-center flex flex-col justify-center">
+                <h3 className="md:text-xs text-[10px] font-medium text-gray-300 md:mb-2 mb-1">Liquidaciones</h3>
+                <p className="md:text-2xl text-lg font-bold text-white">{productos.liquidaciones.length}</p>
+              </div>
+            </div>
+
+            {/* Tercera fila responsive: KPI Ancho Total de Productos */}
+            <div className="bg-gray-700 rounded-lg md:p-3 p-2 text-center">
+              <h3 className="md:text-sm text-xs font-medium text-white md:mb-2 mb-1">Total de Productos</h3>
+              <div className="md:space-y-1 space-y-0.5">
+                <div className="flex justify-between md:text-xs text-[10px]">
                   <span className="text-gray-300">Progreso</span>
                   <span className="text-gray-300">{Object.values(productos).flat().length} / 7</span>
                 </div>
-                <div className="w-full bg-gray-600 rounded-full h-3">
+                <div className="w-full bg-gray-600 rounded-full md:h-3 h-2">
                   <div 
-                    className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-300" 
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 md:h-3 h-2 rounded-full transition-all duration-300" 
                     style={{width: `${Math.min((Object.values(productos).flat().length / 7) * 100, 100)}%`}}
                   ></div>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="md:text-xs text-[10px] text-gray-400 md:mt-1 mt-0.5">
                   {Math.round((Object.values(productos).flat().length / 7) * 100)}% completado
                 </p>
               </div>
@@ -1675,9 +1678,9 @@ export default function AdminPage() {
         
         {/* Overlay Message */}
         <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="bg-white border-2 border-gray-400 rounded-lg px-4 py-4 shadow-lg text-center max-w-xs">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">¡Próximamente!</h3>
-            <p className="text-sm text-gray-600">Panel de análisis avanzado para monitorear el rendimiento y visualización de tus productos en tiempo real.</p>
+          <div className="bg-white border-2 border-gray-400 rounded-lg md:px-4 px-3 md:py-4 py-3 shadow-lg text-center md:max-w-xs max-w-[280px]">
+            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1">¡Próximamente!</h3>
+            <p className="md:text-sm text-xs text-gray-600">Panel de análisis avanzado para monitorear el rendimiento y visualización de tus productos en tiempo real.</p>
           </div>
         </div>
       </div>
@@ -1802,298 +1805,306 @@ export default function AdminPage() {
       <div className="border-t border-gray-700 my-8"></div>
 
       {/* Sección: Gestión de Carruseles */}
-      <div className="px-6 py-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Gestión de Carruseles</h1>
-        <p className="text-gray-400">Administra las imágenes de los carruseles principales</p>
+      <div className="px-6 py-8 mb-4">
+        <h1 className="md:text-3xl text-2xl font-bold text-white mb-2">Gestión de Carruseles</h1>
+        <p className="text-gray-400 md:text-base text-sm">Administra las imágenes de los carruseles principales</p>
       </div>
 
       {/* Pestañas de Carruseles */}
       <div className="px-6 mb-8 relative">
-        <Tabs defaultValue="carrusel1" className="w-full blur-[2px]">
-          <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto px-6 mb-8 bg-gray-800 border border-gray-700 rounded-lg p-1">
+        <Tabs defaultValue="carrusel1" className="w-full md:blur-[2px]">
+          <TabsList className="grid grid-cols-2 w-full md:max-w-md max-w-xs mx-auto md:px-6 px-3 md:mb-8 mb-6 bg-gray-800 border border-gray-700 rounded-lg p-1">
             <TabsTrigger 
               value="carrusel1" 
-              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-xs"
             >
               Carrusel 1
             </TabsTrigger>
             <TabsTrigger 
               value="carrusel2" 
-              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-xs"
             >
               Carrusel 2
             </TabsTrigger>
           </TabsList>
 
           {/* Contenido de cada pestaña de carruseles */}
-          <div className="px-6">
+          <div className="md:px-6 px-3">
             {/* Tab Carrusel 1 */}
             <TabsContent value="carrusel1" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h2 className="text-xl font-semibold text-white mb-6">Carrusel 1 - Imágenes (1-8)</h2>
+              <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4">
+                <h2 className="md:text-xl text-lg font-semibold text-white md:mb-6 mb-4">Carrusel 1 - Imágenes (1-8)</h2>
               
-              {/* Primera fila - 4 marcos */}
-              <div className="grid grid-cols-4 gap-4 mb-6">
-                {[0, 1, 2, 3].map((index) => (
-                  <div key={index} className="relative">
-                    {/* Círculo numerado en la esquina superior derecha */}
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
-                      {index + 1}
-                    </div>
-                    
-                    {/* Marco para imagen */}
-                    <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                      {!carouselImages.carrusel1[index] && (
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        />
-                      )}
-                      
-                      {carouselImages.carrusel1[index] ? (
-                        <>
-                          <img 
-                            src={carouselImages.carrusel1[index]} 
-                            alt={`Carrusel 1 - Imagen ${index + 1}`}
-                            className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                            onClick={() => openCarouselProductPopup('carrusel1', index)}
-                          />
+                {/* Desktop Layout - 4 columns */}
+                <div className="hidden md:block">
+                  {/* Primera fila - 4 marcos */}
+                  <div className="grid grid-cols-4 gap-4 mb-6">
+                    {[0, 1, 2, 3].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 1}
+                        </div>
+                        
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel1[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
                           
-                          {/* Botón de configuración en la esquina superior izquierda */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              openCarouselModal('carrusel1', index)
-                            }}
-                            className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
-                          >
-                            <Settings className="w-3 h-3 text-white" />
-                          </button>
-                          
-                          {/* Precio en la esquina inferior derecha (si existe) */}
-                          {carouselProductData.carrusel1[index]?.precioActual && (
-                            <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
-                              <span className="text-white text-xs font-semibold">
-                                ${carouselProductData.carrusel1[index].precioActual}
-                              </span>
+                          {carouselImages.carrusel1[index] ? (
+                            <>
+                              <img 
+                                src={carouselImages.carrusel1[index]} 
+                                alt={`Carrusel 1 - Imagen ${index + 1}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                                onClick={() => openCarouselProductPopup('carrusel1', index)}
+                              />
+                              
+                              {/* Botón de configuración en la esquina superior izquierda */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openCarouselModal('carrusel1', index)
+                                }}
+                                className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                              >
+                                <Settings className="w-3 h-3 text-white" />
+                              </button>
+                              
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel1[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel1[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
                             </div>
                           )}
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                          <Plus className="w-8 h-8 mb-2" />
-                          <span className="text-sm">Subir imagen</span>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              
-              {/* Segunda fila - 4 marcos */}
-              <div className="grid grid-cols-4 gap-4 mb-6">
-                {[4, 5, 6, 7].map((index) => (
-                  <div key={index} className="relative">
-                    {/* Círculo numerado en la esquina superior derecha */}
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
-                      {index + 1}
-                    </div>
-                    
-                    {/* Marco para imagen */}
-                    <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                      {!carouselImages.carrusel1[index] && (
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        />
-                      )}
-                      
-                      {carouselImages.carrusel1[index] ? (
-                        <>
-                          <img 
-                            src={carouselImages.carrusel1[index]} 
-                            alt={`Carrusel 1 - Imagen ${index + 1}`}
-                            className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                            onClick={() => openCarouselProductPopup('carrusel1', index)}
-                          />
+                  
+                  {/* Segunda fila - 4 marcos */}
+                  <div className="grid grid-cols-4 gap-4 mb-6">
+                    {[4, 5, 6, 7].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 1}
+                        </div>
+                        
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel1[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
                           
-                          {/* Botón de configuración en la esquina superior izquierda */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              openCarouselModal('carrusel1', index)
-                            }}
-                            className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
-                          >
-                            <Settings className="w-3 h-3 text-white" />
-                          </button>
-                          
-                          {/* Precio en la esquina inferior derecha (si existe) */}
-                          {carouselProductData.carrusel1[index]?.precioActual && (
-                            <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
-                              <span className="text-white text-xs font-semibold">
-                                ${carouselProductData.carrusel1[index].precioActual}
-                              </span>
+                          {carouselImages.carrusel1[index] ? (
+                            <>
+                              <img 
+                                src={carouselImages.carrusel1[index]} 
+                                alt={`Carrusel 1 - Imagen ${index + 1}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                                onClick={() => openCarouselProductPopup('carrusel1', index)}
+                              />
+                              
+                              {/* Botón de configuración en la esquina superior izquierda */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openCarouselModal('carrusel1', index)
+                                }}
+                                className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                              >
+                                <Settings className="w-3 h-3 text-white" />
+                              </button>
+                              
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel1[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel1[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
                             </div>
                           )}
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                          <Plus className="w-8 h-8 mb-2" />
-                          <span className="text-sm">Subir imagen</span>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+                
+                {/* Botón Guardar Cambios */}
+                <div className="flex justify-end md:mt-6 mt-4">
+                  <Button 
+                    onClick={() => handleSaveCarousel('carrusel1')}
+                    className="bg-purple-600 hover:bg-purple-700 text-white md:px-6 px-4 md:py-2 py-1.5 md:text-sm text-xs"
+                  >
+                    Guardar Cambios
+                  </Button>
+                </div>
               </div>
-              
-              {/* Botón Guardar Cambios */}
-              <div className="flex justify-end">
-                <Button 
-                  onClick={() => handleSaveCarousel('carrusel1')}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2"
-                >
-                  Guardar Cambios
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
 
           {/* Tab Carrusel 2 */}
           <TabsContent value="carrusel2" className="space-y-4">
-            <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-              <h2 className="text-xl font-semibold text-white mb-6">Carrusel 2 - Imágenes (9-16)</h2>
+            <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4">
+              <h2 className="md:text-xl text-lg font-semibold text-white md:mb-6 mb-4">Carrusel 2 - Imágenes (9-16)</h2>
               
-              {/* Primera fila - 4 marcos */}
-              <div className="grid grid-cols-4 gap-4 mb-6">
-                {[0, 1, 2, 3].map((index) => (
-                  <div key={index} className="relative">
-                    {/* Círculo numerado en la esquina superior derecha */}
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
-                      {index + 9}
-                    </div>
-                    
-                    {/* Marco para imagen */}
-                    <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                      {!carouselImages.carrusel2[index] && (
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        />
-                      )}
+              {/* Desktop Layout - 4 columns */}
+              <div className="hidden md:block">
+                {/* Primera fila - 4 marcos */}
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                  {[0, 1, 2, 3].map((index) => (
+                    <div key={index} className="relative">
+                      {/* Círculo numerado en la esquina superior derecha */}
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                        {index + 9}
+                      </div>
                       
-                      {carouselImages.carrusel2[index] ? (
-                        <>
-                          <img 
-                            src={carouselImages.carrusel2[index]} 
-                            alt={`Carrusel 2 - Imagen ${index + 9}`}
-                            className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                            onClick={() => openCarouselProductPopup('carrusel2', index)}
+                      {/* Marco para imagen */}
+                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                        {!carouselImages.carrusel2[index] && (
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                           />
-                          
-                          {/* Botón de configuración en la esquina superior izquierda */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              openCarouselModal('carrusel2', index)
-                            }}
-                            className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
-                          >
-                            <Settings className="w-3 h-3 text-white" />
-                          </button>
-                          
-                          {/* Precio en la esquina inferior derecha (si existe) */}
-                          {carouselProductData.carrusel2[index]?.precioActual && (
-                            <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
-                              <span className="text-white text-xs font-semibold">
-                                ${carouselProductData.carrusel2[index].precioActual}
-                              </span>
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                          <Plus className="w-8 h-8 mb-2" />
-                          <span className="text-sm">Subir imagen</span>
-                        </div>
-                      )}
+                        )}
+                        
+                        {carouselImages.carrusel2[index] ? (
+                          <>
+                            <img 
+                              src={carouselImages.carrusel2[index]} 
+                              alt={`Carrusel 2 - Imagen ${index + 9}`}
+                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                              onClick={() => openCarouselProductPopup('carrusel2', index)}
+                            />
+                            
+                            {/* Botón de configuración en la esquina superior izquierda */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                openCarouselModal('carrusel2', index)
+                              }}
+                              className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                            >
+                              <Settings className="w-3 h-3 text-white" />
+                            </button>
+                            
+                            {/* Precio en la esquina inferior derecha (si existe) */}
+                            {carouselProductData.carrusel2[index]?.precioActual && (
+                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                <span className="text-white text-xs font-semibold">
+                                  ${carouselProductData.carrusel2[index].precioActual}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <Plus className="w-8 h-8 mb-2" />
+                            <span className="text-sm">Subir imagen</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-              
-              {/* Segunda fila - 4 marcos */}
-              <div className="grid grid-cols-4 gap-4 mb-6">
-                {[4, 5, 6, 7].map((index) => (
-                  <div key={index} className="relative">
-                    {/* Círculo numerado en la esquina superior derecha */}
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
-                      {index + 13}
-                    </div>
-                    
-                    {/* Marco para imagen */}
-                    <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                      {!carouselImages.carrusel2[index + 4] && (
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleCarouselImageUpload('carrusel2', index + 4, e)}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        />
-                      )}
+                  ))}
+                </div>
+                
+                {/* Segunda fila - 4 marcos */}
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                  {[4, 5, 6, 7].map((index) => (
+                    <div key={index} className="relative">
+                      {/* Círculo numerado en la esquina superior derecha */}
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                        {index + 13}
+                      </div>
                       
-                      {carouselImages.carrusel2[index + 4] ? (
-                        <>
-                          <img 
-                            src={carouselImages.carrusel2[index + 4]} 
-                            alt={`Carrusel 2 - Imagen ${index + 13}`}
-                            className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                            onClick={() => openCarouselProductPopup('carrusel2', index + 4)}
+                      {/* Marco para imagen */}
+                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                        {!carouselImages.carrusel2[index + 4] && (
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleCarouselImageUpload('carrusel2', index + 4, e)}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                           />
-                          
-                          {/* Botón de configuración en la esquina superior izquierda */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              openCarouselModal('carrusel2', index + 4)
-                            }}
-                            className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
-                          >
-                            <Settings className="w-3 h-3 text-white" />
-                          </button>
-                          
-                          {/* Precio en la esquina inferior derecha (si existe) */}
-                          {carouselProductData.carrusel2[index + 4]?.precioActual && (
-                            <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
-                              <span className="text-white text-xs font-semibold">
-                                ${carouselProductData.carrusel2[index + 4].precioActual}
-                              </span>
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                          <Plus className="w-8 h-8 mb-2" />
-                          <span className="text-sm">Subir imagen</span>
-                        </div>
-                      )}
+                        )}
+                        
+                        {carouselImages.carrusel2[index + 4] ? (
+                          <>
+                            <img 
+                              src={carouselImages.carrusel2[index + 4]} 
+                              alt={`Carrusel 2 - Imagen ${index + 13}`}
+                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                              onClick={() => openCarouselProductPopup('carrusel2', index + 4)}
+                            />
+                            
+                            {/* Botón de configuración en la esquina superior izquierda */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                openCarouselModal('carrusel2', index + 4)
+                              }}
+                              className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                            >
+                              <Settings className="w-3 h-3 text-white" />
+                            </button>
+                            
+                            {/* Precio en la esquina inferior derecha (si existe) */}
+                            {carouselProductData.carrusel2[index + 4]?.precioActual && (
+                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                <span className="text-white text-xs font-semibold">
+                                  ${carouselProductData.carrusel2[index + 4].precioActual}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <Plus className="w-8 h-8 mb-2" />
+                            <span className="text-sm">Subir imagen</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
+
+
               
               {/* Botón Guardar Cambios */}
-              <div className="flex justify-end">
+              <div className="flex justify-end md:mt-6 mt-4">
                 <Button 
                   onClick={() => handleSaveCarousel('carrusel2')}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2"
+                  className="bg-purple-600 hover:bg-purple-700 text-white md:px-6 px-4 md:py-2 py-1.5 md:text-sm text-xs"
                 >
                   Guardar Cambios
                 </Button>
@@ -2103,11 +2114,11 @@ export default function AdminPage() {
         </div>
       </Tabs>
       
-      {/* Overlay Message */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className="bg-white border-2 border-gray-400 rounded-lg px-4 py-4 shadow-lg text-center max-w-xs">
-          <h3 className="text-lg font-bold text-gray-800 mb-2">¡Próximamente!</h3>
-          <p className="text-sm text-gray-600">Sistema avanzado de gestión de carruseles interactivos para mostrar contenido dinámico y promocional en la página principal.</p>
+      {/* Overlay Message - Solo visible en desktop */}
+      <div className="hidden md:flex absolute inset-0 items-center justify-center z-10">
+        <div className="bg-white border-2 border-gray-400 rounded-lg md:px-4 px-3 md:py-4 py-3 shadow-lg text-center md:max-w-xs max-w-[280px]">
+          <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1">¡Próximamente!</h3>
+          <p className="md:text-sm text-xs text-gray-600">Sistema avanzado de gestión de carruseles interactivos para mostrar contenido dinámico y promocional en la página principal.</p>
         </div>
       </div>
     </div>
