@@ -23,16 +23,34 @@ export function AdminProductCarousel({
   const [currentIndex, setCurrentIndex] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  // Configuración fija: 6 cards por vista (incluyendo el botón agregar)
-  const CARDS_PER_VIEW = 6
-  const CARD_WIDTH = 176 // w-44 = 11rem = 176px
-  const CARD_HEIGHT = 256 // h-64 = 16rem = 256px
+  // Configuración responsiva: 6 cards en desktop, 2 en mobile (incluyendo el botón agregar)
+  const CARDS_PER_VIEW_DESKTOP = 6
+  const CARDS_PER_VIEW_MOBILE = 2
+  const CARD_WIDTH_DESKTOP = 176 // w-44 = 11rem = 176px
+  const CARD_WIDTH_MOBILE = 112 // w-28 = 7rem = 112px
+  const CARD_HEIGHT_DESKTOP = 256 // h-64 = 16rem = 256px
+  const CARD_HEIGHT_MOBILE = 176 // h-44 = 11rem = 176px
   const GAP = 12 // gap-3 = 0.75rem = 12px
   
   // Total de elementos: productos + 1 (botón agregar)
   const totalItems = productos.length + 1
-  const maxIndex = Math.max(0, totalItems - CARDS_PER_VIEW)
-  const showArrows = totalItems > CARDS_PER_VIEW
+  
+  // Responsive breakpoint detection (simplified for server-side rendering)
+  const [isMobile, setIsMobile] = useState(false)
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+  
+  const cardsPerView = isMobile ? CARDS_PER_VIEW_MOBILE : CARDS_PER_VIEW_DESKTOP
+  const cardWidth = isMobile ? CARD_WIDTH_MOBILE : CARD_WIDTH_DESKTOP
+  const maxIndex = Math.max(0, totalItems - cardsPerView)
+  const showArrows = totalItems > cardsPerView
 
   // Navegación con flechas
   const handlePrevious = () => {
@@ -41,7 +59,7 @@ export function AdminProductCarousel({
     
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({
-        left: newIndex * (CARD_WIDTH + GAP),
+        left: newIndex * (cardWidth + GAP),
         behavior: 'smooth'
       })
     }
@@ -53,7 +71,7 @@ export function AdminProductCarousel({
     
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({
-        left: newIndex * (CARD_WIDTH + GAP),
+        left: newIndex * (cardWidth + GAP),
         behavior: 'smooth'
       })
     }
@@ -63,16 +81,16 @@ export function AdminProductCarousel({
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({
-        left: currentIndex * (CARD_WIDTH + GAP),
+        left: currentIndex * (cardWidth + GAP),
         behavior: 'smooth'
       })
     }
-  }, [currentIndex])
+  }, [currentIndex, cardWidth])
 
   return (
     <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-      <h2 className="text-xl font-semibold text-white mb-4">{titulo}</h2>
-      <p className="text-gray-400 mb-6">{descripcion}</p>
+      <h2 className="text-xl md:text-xl text-lg font-semibold text-white mb-4">{titulo}</h2>
+      <p className="text-gray-400 md:text-base text-sm mb-6">{descripcion}</p>
       
       <div className="relative">
         {/* Container con scroll horizontal */}
@@ -87,19 +105,19 @@ export function AdminProductCarousel({
           <div 
             className="flex gap-3"
             style={{
-              width: `${totalItems * (CARD_WIDTH + GAP) - GAP}px`
+              width: `${totalItems * (cardWidth + GAP) - GAP}px`
             }}
           >
             {/* Tarjeta con botón agregar - siempre primera */}
             <div 
-              className="flex-shrink-0 bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer w-44 h-64 flex flex-col justify-center"
+              className="flex-shrink-0 bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer md:w-44 w-28 md:h-64 h-44 flex flex-col justify-center"
               onClick={onAgregarProducto}
             >
               <div className="flex flex-col items-center justify-center space-y-2 h-full">
-                <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
-                  <Plus className="w-4 h-4 text-gray-300" />
+                <div className="md:w-8 md:h-8 w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors">
+                  <Plus className="md:w-4 md:h-4 w-3 h-3 text-gray-300" />
                 </div>
-                <p className="text-gray-400 text-[10px] text-center leading-tight">
+                <p className="text-gray-400 md:text-[10px] text-[8px] text-center leading-tight px-1">
                   {textoBotonAgregar}
                 </p>
               </div>
@@ -107,7 +125,7 @@ export function AdminProductCarousel({
             
             {/* Tarjetas de productos existentes */}
             {productos.map((producto) => (
-              <div key={producto.id} className="flex-shrink-0 w-44">
+              <div key={producto.id} className="flex-shrink-0 md:w-44 w-28">
                 <ProductoCard producto={producto} />
               </div>
             ))}

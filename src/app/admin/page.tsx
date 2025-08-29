@@ -438,43 +438,43 @@ export default function AdminPage() {
   // Componente de tarjeta de producto
   const ProductoCard = ({ producto }: { producto: any }) => {
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow w-44 h-64">
+      <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow md:w-44 w-28 md:h-64 h-44">
         {/* Parte superior con imagen - ocupa todo el espacio */}
-        <div className="h-40 bg-white overflow-hidden">
+        <div className="md:h-40 h-24 bg-white overflow-hidden">
           <img 
             src={producto.imagen} 
             alt={producto.nombre}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain bg-gray-100"
           />
         </div>
         
         {/* Parte inferior con información - ultra compacta */}
-        <div className="p-1.5 pb-1">
+        <div className="md:p-1.5 md:pb-1 p-1 pb-0.5">
           {/* Fila con categoría y subcategoría centradas */}
-          <div className="flex items-center justify-center text-[10px] text-gray-400 mb-0.5">
+          <div className="flex items-center justify-center md:text-[10px] text-[8px] text-gray-400 md:mb-0.5 mb-0">
             <span className="text-center truncate max-w-[35%]">{getCategoriaLabel(producto.categoria)}</span>
             <span className="mx-0.5">/</span>
             <span className="text-center truncate max-w-[35%]">{getSubcategoriaLabel(producto.subcategoria)}</span>
           </div>
           
           {/* Nombre del producto */}
-          <div className="mb-1">
-            <h3 className="text-[10px] font-semibold text-gray-100 leading-tight line-clamp-2 text-center">
+          <div className="md:mb-1 mb-0.5">
+            <h3 className="md:text-[10px] text-[8px] font-semibold text-gray-100 leading-tight line-clamp-2 text-center">
               {producto.nombre}
             </h3>
           </div>
           
           {/* Fila con precios */}
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between md:mb-1 mb-0.5">
             {/* Precio actual */}
-            <div className="text-purple-400 font-bold text-xs">
+            <div className="text-purple-400 font-bold md:text-xs text-[9px]">
               ${producto.precioActual}
             </div>
             
             {/* Precio anterior tachado */}
             {producto.precioAnterior && (
               <div className="relative">
-                <span className="text-gray-400 line-through text-[9px]">
+                <span className="text-gray-400 line-through md:text-[9px] text-[7px]">
                   ${producto.precioAnterior}
                 </span>
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -487,7 +487,7 @@ export default function AdminPage() {
           {/* Botón +Información */}
           <button 
             onClick={() => setSelectedProducto(producto)}
-            className="w-full bg-gray-700 hover:bg-gray-600 text-white py-0.5 px-1 rounded transition-colors text-[9px] font-medium mt-1"
+            className="w-full bg-gray-700 hover:bg-gray-600 text-white md:py-0.5 py-0 md:px-1 px-0.5 rounded transition-colors md:text-[9px] text-[7px] font-medium md:mt-1 mt-0.5"
           >
             +Información
           </button>
@@ -663,19 +663,19 @@ export default function AdminPage() {
       <div className="w-full">
         {/* Sección: Datos del Negocio */}
         <div className="px-6 py-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Datos del Negocio</h1>
-          <p className="text-gray-400">Administra la información del negocio</p>
+          <h1 className="text-3xl md:text-3xl text-2xl font-bold text-white mb-2">Datos del Negocio</h1>
+          <p className="text-gray-400 md:text-base text-sm">Administra la información del negocio</p>
         </div>
 
         {/* Formulario */}
         <div className="px-6">
           <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 max-w-4xl mx-auto">
-            <h2 className="text-xl font-semibold text-white mb-4">Información General</h2>
+            <h2 className="text-xl md:text-xl text-lg font-semibold text-white mb-4">Información General</h2>
             <div className="flex justify-between items-center mb-6">
-              <p className="text-gray-400">Ingresa los datos básicos del negocio</p>
+              <p className="text-gray-400 md:text-base text-sm">Ingresa los datos básicos del negocio</p>
               <Button 
                 onClick={autollenarNegocio}
-                className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 text-sm"
+                className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 md:text-sm text-xs"
               >
                 Auto Llenar Datos
               </Button>
@@ -685,80 +685,80 @@ export default function AdminPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="entidad-nombre" className="text-gray-300">Nombre del Negocio</Label>
+                  <Label htmlFor="entidad-nombre" className="text-gray-300 md:text-sm text-xs">Nombre del Negocio</Label>
                   <Input 
                     id="entidad-nombre" 
                     placeholder="Ingresa el nombre del negocio"
                     value={businessInfo.nombre}
                     onChange={(e) => handleBusinessInfoChange('nombre', e.target.value)}
-                    className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                   />
                 </div>
                 
                 <div>
-                  <Label htmlFor="entidad-direccion" className="text-gray-300">Dirección</Label>
+                  <Label htmlFor="entidad-direccion" className="text-gray-300 md:text-sm text-xs">Dirección</Label>
                   <Input 
                     id="entidad-direccion" 
                     placeholder="Ingresa la dirección completa"
                     value={businessInfo.direccion}
                     onChange={(e) => handleBusinessInfoChange('direccion', e.target.value)}
-                    className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                   />
                 </div>
                 
                 {/* Teléfono y WhatsApp en la misma fila */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="entidad-telefono" className="text-gray-300">Teléfono</Label>
+                    <Label htmlFor="entidad-telefono" className="text-gray-300 md:text-sm text-xs">Teléfono</Label>
                     <Input 
                       id="entidad-telefono" 
                       placeholder="Ingresa el número"
                       value={businessInfo.telefono}
                       onChange={(e) => handleBusinessInfoChange('telefono', e.target.value)}
-                      className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                      className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="entidad-whatsapp" className="text-gray-300">WhatsApp</Label>
+                    <Label htmlFor="entidad-whatsapp" className="text-gray-300 md:text-sm text-xs">WhatsApp</Label>
                     <Input 
                       id="entidad-whatsapp" 
                       placeholder="Ingresa el número"
                       value={businessInfo.whatsapp}
                       onChange={(e) => handleBusinessInfoChange('whatsapp', e.target.value)}
-                      className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                      className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <Label htmlFor="entidad-email" className="text-gray-300">Email</Label>
+                  <Label htmlFor="entidad-email" className="text-gray-300 md:text-sm text-xs">Email</Label>
                   <Input 
                     id="entidad-email" 
                     type="email"
                     placeholder="Ingresa el correo electrónico"
                     value={businessInfo.email}
                     onChange={(e) => handleBusinessInfoChange('email', e.target.value)}
-                    className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                   />
                 </div>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="entidad-responsable" className="text-gray-300">Nombre del Responsable del Negocio</Label>
+                  <Label htmlFor="entidad-responsable" className="text-gray-300 md:text-sm text-xs">Nombre del Responsable del Negocio</Label>
                   <Input 
                     id="entidad-responsable" 
                     placeholder="Ingresa el nombre del responsable del negocio"
                     value={businessInfo.responsable}
                     onChange={(e) => handleBusinessInfoChange('responsable', e.target.value)}
-                    className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                   />
                 </div>
                 
                 {/* Sección de Horarios */}
                 <div>
-                  <Label className="text-gray-300 flex items-center gap-2 mb-3">
+                  <Label className="text-gray-300 md:text-sm text-xs flex items-center gap-2 mb-3">
                     <Clock className="w-4 h-4" />
                     Horarios de Atención
                   </Label>
@@ -766,66 +766,72 @@ export default function AdminPage() {
                   <div className="bg-gray-700 border border-gray-600 rounded-lg p-4 space-y-3">
                     {/* Lunes a Viernes */}
                     <div className="flex items-center gap-3">
-                      <Label className="text-gray-400 text-sm w-32">Lunes a Viernes</Label>
+                      <Label className="text-gray-400 md:text-sm text-xs md:w-32 w-16 md:block hidden">Lunes a Viernes</Label>
+                      {/* Responsive: Mostrar "L a V" en móvil */}
+                      <Label className="text-gray-400 text-xs w-16 md:hidden block">L a V</Label>
                       <div className="flex items-center gap-2 flex-1">
                         <Input 
                           id="horario-lv-inicio"
                           type="time"
                           value={businessInfo.horarios.lunesViernes.inicio}
                           onChange={(e) => handleBusinessInfoChange('horarios.lunesViernes.inicio', e.target.value)}
-                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
+                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 md:w-28 w-20 md:text-sm text-xs [&::-webkit-datetime-edit-ampm-field]:lowercase [&::-webkit-datetime-edit-ampm-field]:text-xs"
                         />
-                        <span className="text-gray-400">a</span>
+                        <span className="text-gray-400 md:text-sm text-xs">a</span>
                         <Input 
                           id="horario-lv-fin"
                           type="time"
                           value={businessInfo.horarios.lunesViernes.fin}
                           onChange={(e) => handleBusinessInfoChange('horarios.lunesViernes.fin', e.target.value)}
-                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
+                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 md:w-28 w-20 md:text-sm text-xs [&::-webkit-datetime-edit-ampm-field]:lowercase [&::-webkit-datetime-edit-ampm-field]:text-xs"
                         />
                       </div>
                     </div>
                     
                     {/* Sábado */}
                     <div className="flex items-center gap-3">
-                      <Label className="text-gray-400 text-sm w-32">Sábado</Label>
+                      <Label className="text-gray-400 md:text-sm text-xs md:w-32 w-16 md:block hidden">Sábado</Label>
+                      {/* Responsive: Mostrar "Sab." en móvil */}
+                      <Label className="text-gray-400 text-xs w-16 md:hidden block">Sab.</Label>
                       <div className="flex items-center gap-2 flex-1">
                         <Input 
                           id="horario-sabado-inicio"
                           type="time"
                           value={businessInfo.horarios.sabado.inicio}
                           onChange={(e) => handleBusinessInfoChange('horarios.sabado.inicio', e.target.value)}
-                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
+                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 md:w-28 w-20 md:text-sm text-xs [&::-webkit-datetime-edit-ampm-field]:lowercase [&::-webkit-datetime-edit-ampm-field]:text-xs"
                         />
-                        <span className="text-gray-400">a</span>
+                        <span className="text-gray-400 md:text-sm text-xs">a</span>
                         <Input 
                           id="horario-sabado-fin"
                           type="time"
                           value={businessInfo.horarios.sabado.fin}
                           onChange={(e) => handleBusinessInfoChange('horarios.sabado.fin', e.target.value)}
-                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
+                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 md:w-28 w-20 md:text-sm text-xs [&::-webkit-datetime-edit-ampm-field]:lowercase [&::-webkit-datetime-edit-ampm-field]:text-xs"
                         />
                       </div>
                     </div>
                     
                     {/* Domingo */}
                     <div className="flex items-center gap-3">
-                      <Label className="text-gray-400 text-sm w-32">Domingo</Label>
+                      <Label className="text-gray-400 md:text-sm text-xs md:w-32 w-16 md:block hidden">Domingo</Label>
+                      {/* Responsive: Mostrar "Dom." en móvil */}
+                      <Label className="text-gray-400 text-xs w-16 md:hidden block">Dom.</Label>
                       <div className="flex items-center gap-2 flex-1">
                         <Input 
                           id="horario-domingo-inicio"
                           type="time"
                           value={businessInfo.horarios.domingo.inicio}
                           onChange={(e) => handleBusinessInfoChange('horarios.domingo.inicio', e.target.value)}
-                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
+                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 md:w-28 w-20 md:text-sm text-xs [&::-webkit-datetime-edit-ampm-field]:lowercase [&::-webkit-datetime-edit-ampm-field]:text-xs"
                         />
-                        <span className="text-gray-400">a</span>
+                        <span className="text-gray-400 md:text-sm text-xs">a</span>
                         <Input 
                           id="horario-domingo-fin"
                           type="time"
                           value={businessInfo.horarios.domingo.fin}
                           onChange={(e) => handleBusinessInfoChange('horarios.domingo.fin', e.target.value)}
-                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 w-24"
+                          className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 md:w-28 w-20 md:text-sm text-xs [&::-webkit-datetime-edit-ampm-field]:lowercase [&::-webkit-datetime-edit-ampm-field]:text-xs"
                         />
                       </div>
                     </div>
@@ -835,7 +841,7 @@ export default function AdminPage() {
             </div>
             
             <div className="mt-6 flex justify-end">
-              <Button className="bg-gray-700 hover:bg-gray-600 text-white">
+              <Button className="bg-gray-700 hover:bg-gray-600 text-white md:text-sm text-xs md:px-4 px-3 md:py-2 py-1">
                 Guardar Información
               </Button>
             </div>
@@ -870,20 +876,20 @@ export default function AdminPage() {
           }
           setIsModalOpen(open)
         }}>
-          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-gray-800 border-gray-700 text-white md:max-w-2xl max-w-[95vw] md:max-h-[90vh] max-h-[95vh] overflow-y-auto md:m-0 m-2">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold">
+              <DialogTitle className="md:text-xl text-lg font-semibold">
                 Agregar Producto a {selectedSection}
               </DialogTitle>
             </DialogHeader>
             
-            <div className="space-y-6">
+            <div className="md:space-y-6 space-y-4">
               {/* Cargar imagen */}
               <div>
-                <Label htmlFor="producto-imagen" className="text-gray-300 mb-2 block">
+                <Label htmlFor="producto-imagen" className="text-gray-300 mb-2 block md:text-sm text-xs">
                   Cargar Imagen (JPG, PNG)
                 </Label>
-                <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 hover:border-gray-500 transition-colors w-64 h-48 mx-auto bg-white">
+                <div className="border-2 border-dashed border-gray-600 rounded-lg md:p-4 p-2 hover:border-gray-500 transition-colors md:w-64 w-48 md:h-48 h-36 mx-auto bg-white">
                   <input
                     id="producto-imagen"
                     type="file"
@@ -917,28 +923,28 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Fila con tres campos: Tipo de Negocio, Categoría, Subcategoría */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Tipo de Negocio */}
-                <div>
-                  <Label htmlFor="tipo-negocio" className="text-gray-300 mb-2 block">
-                    Tipo de Negocio
-                  </Label>
-                  <Select value={productoData.tipoNegocio} onValueChange={(value) => handleProductoDataChange('tipoNegocio', value)}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
-                      <SelectValue placeholder="Seleccionar" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600 w-full">
-                      <SelectItem value="productos">Productos</SelectItem>
-                      <SelectItem value="servicios">Servicios</SelectItem>
-                      <SelectItem value="arriendos">Arriendos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              {/* Tipo de Negocio */}
+              <div>
+                <Label htmlFor="tipo-negocio" className="text-gray-300 mb-2 block md:text-sm text-xs">
+                  Tipo de Negocio
+                </Label>
+                <Select value={productoData.tipoNegocio} onValueChange={(value) => handleProductoDataChange('tipoNegocio', value)}>
+                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
+                    <SelectValue placeholder="Seleccionar" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-700 border-gray-600 w-full">
+                    <SelectItem value="productos">Productos</SelectItem>
+                    <SelectItem value="servicios">Servicios</SelectItem>
+                    <SelectItem value="arriendos">Arriendos</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
+              {/* Fila con Categoría y Subcategoría */}
+              <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:space-y-4">
                 {/* Categoría */}
                 <div>
-                  <Label htmlFor="categoria" className="text-gray-300 mb-2 block">
+                  <Label htmlFor="categoria" className="text-gray-300 mb-2 block md:text-sm text-xs">
                     Categoría
                   </Label>
                   <Select value={productoData.categoria} onValueChange={(value) => handleProductoDataChange('categoria', value)}>
@@ -957,7 +963,7 @@ export default function AdminPage() {
 
                 {/* Subcategoría */}
                 <div>
-                  <Label htmlFor="subcategoria" className="text-gray-300 mb-2 block">
+                  <Label htmlFor="subcategoria" className="text-gray-300 mb-2 block md:text-sm text-xs">
                     Subcategoría
                   </Label>
                   <Select value={productoData.subcategoria} onValueChange={(value) => handleProductoDataChange('subcategoria', value)}>
@@ -977,7 +983,7 @@ export default function AdminPage() {
 
               {/* Nombre o Título del Producto */}
               <div>
-                <Label htmlFor="producto-nombre" className="text-gray-300 mb-2 block">
+                <Label htmlFor="producto-nombre" className="text-gray-300 mb-2 block md:text-sm text-xs">
                   Nombre o Título del Producto
                 </Label>
                 <Input 
@@ -985,16 +991,16 @@ export default function AdminPage() {
                   value={productoData.nombre}
                   onChange={(e) => handleProductoDataChange('nombre', e.target.value)}
                   placeholder="Ingresa el nombre del producto"
-                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                 />
               </div>
 
               {/* Opciones de características del producto */}
               <div>
-                <Label className="text-gray-300 mb-3 block">
+                <Label className="text-gray-300 mb-3 block md:text-sm text-xs">
                   Tu producto necesita mostrar:
                 </Label>
-                <div className="flex flex-wrap gap-3">
+                <div className="grid grid-cols-4 gap-2">
                   {/* Opción Género - PRIMERA */}
                   <div className="flex items-center space-x-1">
                     <div className="relative">
@@ -1022,7 +1028,7 @@ export default function AdminPage() {
                         )}
                       </label>
                     </div>
-                    <label htmlFor="opcion-genero" className="text-gray-300 cursor-pointer text-xs">
+                    <label htmlFor="opcion-genero" className="text-gray-300 cursor-pointer md:text-xs text-[10px]">
                       Género
                     </label>
                   </div>
@@ -1054,12 +1060,12 @@ export default function AdminPage() {
                         )}
                       </label>
                     </div>
-                    <label htmlFor="opcion-medidas" className="text-gray-300 cursor-pointer text-xs">
+                    <label htmlFor="opcion-medidas" className="text-gray-300 cursor-pointer md:text-xs text-[10px]">
                       Medidas
                     </label>
                   </div>
 
-                  {/* Opción Talla de Calzado - TERCERA */}
+                  {/* Opción Calzado - TERCERA */}
                   <div className="flex items-center space-x-1">
                     <div className="relative">
                       <input
@@ -1086,12 +1092,12 @@ export default function AdminPage() {
                         )}
                       </label>
                     </div>
-                    <label htmlFor="opcion-tallas-calzado" className="text-gray-300 cursor-pointer text-xs">
-                      Talla Calzado
+                    <label htmlFor="opcion-tallas-calzado" className="text-gray-300 cursor-pointer md:text-xs text-[10px]">
+                      Calzado
                     </label>
                   </div>
 
-                  {/* Opción Talla de Ropa - CUARTA */}
+                  {/* Opción Ropa - CUARTA */}
                   <div className="flex items-center space-x-1">
                     <div className="relative">
                       <input
@@ -1118,8 +1124,8 @@ export default function AdminPage() {
                         )}
                       </label>
                     </div>
-                    <label htmlFor="opcion-tallas-ropa" className="text-gray-300 cursor-pointer text-xs">
-                      Talla Ropa
+                    <label htmlFor="opcion-tallas-ropa" className="text-gray-300 cursor-pointer md:text-xs text-[10px]">
+                      Ropa
                     </label>
                   </div>
                 </div>
@@ -1127,13 +1133,13 @@ export default function AdminPage() {
                 {/* Campos dinámicos según opciones seleccionadas */}
                 <div className="mt-6">
                   <div className="space-y-4">
-                    {/* Campos de Género y Medidas - EN LA MISMA FILA */}
+                    {/* Campos de Género y Medidas - EN LA MISMA FILA SOLO EN RESPONSIVE */}
                     {(opcionesProducto.genero || opcionesProducto.medidas) && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:space-y-4">
                         {/* Campo de Género */}
                         {opcionesProducto.genero && (
                           <div>
-                            <Label htmlFor="genero" className="text-gray-300 mb-2 block">
+                            <Label htmlFor="genero" className="text-gray-300 mb-2 block md:text-sm text-xs">
                               Género
                             </Label>
                             <Select value={productoData.genero} onValueChange={(value) => handleProductoDataChange('genero', value)}>
@@ -1154,7 +1160,7 @@ export default function AdminPage() {
                         {/* Campo de Medidas */}
                         {opcionesProducto.medidas && (
                           <div>
-                            <Label className="text-gray-300 mb-2 block">
+                            <Label className="text-gray-300 mb-2 block md:text-sm text-xs">
                               Medidas
                             </Label>
                             <div className="flex items-center gap-2">
@@ -1164,7 +1170,7 @@ export default function AdminPage() {
                                 value={productoData.medidas}
                                 onChange={(e) => handleProductoDataChange('medidas', e.target.value)}
                                 placeholder="0"
-                                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 flex-1"
+                                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 flex-1 md:text-sm text-xs"
                               />
                               <Select value={productoData.unidadMedida} onValueChange={(value) => handleProductoDataChange('unidadMedida', value)}>
                                 <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-16">
@@ -1247,10 +1253,10 @@ export default function AdminPage() {
 
               {/* Campos de Precio */}
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:space-y-4">
                   {/* Precio Actual */}
                   <div>
-                    <Label htmlFor="precio-actual" className="text-gray-300 mb-2 block">
+                    <Label htmlFor="precio-actual" className="text-gray-300 mb-2 block md:text-sm text-xs">
                       Precio Actual
                     </Label>
                     <div className="relative">
@@ -1261,14 +1267,14 @@ export default function AdminPage() {
                         value={productoData.precioActual}
                         onChange={(e) => handleProductoDataChange('precioActual', e.target.value)}
                         placeholder="0.00"
-                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-8"
+                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-8 md:text-sm text-xs"
                       />
                     </div>
                   </div>
 
                   {/* Precio Anterior */}
                   <div>
-                    <Label htmlFor="precio-anterior" className="text-gray-300 mb-2 block">
+                    <Label htmlFor="precio-anterior" className="text-gray-300 mb-2 block md:text-sm text-xs">
                       Precio Anterior
                     </Label>
                     <div className="relative">
@@ -1279,7 +1285,7 @@ export default function AdminPage() {
                         value={productoData.precioAnterior}
                         onChange={(e) => handleProductoDataChange('precioAnterior', e.target.value)}
                         placeholder="0.00"
-                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-8"
+                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-8 md:text-sm text-xs"
                       />
                     </div>
                   </div>
@@ -1327,24 +1333,34 @@ export default function AdminPage() {
               </div>
 
               {/* Botones de acción */}
-              <div className="flex justify-end space-x-3 pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsModalOpen(false)}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
-                >
-                  Cancelar
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={autollenarCampos}
-                  className="border-blue-600 text-blue-300 hover:bg-blue-700 hover:text-white"
-                >
-                  Autollenado
-                </Button>
-                <Button onClick={agregarProducto} className="bg-gray-700 hover:bg-gray-600 text-white">
-                  Agregar Producto
-                </Button>
+              <div className="space-y-3 pt-4">
+                {/* Primera fila: Botón Auto llenado solo */}
+                <div className="flex justify-center">
+                  <Button 
+                    variant="outline" 
+                    onClick={autollenarCampos}
+                    className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600 md:text-sm text-xs md:px-4 px-3 md:py-2 py-1.5"
+                  >
+                    Autollenado
+                  </Button>
+                </div>
+                
+                {/* Segunda fila: Cancelar y Agregar Producto */}
+                <div className="flex justify-center gap-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsModalOpen(false)}
+                    className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600 md:text-sm text-xs md:px-4 px-3 md:py-2 py-1.5"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button 
+                    onClick={agregarProducto} 
+                    className="bg-gray-700 hover:bg-gray-600 text-white md:text-sm text-xs md:px-4 px-3 md:py-2 py-1.5"
+                  >
+                    Agregar Producto
+                  </Button>
+                </div>
               </div>
             </div>
           </DialogContent>
@@ -1355,46 +1371,46 @@ export default function AdminPage() {
 
         {/* Sección: Gestión de Productos */}
         <div className="px-6 py-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Gestión de Productos</h1>
-          <p className="text-gray-400">Administra las diferentes secciones de productos del marketplace</p>
+          <h1 className="text-3xl md:text-3xl text-2xl font-bold text-white mb-2">Gestión de Productos</h1>
+          <p className="text-gray-400 md:text-base text-sm">Administra las diferentes secciones de productos del marketplace</p>
         </div>
 
         {/* Pestañas de Productos */}
         <Tabs defaultValue="destacados" className="w-full">
-          <TabsList className="grid grid-cols-6 w-full max-w-4xl mx-auto px-6 mb-8 bg-gray-800 border border-gray-700 rounded-lg p-1">
+          <TabsList className="grid md:grid-cols-6 grid-cols-3 md:w-full w-11/12 md:max-w-4xl max-w-sm mx-auto px-6 mb-8 bg-gray-800 border border-gray-700 rounded-lg p-1 md:h-auto h-auto md:gap-0 gap-y-1">
             <TabsTrigger 
               value="destacados" 
-              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               Destacados
             </TabsTrigger>
             <TabsTrigger 
               value="ofertas" 
-              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               Ofertas
             </TabsTrigger>
             <TabsTrigger 
               value="novedades" 
-              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               Novedades
             </TabsTrigger>
             <TabsTrigger 
               value="tendencias" 
-              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               Tendencias
             </TabsTrigger>
             <TabsTrigger 
               value="no-te-lo-pierdas" 
-              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               ¡No te lo Pierdas!
             </TabsTrigger>
             <TabsTrigger 
               value="liquidaciones" 
-              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               Liquidaciones
             </TabsTrigger>
