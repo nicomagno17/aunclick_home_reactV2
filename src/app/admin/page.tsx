@@ -7,10 +7,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, X, MapPin } from 'lucide-react'
+import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, X, MapPin, Settings } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminProductCarousel } from '@/components/admin/admin-product-carousel'
+import { CarouselProductForm } from '@/components/admin/carousel-product-form'
 
 export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -68,6 +69,36 @@ export default function AdminPage() {
       domingo: { inicio: '', fin: '' }
     }
   })
+  
+  // Estado para las imágenes de los carruseles
+  const [carouselImages, setCarouselImages] = useState({
+    carrusel1: Array(8).fill(null), // 8 espacios para el carrusel 1 (índices 1-8)
+    carrusel2: Array(8).fill(null)  // 8 espacios para el carrusel 2 (índices 9-16)
+  })
+  
+  // Estado para los precios de las imágenes de los carruseles
+  const [carouselPrices, setCarouselPrices] = useState({
+    carrusel1: Array(8).fill(''), // 8 precios para el carrusel 1
+    carrusel2: Array(8).fill('')  // 8 precios para el carrusel 2
+  })
+  
+  // Estado para el enfoque de los inputs de precio
+  const [priceFocus, setPriceFocus] = useState({
+    carrusel1: Array(8).fill(false), // 8 estados de enfoque para el carrusel 1
+    carrusel2: Array(8).fill(false)  // 8 estados de enfoque para el carrusel 2
+  })
+  
+  // Estado para los datos de productos del carrusel
+  const [carouselProductData, setCarouselProductData] = useState({
+    carrusel1: Array(8).fill(null), // 8 productos para el carrusel 1
+    carrusel2: Array(8).fill(null)  // 8 productos para el carrusel 2
+  })
+  
+  // Estado para el modal de datos del producto y producto seleccionado
+  const [isCarouselModalOpen, setIsCarouselModalOpen] = useState(false)
+  const [selectedCarouselItem, setSelectedCarouselItem] = useState<{type: 'carrusel1' | 'carrusel2', index: number} | null>(null)
+  const [selectedCarouselProduct, setSelectedCarouselProduct] = useState<any | null>(null)
+  const [selectedCarouselItemForPopup, setSelectedCarouselItemForPopup] = useState<{type: 'carrusel1' | 'carrusel2', index: number} | null>(null)
   
   const openModal = (section: string) => {
     setSelectedSection(section)
@@ -149,6 +180,83 @@ export default function AdminPage() {
         }
       }
     })
+  }
+
+  // Función para manejar la carga de imágenes del carrusel
+  const handleCarouselImageUpload = (carruselType: 'carrusel1' | 'carrusel2', index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string
+        setCarouselImages(prev => ({
+          ...prev,
+          [carruselType]: prev[carruselType].map((img, idx) => idx === index ? imageUrl : img)
+        }))
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  // Función para manejar cambios de precio del carrusel
+  const handleCarouselPriceChange = (carruselType: 'carrusel1' | 'carrusel2', index: number, price: string) => {
+    setCarouselPrices(prev => ({
+      ...prev,
+      [carruselType]: prev[carruselType].map((p, idx) => idx === index ? price : p)
+    }))
+  }
+
+  // Función para manejar el enfoque del input de precio
+  const handlePriceFocus = (carruselType: 'carrusel1' | 'carrusel2', index: number) => {
+    setPriceFocus(prev => ({
+      ...prev,
+      [carruselType]: prev[carruselType].map((f, idx) => idx === index ? true : f)
+    }))
+  }
+
+  // Función para manejar la pérdida de enfoque del input de precio
+  const handlePriceBlur = (carruselType: 'carrusel1' | 'carrusel2', index: number) => {
+    setPriceFocus(prev => ({
+      ...prev,
+      [carruselType]: prev[carruselType].map((f, idx) => idx === index ? false : f)
+    }))
+  }
+
+  // Función para abrir el modal de datos del producto del carrusel
+  const openCarouselModal = (carruselType: 'carrusel1' | 'carrusel2', index: number) => {
+    setSelectedCarouselItem({ type: carruselType, index })
+    setIsCarouselModalOpen(true)
+  }
+
+  // Función para guardar datos del producto del carrusel
+  const saveCarouselProductData = (productData: any) => {
+    if (selectedCarouselItem) {
+      const { type, index } = selectedCarouselItem
+      setCarouselProductData(prev => ({
+        ...prev,
+        [type]: prev[type].map((item, idx) => idx === index ? productData : item)
+      }))
+      setIsCarouselModalOpen(false)
+      setSelectedCarouselItem(null)
+    }
+  }
+
+  // Función para abrir el popup de información del producto del carrusel
+  const openCarouselProductPopup = (carruselType: 'carrusel1' | 'carrusel2', index: number) => {
+    const productData = carouselProductData[carruselType][index]
+    if (productData) {
+      setSelectedCarouselProduct(productData)
+      setSelectedCarouselItemForPopup({ type: carruselType, index })
+    }
+  }
+
+  // Función para guardar cambios del carrusel
+  const handleSaveCarousel = (carruselType: 'carrusel1' | 'carrusel2') => {
+    console.log(`Guardando cambios para ${carruselType}:`)
+    console.log('Imágenes:', carouselImages[carruselType])
+    console.log('Precios:', carouselPrices[carruselType])
+    // Aquí iría la lógica para guardar en la base de datos
+    alert(`Cambios guardados para ${carruselType === 'carrusel1' ? 'Carrusel 1' : 'Carrusel 2'}`)
   }
 
   // Función de autollenado para información del negocio
@@ -1568,8 +1676,8 @@ export default function AdminPage() {
       </div>
 
       {/* Container Banner publicitario */}
-      <div className="px-6 mb-8">
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+      <div className="px-6 mb-8 relative">
+        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 blur-[2px]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
             {/* Columna 1 - Banner 1 */}
             <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
@@ -1664,7 +1772,329 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+        
+        {/* Overlay Message */}
+        <div className="absolute inset-0 flex items-center justify-center z-10">
+          <div className="bg-white border-2 border-gray-400 rounded-lg px-4 py-4 shadow-lg text-center max-w-xs">
+            <h3 className="text-lg font-bold text-gray-800 mb-2">¡Próximamente!</h3>
+            <p className="text-sm text-gray-600">Sistema de gestión de banners promocionales para destacar productos y ofertas especiales en tu tienda virtual.</p>
+          </div>
+        </div>
       </div>
+
+      {/* Separador entre secciones */}
+      <div className="border-t border-gray-700 my-8"></div>
+
+      {/* Sección: Gestión de Carruseles */}
+      <div className="px-6 py-8">
+        <h1 className="text-3xl font-bold text-white mb-2">Gestión de Carruseles</h1>
+        <p className="text-gray-400">Administra las imágenes de los carruseles principales</p>
+      </div>
+
+      {/* Pestañas de Carruseles */}
+      <div className="px-6 mb-8 relative">
+        <Tabs defaultValue="carrusel1" className="w-full blur-[2px]">
+          <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto px-6 mb-8 bg-gray-800 border border-gray-700 rounded-lg p-1">
+            <TabsTrigger 
+              value="carrusel1" 
+              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+            >
+              Carrusel 1
+            </TabsTrigger>
+            <TabsTrigger 
+              value="carrusel2" 
+              className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+            >
+              Carrusel 2
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Contenido de cada pestaña de carruseles */}
+          <div className="px-6">
+            {/* Tab Carrusel 1 */}
+            <TabsContent value="carrusel1" className="space-y-4">
+              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+                <h2 className="text-xl font-semibold text-white mb-6">Carrusel 1 - Imágenes (1-8)</h2>
+              
+              {/* Primera fila - 4 marcos */}
+              <div className="grid grid-cols-4 gap-4 mb-6">
+                {[0, 1, 2, 3].map((index) => (
+                  <div key={index} className="relative">
+                    {/* Círculo numerado en la esquina superior derecha */}
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                      {index + 1}
+                    </div>
+                    
+                    {/* Marco para imagen */}
+                    <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                      {!carouselImages.carrusel1[index] && (
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        />
+                      )}
+                      
+                      {carouselImages.carrusel1[index] ? (
+                        <>
+                          <img 
+                            src={carouselImages.carrusel1[index]} 
+                            alt={`Carrusel 1 - Imagen ${index + 1}`}
+                            className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                            onClick={() => openCarouselProductPopup('carrusel1', index)}
+                          />
+                          
+                          {/* Botón de configuración en la esquina superior izquierda */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openCarouselModal('carrusel1', index)
+                            }}
+                            className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                          >
+                            <Settings className="w-3 h-3 text-white" />
+                          </button>
+                          
+                          {/* Precio en la esquina inferior derecha (si existe) */}
+                          {carouselProductData.carrusel1[index]?.precioActual && (
+                            <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                              <span className="text-white text-xs font-semibold">
+                                ${carouselProductData.carrusel1[index].precioActual}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                          <Plus className="w-8 h-8 mb-2" />
+                          <span className="text-sm">Subir imagen</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Segunda fila - 4 marcos */}
+              <div className="grid grid-cols-4 gap-4 mb-6">
+                {[4, 5, 6, 7].map((index) => (
+                  <div key={index} className="relative">
+                    {/* Círculo numerado en la esquina superior derecha */}
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                      {index + 1}
+                    </div>
+                    
+                    {/* Marco para imagen */}
+                    <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                      {!carouselImages.carrusel1[index] && (
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        />
+                      )}
+                      
+                      {carouselImages.carrusel1[index] ? (
+                        <>
+                          <img 
+                            src={carouselImages.carrusel1[index]} 
+                            alt={`Carrusel 1 - Imagen ${index + 1}`}
+                            className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                            onClick={() => openCarouselProductPopup('carrusel1', index)}
+                          />
+                          
+                          {/* Botón de configuración en la esquina superior izquierda */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openCarouselModal('carrusel1', index)
+                            }}
+                            className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                          >
+                            <Settings className="w-3 h-3 text-white" />
+                          </button>
+                          
+                          {/* Precio en la esquina inferior derecha (si existe) */}
+                          {carouselProductData.carrusel1[index]?.precioActual && (
+                            <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                              <span className="text-white text-xs font-semibold">
+                                ${carouselProductData.carrusel1[index].precioActual}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                          <Plus className="w-8 h-8 mb-2" />
+                          <span className="text-sm">Subir imagen</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Botón Guardar Cambios */}
+              <div className="flex justify-end">
+                <Button 
+                  onClick={() => handleSaveCarousel('carrusel1')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2"
+                >
+                  Guardar Cambios
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Tab Carrusel 2 */}
+          <TabsContent value="carrusel2" className="space-y-4">
+            <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+              <h2 className="text-xl font-semibold text-white mb-6">Carrusel 2 - Imágenes (9-16)</h2>
+              
+              {/* Primera fila - 4 marcos */}
+              <div className="grid grid-cols-4 gap-4 mb-6">
+                {[0, 1, 2, 3].map((index) => (
+                  <div key={index} className="relative">
+                    {/* Círculo numerado en la esquina superior derecha */}
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                      {index + 9}
+                    </div>
+                    
+                    {/* Marco para imagen */}
+                    <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                      {!carouselImages.carrusel2[index] && (
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        />
+                      )}
+                      
+                      {carouselImages.carrusel2[index] ? (
+                        <>
+                          <img 
+                            src={carouselImages.carrusel2[index]} 
+                            alt={`Carrusel 2 - Imagen ${index + 9}`}
+                            className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                            onClick={() => openCarouselProductPopup('carrusel2', index)}
+                          />
+                          
+                          {/* Botón de configuración en la esquina superior izquierda */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openCarouselModal('carrusel2', index)
+                            }}
+                            className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                          >
+                            <Settings className="w-3 h-3 text-white" />
+                          </button>
+                          
+                          {/* Precio en la esquina inferior derecha (si existe) */}
+                          {carouselProductData.carrusel2[index]?.precioActual && (
+                            <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                              <span className="text-white text-xs font-semibold">
+                                ${carouselProductData.carrusel2[index].precioActual}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                          <Plus className="w-8 h-8 mb-2" />
+                          <span className="text-sm">Subir imagen</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Segunda fila - 4 marcos */}
+              <div className="grid grid-cols-4 gap-4 mb-6">
+                {[4, 5, 6, 7].map((index) => (
+                  <div key={index} className="relative">
+                    {/* Círculo numerado en la esquina superior derecha */}
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                      {index + 13}
+                    </div>
+                    
+                    {/* Marco para imagen */}
+                    <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                      {!carouselImages.carrusel2[index + 4] && (
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleCarouselImageUpload('carrusel2', index + 4, e)}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        />
+                      )}
+                      
+                      {carouselImages.carrusel2[index + 4] ? (
+                        <>
+                          <img 
+                            src={carouselImages.carrusel2[index + 4]} 
+                            alt={`Carrusel 2 - Imagen ${index + 13}`}
+                            className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                            onClick={() => openCarouselProductPopup('carrusel2', index + 4)}
+                          />
+                          
+                          {/* Botón de configuración en la esquina superior izquierda */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openCarouselModal('carrusel2', index + 4)
+                            }}
+                            className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                          >
+                            <Settings className="w-3 h-3 text-white" />
+                          </button>
+                          
+                          {/* Precio en la esquina inferior derecha (si existe) */}
+                          {carouselProductData.carrusel2[index + 4]?.precioActual && (
+                            <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                              <span className="text-white text-xs font-semibold">
+                                ${carouselProductData.carrusel2[index + 4].precioActual}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                          <Plus className="w-8 h-8 mb-2" />
+                          <span className="text-sm">Subir imagen</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Botón Guardar Cambios */}
+              <div className="flex justify-end">
+                <Button 
+                  onClick={() => handleSaveCarousel('carrusel2')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2"
+                >
+                  Guardar Cambios
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </div>
+      </Tabs>
+      
+      {/* Overlay Message */}
+      <div className="absolute inset-0 flex items-center justify-center z-10">
+        <div className="bg-white border-2 border-gray-400 rounded-lg px-4 py-4 shadow-lg text-center max-w-xs">
+          <h3 className="text-lg font-bold text-gray-800 mb-2">¡Próximamente!</h3>
+          <p className="text-sm text-gray-600">Sistema avanzado de gestión de carruseles interactivos para mostrar contenido dinámico y promocional en la página principal.</p>
+        </div>
+      </div>
+    </div>
 
       {/* Popup de Información del Producto */}
       <Dialog open={selectedProducto !== null} onOpenChange={(open) => !open && setSelectedProducto(null)}>
@@ -1863,6 +2293,158 @@ export default function AdminPage() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Configuración de Producto del Carrusel */}
+      <Dialog open={isCarouselModalOpen} onOpenChange={setIsCarouselModalOpen}>
+        <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">
+              Configurar Producto del Carrusel
+            </DialogTitle>
+          </DialogHeader>
+          
+          <CarouselProductForm 
+            onSave={saveCarouselProductData}
+            onCancel={() => setIsCarouselModalOpen(false)}
+            existingData={selectedCarouselItem ? carouselProductData[selectedCarouselItem.type]?.[selectedCarouselItem.index] : null}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Popup de Información del Producto del Carrusel */}
+      <Dialog open={selectedCarouselProduct !== null} onOpenChange={(open) => {
+        if (!open) {
+          setSelectedCarouselProduct(null)
+          setSelectedCarouselItemForPopup(null)
+        }
+      }}>
+        <DialogContent className="max-w-4xl w-full max-h-[60vh] bg-gray-800 border-gray-700 text-white">
+          {/* Botón cerrar */}
+          <button
+            onClick={() => {
+              setSelectedCarouselProduct(null)
+              setSelectedCarouselItemForPopup(null)
+            }}
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10"
+          >
+            <X className="h-4 w-4 text-gray-400 hover:text-white" />
+            <span className="sr-only">Cerrar</span>
+          </button>
+
+          {selectedCarouselProduct && (
+            <div className="overflow-y-auto max-h-[calc(60vh-2rem)] p-6">
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                {/* Columna Izquierda - Imagen del producto */}
+                <div className="col-span-1">
+                  <div className="aspect-square bg-white rounded-lg overflow-hidden">
+                    {/* Get the uploaded image from carousel */}
+                    {(() => {
+                      // Find the image from carousel data
+                      let carouselImage = null;
+                      
+                      if (selectedCarouselItemForPopup) {
+                        const { type, index } = selectedCarouselItemForPopup;
+                        carouselImage = carouselImages[type][index];
+                      }
+                      
+                      return carouselImage ? (
+                        <img
+                          src={carouselImage}
+                          alt={selectedCarouselProduct.nombre}
+                          className="w-full h-full object-contain bg-gray-100"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-500">Sin imagen</span>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                {/* Columna Derecha - Información del producto */}
+                <div className="col-span-1 space-y-2">
+                  {/* Título del producto */}
+                  <h2 className="text-lg font-bold text-white leading-tight mb-1">
+                    {selectedCarouselProduct.nombre}
+                  </h2>
+
+                  {/* Categoría y Subcategoría - más pequeño y más cerca */}
+                  {(selectedCarouselProduct.categoria || selectedCarouselProduct.subcategoria) && (
+                    <div className="flex items-center gap-2 text-[10px] text-gray-400 mb-2">
+                      {selectedCarouselProduct.categoria && <span>{selectedCarouselProduct.categoria}</span>}
+                      {selectedCarouselProduct.categoria && selectedCarouselProduct.subcategoria && <span>/</span>}
+                      {selectedCarouselProduct.subcategoria && <span>{selectedCarouselProduct.subcategoria}</span>}
+                    </div>
+                  )}
+
+                  {/* Descripción - más pequeña y líneas más juntas */}
+                  {selectedCarouselProduct.descripcion && (
+                    <div className="mb-2">
+                      <p className="text-gray-300 text-xs leading-snug text-justify">
+                        {selectedCarouselProduct.descripcion}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Precios - más pequeños */}
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-base font-bold text-purple-400">
+                      ${selectedCarouselProduct.precioActual}
+                    </span>
+                    {selectedCarouselProduct.precioAnterior && (
+                      <span className="text-xs text-gray-400 line-through">
+                        ${selectedCarouselProduct.precioAnterior}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Información adicional del producto - sin título y más pequeña */}
+                  <div className="space-y-2 pt-2 border-t border-gray-700">
+                    <div className="space-y-1 text-xs">
+                      {/* Tallas de Calzado */}
+                      {selectedCarouselProduct.tallasCalzado && selectedCarouselProduct.tallasCalzado.length > 0 && (
+                        <div className="flex items-start gap-2">
+                          <span className="text-gray-400 min-w-[80px]">Tallas Calzado:</span>
+                          <span className="text-gray-300 text-[10px]">{selectedCarouselProduct.tallasCalzado.join(', ')}</span>
+                        </div>
+                      )}
+                      
+                      {/* Tallas de Ropa */}
+                      {selectedCarouselProduct.tallasRopa && selectedCarouselProduct.tallasRopa.length > 0 && (
+                        <div className="flex items-start gap-2">
+                          <span className="text-gray-400 min-w-[80px]">Tallas Ropa:</span>
+                          <span className="text-gray-300 text-[10px]">{selectedCarouselProduct.tallasRopa.join(', ')}</span>
+                        </div>
+                      )}
+                      
+                      {/* Género */}
+                      {selectedCarouselProduct.genero && selectedCarouselProduct.genero !== 'generico' && (
+                        <div className="flex items-start gap-2">
+                          <span className="text-gray-400 min-w-[60px]">Género:</span>
+                          <span className="text-gray-300 capitalize">{selectedCarouselProduct.genero}</span>
+                        </div>
+                      )}
+                      
+                      {/* Medidas */}
+                      {selectedCarouselProduct.medidas && (
+                        <div className="flex items-start gap-2">
+                          <span className="text-gray-400 min-w-[60px]">Medidas:</span>
+                          <span className="text-gray-300">
+                            {selectedCarouselProduct.medidas} {selectedCarouselProduct.unidadMedida || 'cm'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+
             </div>
           )}
         </DialogContent>
