@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, X, MapPin, Settings, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Clock, Calendar, Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, X, MapPin, Settings, ChevronLeft, ChevronRight, BarChart3, Image, ShoppingBag, ArrowLeft } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminProductCarousel } from '@/components/admin/admin-product-carousel'
@@ -16,6 +16,7 @@ import { CarouselProductForm } from '@/components/admin/carousel-product-form'
 export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedSection, setSelectedSection] = useState('')
+  const [activeContainer, setActiveContainer] = useState<string | null>(null)
   const [opcionesProducto, setOpcionesProducto] = useState({
     tallasCalzado: false,
     tallasRopa: false,
@@ -80,13 +81,14 @@ export default function AdminPage() {
       title: 'Analytics Dashboard',
       content: 'Esta sección te proporcionará estadísticas detalladas sobre el rendimiento de tu negocio en el marketplace. Podrás ver cuántas personas han visto tus productos, cuántas interacciones has recibido, consultas de clientes y el progreso de tu catálogo de productos. Estas métricas te ayudarán a entender qué productos son más populares y cómo mejorar tu presencia en la plataforma.'
     },
-    'banner': {
-      title: 'Banner Publicitario',
-      content: 'Los banners publicitarios te permiten destacar productos especiales o promociones en la página principal de tu negocio. Puedes configurar hasta 2 banners con imágenes atractivas y precios especiales. Estos banners aparecen de forma prominente para captar la atención de los visitantes y dirigir el tráfico hacia tus productos más importantes o ofertas especiales.'
-    },
+
     'carruseles': {
       title: 'Gestión de Carruseles',
       content: 'Los carruseles son galerías de imágenes que se muestran de forma rotatoria en tu página del marketplace. Tienes 2 carruseles disponibles: el Carrusel 1 (posiciones 1-8) y el Carrusel 2 (posiciones 9-16). Cada carrusel puede contener hasta 8 imágenes de productos con sus respectivos precios. Estas imágenes ayudan a mostrar la variedad de tu catálogo y atraer la atención visual de los clientes potenciales.'
+    },
+    'gestion-banner': {
+      title: 'Gestión de Banner',
+      content: 'Los banners publicitarios te permiten destacar productos especiales o promociones en la página principal de tu negocio. Puedes configurar hasta 2 banners con imágenes atractivas y precios especiales. Estos banners aparecen de forma prominente para captar la atención de los visitantes y dirigir el tráfico hacia tus productos más importantes o ofertas especiales.'
     }
   }
   
@@ -817,10 +819,82 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      {/* Responsive Menu - Only shows on mobile */}
+      <div className="md:hidden block">
+        {!activeContainer ? (
+          <div className="p-6">
+            {/* Removed the "Panel de Administración" title as it's already in the header */}
+            
+            {/* Uniform-sized buttons grid */}
+            <div className="space-y-4 mb-4">
+              {/* First row - 2 buttons */}
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => setActiveContainer('datos-negocio')}
+                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
+                >
+                  <Store className="w-8 h-8 text-blue-400 mb-2" />
+                  <span className="text-white text-sm font-medium">Datos del Negocio</span>
+                </button>
+                
+                <button
+                  onClick={() => setActiveContainer('gestion-productos')}
+                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
+                >
+                  <ShoppingBag className="w-8 h-8 text-green-400 mb-2" />
+                  <span className="text-white text-sm font-medium">Gestión de Productos</span>
+                </button>
+              </div>
+              
+              {/* Second row - 2 buttons */}
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => setActiveContainer('gestion-banner')}
+                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
+                >
+                  <Image className="w-8 h-8 text-yellow-400 mb-2" />
+                  <span className="text-white text-sm font-medium">Gestión de Banner</span>
+                </button>
+                
+                <button
+                  onClick={() => setActiveContainer('analytics')}
+                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
+                >
+                  <BarChart3 className="w-8 h-8 text-purple-400 mb-2" />
+                  <span className="text-white text-sm font-medium">Analytics Dashboard</span>
+                </button>
+              </div>
+              
+              {/* Third row - 1 centered button */}
+              <div className="flex justify-center">
+                <button
+                  onClick={() => setActiveContainer('carruseles')}
+                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center w-[calc(50%-0.5rem)]"
+                >
+                  <Settings className="w-8 h-8 text-orange-400 mb-2" />
+                  <span className="text-white text-sm font-medium">Gestión de Carruseles</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4">
+            {/* Back button */}
+            <button
+              onClick={() => setActiveContainer(null)}
+              className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors duration-200 mb-2"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="text-sm">Volver al menú</span>
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Container principal con título y pestañas */}
       <div className="w-full">
         {/* Sección: Datos del Negocio */}
-        <div className="px-6 py-8">
+        <div className={`px-6 py-8 ${activeContainer === 'datos-negocio' ? 'block' : 'hidden md:block'}`}>
           <div className="flex items-center gap-3">
             <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Datos del Negocio</h1>
             <button
@@ -834,8 +908,8 @@ export default function AdminPage() {
         </div>
 
         {/* Formulario */}
-        <div className="px-6">
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 max-w-4xl mx-auto">
+        <div className={`px-6 pb-4 ${activeContainer === 'datos-negocio' ? 'block' : 'hidden md:block'}`}>
+          <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 max-w-4xl mx-auto">
             <h2 className="text-base md:text-xl font-semibold text-white mb-4">Información General</h2>
             <div className="flex justify-between items-center mb-6">
               <p className="text-gray-400 text-xs md:text-base">Ingresa los datos básicos del negocio</p>
@@ -1536,11 +1610,8 @@ export default function AdminPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Separador entre secciones */}
-        <div className="border-t border-gray-700 my-8"></div>
-
         {/* Sección: Gestión de Productos */}
-        <div className="px-6 py-8">
+        <div className={`px-6 py-8 ${activeContainer === 'gestion-productos' ? 'block' : 'hidden md:block'}`}>
           <div className="flex items-center gap-3">
             <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Productos</h1>
             <button
@@ -1554,7 +1625,7 @@ export default function AdminPage() {
         </div>
 
         {/* Pestañas de Productos */}
-        <Tabs defaultValue="destacados" className="w-full">
+        <Tabs defaultValue="destacados" className={`w-full pb-4 ${activeContainer === 'gestion-productos' ? 'block' : 'hidden md:block'}`}>
           <TabsList className="grid md:grid-cols-6 grid-cols-3 md:w-full w-11/12 md:max-w-4xl max-w-sm mx-auto px-6 mb-8 bg-gray-800 border border-gray-700 rounded-lg p-1 md:h-auto h-auto md:gap-0 gap-y-1">
             <TabsTrigger 
               value="destacados" 
@@ -1671,11 +1742,9 @@ export default function AdminPage() {
         </Tabs>
       </div>
 
-      {/* Separador entre secciones */}
-      <div className="border-t border-gray-700 my-8"></div>
 
       {/* Sección: Analytics Dashboard */}
-      <div className="px-6 py-8">
+      <div className={`px-6 py-8 ${activeContainer === 'analytics' ? 'block' : 'hidden md:block'}`}>
         <div className="flex items-center gap-3">
           <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Analytics Dashboard</h1>
           <button
@@ -1689,8 +1758,8 @@ export default function AdminPage() {
       </div>
 
       {/* Container Analytics */}
-      <div className="px-6 mb-8 relative">
-        <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 blur-[2px]">
+      <div className={`px-6 pb-4 relative ${activeContainer === 'analytics' ? 'block' : 'hidden md:block'}`}>
+        <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4">
           {/* Fila Superior - 3 Columnas en desktop, apiladas en mobile */}
           <div className="grid md:grid-cols-3 grid-cols-1 md:gap-6 gap-4 md:mb-8 mb-6">
             {/* Columna 1 - 4 KPIs en 2 filas */}
@@ -1868,129 +1937,6 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* Separador entre secciones */}
-      <div className="border-t border-gray-700 my-8"></div>
-
-      {/* Sección: Banner publicitario */}
-      <div className="px-6 py-8">
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Banner publicitario</h1>
-          <button
-            onClick={() => openHelpPopup('banner')}
-            className="mb-2 w-6 h-6 md:w-8 md:h-8 rounded-full border border-yellow-400 bg-transparent hover:bg-yellow-400/10 transition-colors flex items-center justify-center"
-          >
-            <span className="text-yellow-400 font-bold text-sm md:text-base">?</span>
-          </button>
-        </div>
-        <p className="text-gray-400 text-xs md:text-base">Gestión de banners promocionales</p>
-      </div>
-
-      {/* Container Banner publicitario */}
-      <div className="px-6 mb-8 relative">
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 blur-[2px]">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
-            {/* Columna 1 - Banner 1 */}
-            <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
-              {/* Número identificador */}
-              <div className="absolute -top-2 -left-2 bg-purple-600 text-white rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold z-10">
-                1
-              </div>
-              
-              {/* Marco rectangular para imagen */}
-              <div className="bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer">
-                <div className="text-center">
-                  <div className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2">+</div>
-                  <p className="text-gray-400 text-xs md:text-sm">Agregar producto</p>
-                </div>
-              </div>
-              
-              {/* Precios y botón responsive */}
-              <div className="space-y-2 md:space-y-0 md:flex md:items-end md:justify-between">
-                {/* Fila de precios */}
-                <div className="flex gap-2 md:gap-4 justify-center md:justify-start">
-                  <div className="text-center">
-                    <label className="block text-xs text-gray-400 mb-1">Precio actual</label>
-                    <input 
-                      type="text" 
-                      placeholder="$0.00" 
-                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
-                    />
-                  </div>
-                  <div className="text-center">
-                    <label className="block text-xs text-gray-400 mb-1">Precio anterior</label>
-                    <input 
-                      type="text" 
-                      placeholder="$0.00" 
-                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
-                    />
-                  </div>
-                </div>
-                
-                {/* Botón debajo en mobile, a la derecha en desktop */}
-                <div className="flex justify-center md:justify-end">
-                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-3 md:px-6 py-1 md:py-2 text-xs md:text-base rounded transition-colors">
-                    Agregar
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Columna 2 - Banner 2 */}
-            <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
-              {/* Número identificador */}
-              <div className="absolute -top-2 -left-2 bg-purple-600 text-white rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold z-10">
-                2
-              </div>
-              
-              {/* Marco rectangular para imagen */}
-              <div className="bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer">
-                <div className="text-center">
-                  <div className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2">+</div>
-                  <p className="text-gray-400 text-xs md:text-sm">Agregar producto</p>
-                </div>
-              </div>
-              
-              {/* Precios y botón responsive */}
-              <div className="space-y-2 md:space-y-0 md:flex md:items-end md:justify-between">
-                {/* Fila de precios */}
-                <div className="flex gap-2 md:gap-4 justify-center md:justify-start">
-                  <div className="text-center">
-                    <label className="block text-xs text-gray-400 mb-1">Precio actual</label>
-                    <input 
-                      type="text" 
-                      placeholder="$0.00" 
-                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
-                    />
-                  </div>
-                  <div className="text-center">
-                    <label className="block text-xs text-gray-400 mb-1">Precio anterior</label>
-                    <input 
-                      type="text" 
-                      placeholder="$0.00" 
-                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
-                    />
-                  </div>
-                </div>
-                
-                {/* Botón debajo en mobile, a la derecha en desktop */}
-                <div className="flex justify-center md:justify-end">
-                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-3 md:px-6 py-1 md:py-2 text-xs md:text-base rounded transition-colors">
-                    Agregar
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Overlay Message */}
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
-            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
-            <p className="md:text-sm text-xs text-gray-600">Sistema de gestión de banners promocionales para destacar productos y ofertas especiales en tu tienda virtual.</p>
-          </div>
-        </div>
-      </div>
 
       {/* Modal de Ayuda */}
       <Dialog open={showHelpPopup} onOpenChange={(open) => {
@@ -2014,7 +1960,7 @@ export default function AdminPage() {
           </DialogHeader>
           
           <div className="md:mt-4 mt-3">
-            <p className="text-gray-300 md:text-base text-sm leading-relaxed">
+            <p className="text-gray-300 md:text-base text-sm leading-relaxed text-justify">
               {helpContent?.content}
             </p>
           </div>
@@ -2029,12 +1975,7 @@ export default function AdminPage() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Separador entre secciones */}
-      <div className="border-t border-gray-700 my-8"></div>
-
-      {/* Sección: Gestión de Carruseles */}
-      <div className="px-6 py-8 mb-4">
+      <div className={`px-6 py-8 ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
         <div className="flex items-center gap-3">
           <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Carruseles</h1>
           <button
@@ -2048,8 +1989,8 @@ export default function AdminPage() {
       </div>
 
       {/* Pestañas de Carruseles */}
-      <div className="px-6 mb-8 relative">
-        <Tabs defaultValue="carrusel1" className="w-full blur-[2px]">
+      <div className={`px-6 pb-4 relative ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
+        <Tabs defaultValue="carrusel1" className={`w-full ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
           <TabsList className="grid grid-cols-2 w-full md:max-w-md max-w-xs mx-auto md:px-6 px-3 md:mb-8 mb-6 bg-gray-800 border border-gray-700 rounded-lg p-1">
             <TabsTrigger 
               value="carrusel1" 
@@ -2846,6 +2787,125 @@ export default function AdminPage() {
       </div>
     </div>
 
+    {/* Sección: Gestión de Banner */}
+    <div className={`px-6 py-8 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'}`}>
+      <div className="flex items-center gap-3">
+        <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Banner</h1>
+        <button
+          onClick={() => openHelpPopup('gestion-banner')}
+          className="mb-2 w-6 h-6 md:w-8 md:h-8 rounded-full border border-yellow-400 bg-transparent hover:bg-yellow-400/10 transition-colors flex items-center justify-center"
+        >
+          <span className="text-yellow-400 font-bold text-sm md:text-base">?</span>
+        </button>
+      </div>
+      <p className="text-gray-400 text-xs md:text-base">Configuración de banners promocionales</p>
+    </div>
+
+    {/* Container Gestión de Banner */}
+    <div className={`px-6 pb-4 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'}`}>
+      <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+          {/* Columna 1 - Banner 1 */}
+          <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
+            {/* Número identificador */}
+            <div className="absolute -top-2 -right-2 bg-purple-600 text-white rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold z-10">
+              1
+            </div>
+            
+            {/* Marco rectangular para imagen */}
+            <div className="bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer">
+              <div className="text-center">
+                <Plus className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2" />
+                <p className="text-gray-400 text-xs md:text-sm">Agregar imagen</p>
+              </div>
+            </div>
+            
+            {/* Precios y botones responsive */}
+            <div className="space-y-2 md:space-y-0 md:flex md:items-end md:justify-between">
+              {/* Fila de precios */}
+              <div className="flex gap-2 md:gap-4 justify-center md:justify-start">
+                <div className="text-center">
+                  <label className="block text-xs text-gray-400 mb-1">Precio actual</label>
+                  <input 
+                    type="text" 
+                    placeholder="$0.00" 
+                    className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                  />
+                </div>
+                <div className="text-center">
+                  <label className="block text-xs text-gray-400 mb-1">Precio anterior</label>
+                  <input 
+                    type="text" 
+                    placeholder="$0.00" 
+                    className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                  />
+                </div>
+              </div>
+              
+              {/* Botones debajo en mobile, a la derecha en desktop */}
+              <div className="flex gap-2 justify-center md:justify-end">
+                <button className="bg-red-600 hover:bg-red-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors">
+                  Eliminar
+                </button>
+                <button className="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors">
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Columna 2 - Banner 2 */}
+          <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
+            {/* Número identificador */}
+            <div className="absolute -top-2 -right-2 bg-purple-600 text-white rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold z-10">
+              2
+            </div>
+            
+            {/* Marco rectangular para imagen */}
+            <div className="bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer">
+              <div className="text-center">
+                <Plus className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2" />
+                <p className="text-gray-400 text-xs md:text-sm">Agregar imagen</p>
+              </div>
+            </div>
+            
+            {/* Precios y botones responsive */}
+            <div className="space-y-2 md:space-y-0 md:flex md:items-end md:justify-between">
+              {/* Fila de precios */}
+              <div className="flex gap-2 md:gap-4 justify-center md:justify-start">
+                <div className="text-center">
+                  <label className="block text-xs text-gray-400 mb-1">Precio actual</label>
+                  <input 
+                    type="text" 
+                    placeholder="$0.00" 
+                    className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                  />
+                </div>
+                <div className="text-center">
+                  <label className="block text-xs text-gray-400 mb-1">Precio anterior</label>
+                  <input 
+                    type="text" 
+                    placeholder="$0.00" 
+                    className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                  />
+                </div>
+              </div>
+              
+              {/* Botones debajo en mobile, a la derecha en desktop */}
+              <div className="flex gap-2 justify-center md:justify-end">
+                <button className="bg-red-600 hover:bg-red-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors">
+                  Eliminar
+                </button>
+                <button className="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors">
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
       {/* Popup de Información del Producto */}
       <Dialog open={selectedProducto !== null} onOpenChange={(open) => !open && setSelectedProducto(null)}>
         <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700 text-white">
@@ -3284,7 +3344,8 @@ export default function AdminPage() {
       </Dialog>
 
       {/* Footer */}
-      <footer className="relative text-white py-8 px-6 mt-12 shadow-2xl" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
+      {/* Original footer - hidden in mobile since we show a copy after the menu */}
+      <footer className="relative text-white py-8 px-6 mt-12 shadow-2xl hidden md:block" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
         <div className="container mx-auto">
           {/* Fila superior - 2 filas de 2 columnas en móvil, 4 columnas en desktop */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mb-8">
@@ -3395,6 +3456,7 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+
       </footer>
 
       {/* Modal de Ayuda */}
@@ -3427,6 +3489,120 @@ export default function AdminPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Mobile-only footer - appears at the end */}
+      <div className="md:hidden block bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white py-6 px-6">
+        <div className="container mx-auto">
+          {/* Fila superior - 2 filas de 2 columnas en móvil, 4 columnas en desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mb-8">
+
+            {/* Primera fila en móvil: Logo y Contacto */}
+            <div className="grid grid-cols-2 gap-6 md:gap-8 md:col-span-2">
+
+              {/* Columna 1 - Logo y descripción */}
+              <div className="text-left">
+                <div className="mb-3 md:mb-4">
+                  <h2 className="text-lg md:text-2xl font-bold text-white mb-0.5">Solo a un</h2>
+                  <h2 className="text-xl md:text-3xl font-bold text-yellow-300">CLICK</h2>
+                </div>
+                <p className="text-primary-foreground/80 text-xs md:text-sm leading-relaxed">
+                  Tu guía completa de comercios, servicios y eventos.
+                </p>
+                <p className="text-primary-foreground/80 text-xs md:text-sm leading-relaxed">
+                  Descubre todo lo que tu ciudad tiene para ofrecer.
+                </p>
+              </div>
+
+              {/* Columna 2 - Avisos Legales (intercambiado con Contacto) */}
+              <div className="text-left">
+                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
+                  Avisos Legales
+                </h3>
+                <div className="space-y-1 md:space-y-2">
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Privacidad
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <Cookie className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Cookies
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <RefreshCw className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Reembolso
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Seguridad
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <FileText className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Condiciones y términos
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Segunda fila en móvil: Información y Contacto */}
+            <div className="grid grid-cols-2 gap-6 md:gap-8 md:col-span-2">
+
+              {/* Columna 3 - Información */}
+              <div className="text-left">
+                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
+                  Información
+                </h3>
+                <div className="space-y-1 md:space-y-2">
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <Users className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Sobre Nosotros
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <Store className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Registra tu Negocio
+                  </a>
+                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                    <HelpCircle className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    Preguntas
+                  </a>
+                </div>
+              </div>
+
+              {/* Columna 4 - Contacto (intercambiado con Avisos Legales) */}
+              <div className="text-left">
+                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
+                  Contacto
+                </h3>
+                <div className="space-y-2 md:space-y-3">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <Mail className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    <span className="text-primary-foreground/80 text-xs">soloaunclick@gmail.com</span>
+                  </div>
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <Phone className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    <span className="text-primary-foreground/80 text-xs">+1 234 567 890</span>
+                  </div>
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+                    <span className="text-primary-foreground/80 text-xs">+1 234 567 891</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Fila inferior - Copyright */}
+          <div className="border-t border-primary-foreground/20 pt-4 md:pt-6">
+            <div className="text-center">
+              <p className="text-primary-foreground/90 text-xs md:text-sm mb-1 md:mb-2">
+                © 2025 Solo a un CLICK. Todos los derechos reservados.
+              </p>
+              <p className="text-primary-foreground/70 text-[10px] md:text-xs leading-relaxed max-w-2xl mx-auto">
+                Solo a un CLICK es una plataforma de exhibición. Los productos publicados son responsabilidad exclusiva de la tienda que los ofrece.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
