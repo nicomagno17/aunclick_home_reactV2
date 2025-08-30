@@ -193,13 +193,13 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 md:space-y-4">
       {/* Botón de autollenado */}
       <div className="flex justify-end">
         <Button 
           onClick={handleAutoFill}
           variant="outline"
-          className="border-blue-600 text-blue-300 hover:bg-blue-700 hover:text-white"
+          className="border-blue-600 text-blue-300 hover:bg-blue-700 hover:text-white text-xs md:text-sm px-3 md:px-4 py-1 md:py-2"
         >
           Autollenado
         </Button>
@@ -207,7 +207,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
 
       {/* Nombre del producto */}
       <div>
-        <Label htmlFor="carousel-nombre" className="text-gray-300 mb-2 block">
+        <Label htmlFor="carousel-nombre" className="text-gray-300 mb-1 md:mb-2 block text-xs md:text-sm">
           Nombre del Producto
         </Label>
         <Input 
@@ -215,46 +215,46 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
           value={formData.nombre}
           onChange={(e) => handleInputChange('nombre', e.target.value)}
           placeholder="Ingresa el nombre del producto"
-          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 text-xs md:text-sm h-8 md:h-10"
         />
       </div>
 
       {/* Categoría y Subcategoría */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3 md:gap-4">
         <div>
-          <Label htmlFor="carousel-categoria" className="text-gray-300 mb-2 block">
+          <Label htmlFor="carousel-categoria" className="text-gray-300 mb-1 md:mb-2 block text-xs md:text-sm">
             Categoría
           </Label>
           <Select value={formData.categoria} onValueChange={(value) => handleInputChange('categoria', value)}>
-            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+            <SelectTrigger className="bg-gray-700 border-gray-600 text-white h-8 md:h-10 text-xs md:text-sm">
               <SelectValue placeholder="Seleccionar" />
             </SelectTrigger>
             <SelectContent className="bg-gray-700 border-gray-600">
-              <SelectItem value="electronica">Electrónica</SelectItem>
-              <SelectItem value="ropa">Ropa y Accesorios</SelectItem>
-              <SelectItem value="hogar">Hogar y Decoración</SelectItem>
-              <SelectItem value="deportes">Deportes</SelectItem>
-              <SelectItem value="libros">Libros</SelectItem>
+              <SelectItem value="electronica" className="text-[11px] md:text-sm">Electrónica</SelectItem>
+              <SelectItem value="ropa" className="text-[11px] md:text-sm">Ropa y Accesorios</SelectItem>
+              <SelectItem value="hogar" className="text-[11px] md:text-sm">Hogar y Decoración</SelectItem>
+              <SelectItem value="deportes" className="text-[11px] md:text-sm">Deportes</SelectItem>
+              <SelectItem value="libros" className="text-[11px] md:text-sm">Libros</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div>
-          <Label htmlFor="carousel-subcategoria" className="text-gray-300 mb-2 block">
+          <Label htmlFor="carousel-subcategoria" className="text-gray-300 mb-1 md:mb-2 block text-xs md:text-sm">
             Subcategoría
           </Label>
           <Select value={formData.subcategoria} onValueChange={(value) => handleInputChange('subcategoria', value)}>
-            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+            <SelectTrigger className="bg-gray-700 border-gray-600 text-white h-8 md:h-10 text-xs md:text-sm">
               <SelectValue placeholder="Seleccionar" />
             </SelectTrigger>
             <SelectContent className="bg-gray-700 border-gray-600">
-              <SelectItem value="smartphones">Smartphones</SelectItem>
-              <SelectItem value="laptops">Laptops</SelectItem>
-              <SelectItem value="hombre">Hombre</SelectItem>
-              <SelectItem value="mujer">Mujer</SelectItem>
-              <SelectItem value="calzado">Calzado</SelectItem>
-              <SelectItem value="cocina">Cocina</SelectItem>
-              <SelectItem value="muebles">Muebles</SelectItem>
+              <SelectItem value="smartphones" className="text-[11px] md:text-sm">Smartphones</SelectItem>
+              <SelectItem value="laptops" className="text-[11px] md:text-sm">Laptops</SelectItem>
+              <SelectItem value="hombre" className="text-[11px] md:text-sm">Hombre</SelectItem>
+              <SelectItem value="mujer" className="text-[11px] md:text-sm">Mujer</SelectItem>
+              <SelectItem value="calzado" className="text-[11px] md:text-sm">Calzado</SelectItem>
+              <SelectItem value="cocina" className="text-[11px] md:text-sm">Cocina</SelectItem>
+              <SelectItem value="muebles" className="text-[11px] md:text-sm">Muebles</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -262,10 +262,10 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
 
       {/* Opciones adicionales */}
       <div>
-        <Label className="text-gray-300 mb-3 block">
+        <Label className="text-gray-300 mb-2 md:mb-3 block text-xs md:text-sm">
           Tu producto necesita mostrar:
         </Label>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2 md:gap-3">
           <div className="flex items-center space-x-1">
             <div className="relative">
               <input
@@ -277,7 +277,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
               />
               <label 
                 htmlFor="carousel-genero"
-                className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
+                className={`flex items-center justify-center w-3 h-3 md:w-3.5 md:h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
                   opcionesProducto.genero 
                     ? 'bg-blue-500 border-blue-500' 
                     : 'border-gray-400 hover:border-gray-300'
@@ -288,7 +288,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
                 )}
               </label>
             </div>
-            <label htmlFor="carousel-genero" className="text-gray-300 cursor-pointer text-xs">
+            <label htmlFor="carousel-genero" className="text-gray-300 cursor-pointer text-[10px] md:text-xs">
               Género
             </label>
           </div>
@@ -304,7 +304,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
               />
               <label 
                 htmlFor="carousel-medidas"
-                className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
+                className={`flex items-center justify-center w-3 h-3 md:w-3.5 md:h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
                   opcionesProducto.medidas 
                     ? 'bg-blue-500 border-blue-500' 
                     : 'border-gray-400 hover:border-gray-300'
@@ -315,7 +315,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
                 )}
               </label>
             </div>
-            <label htmlFor="carousel-medidas" className="text-gray-300 cursor-pointer text-xs">
+            <label htmlFor="carousel-medidas" className="text-gray-300 cursor-pointer text-[10px] md:text-xs">
               Medidas
             </label>
           </div>
@@ -331,7 +331,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
               />
               <label 
                 htmlFor="carousel-tallas-calzado"
-                className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
+                className={`flex items-center justify-center w-3 h-3 md:w-3.5 md:h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
                   opcionesProducto.tallasCalzado 
                     ? 'bg-blue-500 border-blue-500' 
                     : 'border-gray-400 hover:border-gray-300'
@@ -342,7 +342,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
                 )}
               </label>
             </div>
-            <label htmlFor="carousel-tallas-calzado" className="text-gray-300 cursor-pointer text-xs">
+            <label htmlFor="carousel-tallas-calzado" className="text-gray-300 cursor-pointer text-[10px] md:text-xs">
               Talla Calzado
             </label>
           </div>
@@ -358,7 +358,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
               />
               <label 
                 htmlFor="carousel-tallas-ropa"
-                className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
+                className={`flex items-center justify-center w-3 h-3 md:w-3.5 md:h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
                   opcionesProducto.tallasRopa 
                     ? 'bg-blue-500 border-blue-500' 
                     : 'border-gray-400 hover:border-gray-300'
@@ -369,7 +369,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
                 )}
               </label>
             </div>
-            <label htmlFor="carousel-tallas-ropa" className="text-gray-300 cursor-pointer text-xs">
+            <label htmlFor="carousel-tallas-ropa" className="text-gray-300 cursor-pointer text-[10px] md:text-xs">
               Talla Ropa
             </label>
           </div>
@@ -378,22 +378,22 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
 
       {/* Campos dinámicos */}
       {(opcionesProducto.genero || opcionesProducto.medidas) && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
           {opcionesProducto.genero && (
             <div>
-              <Label htmlFor="carousel-genero-select" className="text-gray-300 mb-2 block">
+              <Label htmlFor="carousel-genero-select" className="text-gray-300 mb-1 md:mb-2 block text-xs md:text-sm">
                 Género
               </Label>
               <Select value={formData.genero} onValueChange={(value) => handleInputChange('genero', value)}>
-                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white h-8 md:h-10 text-xs md:text-sm">
                   <SelectValue placeholder="Seleccionar género" />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-700 border-gray-600">
-                  <SelectItem value="hombre">Hombre</SelectItem>
-                  <SelectItem value="mujer">Mujer</SelectItem>
-                  <SelectItem value="niño">Niño</SelectItem>
-                  <SelectItem value="niña">Niña</SelectItem>
-                  <SelectItem value="generico">Genérico</SelectItem>
+                  <SelectItem value="hombre" className="text-xs md:text-sm">Hombre</SelectItem>
+                  <SelectItem value="mujer" className="text-xs md:text-sm">Mujer</SelectItem>
+                  <SelectItem value="niño" className="text-xs md:text-sm">Niño</SelectItem>
+                  <SelectItem value="niña" className="text-xs md:text-sm">Niña</SelectItem>
+                  <SelectItem value="generico" className="text-xs md:text-sm">Genérico</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -401,7 +401,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
 
           {opcionesProducto.medidas && (
             <div>
-              <Label className="text-gray-300 mb-2 block">
+              <Label className="text-gray-300 mb-1 md:mb-2 block text-xs md:text-sm">
                 Medidas
               </Label>
               <div className="flex items-center gap-2">
@@ -410,10 +410,10 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
                   value={formData.medidas}
                   onChange={(e) => handleInputChange('medidas', e.target.value)}
                   placeholder="0"
-                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 flex-1"
+                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 flex-1 h-8 md:h-10 text-xs md:text-sm"
                 />
                 <Select value={formData.unidadMedida} onValueChange={(value) => handleInputChange('unidadMedida', value)}>
-                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-16">
+                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-12 md:w-16 h-8 md:h-10 text-xs md:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-700 border-gray-600">
@@ -431,16 +431,16 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
       {/* Tallas de Calzado */}
       {opcionesProducto.tallasCalzado && (
         <div>
-          <Label className="text-gray-300 mb-2 block">
+          <Label className="text-gray-300 mb-1 md:mb-2 block text-xs md:text-sm">
             Tallas de Calzado
           </Label>
-          <div className="grid grid-cols-12 gap-1 p-2 bg-gray-700 rounded-lg border border-gray-600">
-            {['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'].map((talla) => (
+          <div className="grid grid-cols-6 md:grid-cols-12 gap-1 p-2 bg-gray-700 rounded-lg border border-gray-600">
+            {['22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'].map((talla) => (
               <button
                 key={talla}
                 type="button"
                 onClick={() => handleTallaToggle('tallasCalzado', talla)}
-                className={`px-1 py-0.5 text-xs rounded transition-colors text-center ${
+                className={`px-0.5 md:px-1 py-0.5 text-[10px] md:text-xs rounded transition-colors text-center ${
                   formData.tallasCalzado.includes(talla)
                     ? 'bg-blue-500 text-white'
                     : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
@@ -456,16 +456,16 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
       {/* Tallas de Ropa */}
       {opcionesProducto.tallasRopa && (
         <div>
-          <Label className="text-gray-300 mb-2 block">
+          <Label className="text-gray-300 mb-1 md:mb-2 block text-xs md:text-sm">
             Tallas de Ropa
           </Label>
-          <div className="grid grid-cols-8 gap-1 p-2 bg-gray-700 rounded-lg border border-gray-600">
+          <div className="grid grid-cols-4 md:grid-cols-8 gap-1 p-1.5 md:p-2 bg-gray-700 rounded-lg border border-gray-600">
             {['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'T.Única'].map((talla) => (
               <button
                 key={talla}
                 type="button"
                 onClick={() => handleTallaToggle('tallasRopa', talla === 'T.Única' ? 'Talla Única' : talla)}
-                className={`px-1 py-0.5 text-xs rounded transition-colors text-center ${
+                className={`px-0.5 md:px-1 py-0.5 text-[10px] md:text-xs rounded transition-colors text-center ${
                   formData.tallasRopa.includes(talla === 'T.Única' ? 'Talla Única' : talla)
                     ? 'bg-blue-500 text-white'
                     : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
@@ -479,37 +479,37 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
       )}
 
       {/* Precios */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3 md:gap-4">
         <div>
-          <Label htmlFor="carousel-precio-actual" className="text-gray-300 mb-2 block">
+          <Label htmlFor="carousel-precio-actual" className="text-gray-300 mb-1 md:mb-2 block text-xs md:text-sm">
             Precio Actual
           </Label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+            <span className="absolute left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs md:text-sm">$</span>
             <Input 
               id="carousel-precio-actual"
               type="number"
               value={formData.precioActual}
               onChange={(e) => handleInputChange('precioActual', e.target.value)}
               placeholder="0.00"
-              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-8"
+              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-6 md:pl-8 h-8 md:h-10 text-xs md:text-sm"
             />
           </div>
         </div>
 
         <div>
-          <Label htmlFor="carousel-precio-anterior" className="text-gray-300 mb-2 block">
+          <Label htmlFor="carousel-precio-anterior" className="text-gray-300 mb-1 md:mb-2 block text-xs md:text-sm">
             Precio Anterior
           </Label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+            <span className="absolute left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs md:text-sm">$</span>
             <Input 
               id="carousel-precio-anterior"
               type="number"
               value={formData.precioAnterior}
               onChange={(e) => handleInputChange('precioAnterior', e.target.value)}
               placeholder="0.00"
-              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-8"
+              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-6 md:pl-8 h-8 md:h-10 text-xs md:text-sm"
             />
           </div>
         </div>
@@ -517,11 +517,11 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
 
       {/* Descripción */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <Label htmlFor="carousel-descripcion" className="text-gray-300">
+        <div className="flex items-center justify-between mb-1 md:mb-2">
+          <Label htmlFor="carousel-descripcion" className="text-gray-300 text-xs md:text-sm">
             Descripción
           </Label>
-          <span className={`text-sm ${
+          <span className={`text-[10px] md:text-sm ${
             contarPalabras(formData.descripcion) > 45 
               ? 'text-yellow-400' 
               : contarPalabras(formData.descripcion) > 48 
@@ -536,23 +536,23 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
           value={formData.descripcion}
           onChange={handleDescripcionChange}
           placeholder="Escribe una descripción del producto..."
-          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 resize-none"
-          rows={3}
+          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 resize-none text-xs md:text-sm"
+          rows={2}
         />
       </div>
 
       {/* Botones */}
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex justify-end space-x-2 md:space-x-3 pt-3 md:pt-4">
         <Button 
           variant="outline" 
           onClick={onCancel}
-          className="border-gray-600 text-gray-300 hover:bg-gray-700"
+          className="border-gray-600 text-gray-300 hover:bg-gray-700 text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 h-8 md:h-10"
         >
           Cancelar
         </Button>
         <Button 
           onClick={handleSubmit}
-          className="bg-gray-700 hover:bg-gray-600 text-white"
+          className="bg-gray-700 hover:bg-gray-600 text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 h-8 md:h-10"
         >
           Guardar
         </Button>

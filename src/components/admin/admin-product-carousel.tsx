@@ -89,8 +89,8 @@ export function AdminProductCarousel({
 
   return (
     <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-      <h2 className="text-xl md:text-xl text-lg font-semibold text-white mb-4">{titulo}</h2>
-      <p className="text-gray-400 md:text-base text-sm mb-6">{descripcion}</p>
+      <h2 className="text-base md:text-xl font-semibold text-white mb-4">{titulo}</h2>
+      <p className="text-gray-400 text-xs md:text-base mb-6">{descripcion}</p>
       
       <div className="relative">
         {/* Container con scroll horizontal */}

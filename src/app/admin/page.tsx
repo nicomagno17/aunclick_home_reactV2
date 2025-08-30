@@ -55,6 +55,53 @@ export default function AdminPage() {
   // Estado para el popup de información del producto
   const [selectedProducto, setSelectedProducto] = useState<any | null>(null)
   
+  // Estado para el producto en edición
+  const [editingProducto, setEditingProducto] = useState<any | null>(null)
+  
+  // Estado para el modal de confirmación de eliminación
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [productToDelete, setProductToDelete] = useState<{producto: any, section: string} | null>(null)
+  
+  // Estado para el popup de ayuda
+  const [showHelpPopup, setShowHelpPopup] = useState(false)
+  const [helpContent, setHelpContent] = useState<{title: string, content: string} | null>(null)
+  
+  // Contenido de ayuda para cada sección
+  const helpContentData = {
+    'datos-negocio': {
+      title: 'Datos del Negocio',
+      content: 'En esta sección puedes ingresar toda la información básica de tu negocio que aparecerá en tu página del marketplace. Incluye el nombre de tu negocio, dirección física, teléfonos de contacto, email y horarios de atención. Esta información ayuda a tus clientes a encontrarte y contactarte fácilmente. Todos estos datos son importantes para generar confianza y credibilidad en tu negocio.'
+    },
+    'gestion-productos': {
+      title: 'Gestión de Productos',
+      content: 'Aquí puedes organizar y administrar todos los productos de tu negocio en diferentes categorías como Destacados, Ofertas, Novedades, Tendencias, ¡No te lo Pierdas! y Liquidaciones. Cada categoría tiene un propósito específico para mostrar tus productos de manera estratégica. Puedes agregar, editar y eliminar productos, subir imágenes, establecer precios y escribir descripciones detalladas para atraer a tus clientes.'
+    },
+    'analytics': {
+      title: 'Analytics Dashboard',
+      content: 'Esta sección te proporcionará estadísticas detalladas sobre el rendimiento de tu negocio en el marketplace. Podrás ver cuántas personas han visto tus productos, cuántas interacciones has recibido, consultas de clientes y el progreso de tu catálogo de productos. Estas métricas te ayudarán a entender qué productos son más populares y cómo mejorar tu presencia en la plataforma.'
+    },
+    'banner': {
+      title: 'Banner Publicitario',
+      content: 'Los banners publicitarios te permiten destacar productos especiales o promociones en la página principal de tu negocio. Puedes configurar hasta 2 banners con imágenes atractivas y precios especiales. Estos banners aparecen de forma prominente para captar la atención de los visitantes y dirigir el tráfico hacia tus productos más importantes o ofertas especiales.'
+    },
+    'carruseles': {
+      title: 'Gestión de Carruseles',
+      content: 'Los carruseles son galerías de imágenes que se muestran de forma rotatoria en tu página del marketplace. Tienes 2 carruseles disponibles: el Carrusel 1 (posiciones 1-8) y el Carrusel 2 (posiciones 9-16). Cada carrusel puede contener hasta 8 imágenes de productos con sus respectivos precios. Estas imágenes ayudan a mostrar la variedad de tu catálogo y atraer la atención visual de los clientes potenciales.'
+    }
+  }
+  
+  // Función para abrir popup de ayuda
+  const openHelpPopup = (sectionKey: keyof typeof helpContentData) => {
+    setHelpContent(helpContentData[sectionKey])
+    setShowHelpPopup(true)
+  }
+  
+  // Función para cerrar popup de ayuda
+  const closeHelpPopup = () => {
+    setShowHelpPopup(false)
+    setHelpContent(null)
+  }
+  
   // Estado para información del negocio
   const [businessInfo, setBusinessInfo] = useState({
     nombre: '',
@@ -104,6 +151,7 @@ export default function AdminPage() {
 
   const openModal = (section: string) => {
     setSelectedSection(section)
+    setEditingProducto(null)
     // Limpiar todos los campos al abrir el modal
     setProductoData({
       tipoNegocio: '',
@@ -127,6 +175,76 @@ export default function AdminPage() {
       medidas: false
     })
     setIsModalOpen(true)
+  }
+
+  // Función para abrir modal en modo edición
+  const openEditModal = (producto: any, section: string) => {
+    setSelectedSection(section)
+    setEditingProducto(producto)
+    
+    // Pre-llenar todos los campos con los datos existentes
+    setProductoData({
+      tipoNegocio: producto.tipoNegocio || '',
+      categoria: producto.categoria || '',
+      subcategoria: producto.subcategoria || '',
+      nombre: producto.nombre || '',
+      tallasCalzado: producto.tallasCalzado || [],
+      tallasRopa: producto.tallasRopa || [],
+      genero: producto.genero || '',
+      medidas: producto.medidas || '',
+      unidadMedida: producto.unidadMedida || 'cm',
+      precioActual: producto.precioActual || '',
+      precioAnterior: producto.precioAnterior || ''
+    })
+    
+    setDescripcion(producto.descripcion || '')
+    setImagenProducto(producto.imagen || null)
+    
+    // Activar opciones según los datos existentes
+    setOpcionesProducto({
+      tallasCalzado: Boolean(producto.tallasCalzado && producto.tallasCalzado.length > 0),
+      tallasRopa: Boolean(producto.tallasRopa && producto.tallasRopa.length > 0),
+      genero: Boolean(producto.genero && producto.genero !== 'generico'),
+      medidas: Boolean(producto.medidas)
+    })
+    
+    // Pre-cargar imagen en el contenedor
+    if (producto.imagen) {
+      setTimeout(() => {
+        const container = document.getElementById('imagen-container')
+        if (container) {
+          container.innerHTML = `
+            <img src="${producto.imagen}" alt="Producto" class="w-full h-full object-contain" />
+          `
+        }
+      }, 100)
+    }
+    
+    setIsModalOpen(true)
+  }
+
+  // Función para abrir confirmación de eliminación
+  const abrirConfirmacionEliminar = (producto: any, section: string) => {
+    setProductToDelete({ producto, section })
+    setShowDeleteConfirm(true)
+  }
+
+  // Función para confirmar eliminación
+  const confirmarEliminacion = () => {
+    if (productToDelete) {
+      setProductos(prev => ({
+        ...prev,
+        [productToDelete.section]: prev[productToDelete.section as keyof typeof prev].filter((p: any) => p.id !== productToDelete.producto.id)
+      }))
+    }
+    setShowDeleteConfirm(false)
+    setProductToDelete(null)
+  }
+
+  // Función para cancelar eliminación
+  const cancelarEliminacion = () => {
+    setShowDeleteConfirm(false)
+    setProductToDelete(null)
   }
 
   // Función para manejar cambios en los campos del formulario
@@ -396,28 +514,47 @@ export default function AdminPage() {
     })
   }
 
-  // Función para agregar un producto
+  // Función para agregar o editar un producto
   const agregarProducto = () => {
     if (!productoData.nombre || !imagenProducto) {
       alert('Por favor completa al menos el nombre del producto y carga una imagen')
       return
     }
 
-    const nuevoProducto = {
-      id: Date.now(), // ID único basado en timestamp
-      ...productoData,
-      descripcion,
-      imagen: imagenProducto
-    }
+    if (editingProducto) {
+      // Modo edición: actualizar producto existente
+      const productoActualizado = {
+        ...editingProducto,
+        ...productoData,
+        descripcion,
+        imagen: imagenProducto
+      }
 
-    setProductos(prev => ({
-      ...prev,
-      [selectedSection]: [...prev[selectedSection as keyof typeof prev], nuevoProducto]
-    }))
+      setProductos(prev => ({
+        ...prev,
+        [selectedSection]: prev[selectedSection as keyof typeof prev].map((p: any) => 
+          p.id === editingProducto.id ? productoActualizado : p
+        )
+      }))
+    } else {
+      // Modo agregar: crear nuevo producto
+      const nuevoProducto = {
+        id: Date.now(), // ID único basado en timestamp
+        ...productoData,
+        descripcion,
+        imagen: imagenProducto
+      }
+
+      setProductos(prev => ({
+        ...prev,
+        [selectedSection]: [...prev[selectedSection as keyof typeof prev], nuevoProducto]
+      }))
+    }
 
     // Cerrar el modal y limpiar campos
     setIsModalOpen(false)
     setImagenProducto(null)
+    setEditingProducto(null)
   }
 
   // Función para obtener la etiqueta de categoría
@@ -439,9 +576,9 @@ export default function AdminPage() {
   }
 
   // Componente de tarjeta de producto
-  const ProductoCard = ({ producto }: { producto: any }) => {
+  const ProductoCard = ({ producto, section }: { producto: any, section?: string }) => {
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow md:w-44 w-28 md:h-64 h-44">
+      <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow md:w-44 w-28 md:h-auto h-auto">
         {/* Parte superior con imagen - ocupa todo el espacio */}
         <div className="md:h-40 h-24 bg-white overflow-hidden">
           <img 
@@ -490,10 +627,28 @@ export default function AdminPage() {
           {/* Botón +Información */}
           <button 
             onClick={() => setSelectedProducto(producto)}
-            className="w-full bg-gray-700 hover:bg-gray-600 text-white md:py-0.5 py-0 md:px-1 px-0.5 rounded transition-colors md:text-[9px] text-[7px] font-medium md:mt-1 mt-0.5"
+            className="w-full bg-gray-700 hover:bg-gray-600 text-white md:py-0.5 py-0 md:px-1 px-0.5 rounded transition-colors md:text-[9px] text-[7px] font-medium md:mt-1 mt-0.5 md:mb-1 mb-0.5"
           >
             +Información
           </button>
+          
+          {/* Botones de Editar y Eliminar */}
+          {section && (
+            <div className="flex gap-1">
+              <button 
+                onClick={() => openEditModal(producto, section)}
+                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white md:py-0.5 py-0 md:px-1 px-0.5 rounded transition-colors md:text-[8px] text-[6px] font-medium"
+              >
+                Editar
+              </button>
+              <button 
+                onClick={() => abrirConfirmacionEliminar(producto, section)}
+                className="flex-1 bg-red-600 hover:bg-red-500 text-white md:py-0.5 py-0 md:px-1 px-0.5 rounded transition-colors md:text-[8px] text-[6px] font-medium"
+              >
+                Eliminar
+              </button>
+            </div>
+          )}
         </div>
       </div>
     )
@@ -666,16 +821,24 @@ export default function AdminPage() {
       <div className="w-full">
         {/* Sección: Datos del Negocio */}
         <div className="px-6 py-8">
-          <h1 className="text-3xl md:text-3xl text-2xl font-bold text-white mb-2">Datos del Negocio</h1>
-          <p className="text-gray-400 md:text-base text-sm">Administra la información del negocio</p>
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Datos del Negocio</h1>
+            <button
+              onClick={() => openHelpPopup('datos-negocio')}
+              className="mb-2 w-6 h-6 md:w-8 md:h-8 rounded-full border border-yellow-400 bg-transparent hover:bg-yellow-400/10 transition-colors flex items-center justify-center"
+            >
+              <span className="text-yellow-400 font-bold text-sm md:text-base">?</span>
+            </button>
+          </div>
+          <p className="text-gray-400 text-xs md:text-base">Administra la información del negocio</p>
         </div>
 
         {/* Formulario */}
         <div className="px-6">
           <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 max-w-4xl mx-auto">
-            <h2 className="text-xl md:text-xl text-lg font-semibold text-white mb-4">Información General</h2>
+            <h2 className="text-base md:text-xl font-semibold text-white mb-4">Información General</h2>
             <div className="flex justify-between items-center mb-6">
-              <p className="text-gray-400 md:text-base text-sm">Ingresa los datos básicos del negocio</p>
+              <p className="text-gray-400 text-xs md:text-base">Ingresa los datos básicos del negocio</p>
               <Button 
                 onClick={autollenarNegocio}
                 className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 md:text-sm text-xs"
@@ -870,6 +1033,7 @@ export default function AdminPage() {
             })
             setDescripcion('')
             setImagenProducto(null)
+            setEditingProducto(null)
             setOpcionesProducto({
               tallasCalzado: false,
               tallasRopa: false,
@@ -882,7 +1046,7 @@ export default function AdminPage() {
           <DialogContent className="bg-gray-800 border-gray-700 text-white md:max-w-2xl max-w-[95vw] md:max-h-[90vh] max-h-[95vh] overflow-y-auto md:m-0 m-2">
             <DialogHeader>
               <DialogTitle className="md:text-xl text-lg font-semibold">
-                Agregar Producto a {selectedSection}
+                {editingProducto ? 'Editar Producto' : `Agregar Producto a ${selectedSection}`}
               </DialogTitle>
             </DialogHeader>
             
@@ -926,25 +1090,25 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Tipo de Negocio */}
-              <div>
-                <Label htmlFor="tipo-negocio" className="text-gray-300 mb-2 block md:text-sm text-xs">
-                  Tipo de Negocio
-                </Label>
-                <Select value={productoData.tipoNegocio} onValueChange={(value) => handleProductoDataChange('tipoNegocio', value)}>
-                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
-                    <SelectValue placeholder="Seleccionar" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-700 border-gray-600 w-full">
-                    <SelectItem value="productos">Productos</SelectItem>
-                    <SelectItem value="servicios">Servicios</SelectItem>
-                    <SelectItem value="arriendos">Arriendos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Tipo de Negocio, Categoría y Subcategoría en la misma fila SOLO PARA NORMAL MODE */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Tipo de Negocio */}
+                <div>
+                  <Label htmlFor="tipo-negocio" className="text-gray-300 mb-2 block md:text-sm text-xs">
+                    Tipo de Negocio
+                  </Label>
+                  <Select value={productoData.tipoNegocio} onValueChange={(value) => handleProductoDataChange('tipoNegocio', value)}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
+                      <SelectValue placeholder="Seleccionar" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 border-gray-600 w-full">
+                      <SelectItem value="productos">Productos</SelectItem>
+                      <SelectItem value="servicios">Servicios</SelectItem>
+                      <SelectItem value="arriendos">Arriendos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {/* Fila con Categoría y Subcategoría */}
-              <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:space-y-4">
                 {/* Categoría */}
                 <div>
                   <Label htmlFor="categoria" className="text-gray-300 mb-2 block md:text-sm text-xs">
@@ -1136,9 +1300,9 @@ export default function AdminPage() {
                 {/* Campos dinámicos según opciones seleccionadas */}
                 <div className="mt-6">
                   <div className="space-y-4">
-                    {/* Campos de Género y Medidas - EN LA MISMA FILA SOLO EN RESPONSIVE */}
+                    {/* Campos de Género y Medidas - EN LA MISMA FILA SOLO EN MODO NORMAL */}
                     {(opcionesProducto.genero || opcionesProducto.medidas) && (
-                      <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Campo de Género */}
                         {opcionesProducto.genero && (
                           <div>
@@ -1254,9 +1418,9 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Campos de Precio */}
+              {/* Campos de Precio - EN LA MISMA FILA SOLO EN MODO NORMAL */}
               <div>
-                <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Precio Actual */}
                   <div>
                     <Label htmlFor="precio-actual" className="text-gray-300 mb-2 block md:text-sm text-xs">
@@ -1352,7 +1516,10 @@ export default function AdminPage() {
                 <div className="flex justify-center gap-3">
                   <Button 
                     variant="outline" 
-                    onClick={() => setIsModalOpen(false)}
+                    onClick={() => {
+                      setIsModalOpen(false)
+                      setEditingProducto(null)
+                    }}
                     className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600 md:text-sm text-xs md:px-4 px-3 md:py-2 py-1.5"
                   >
                     Cancelar
@@ -1361,7 +1528,7 @@ export default function AdminPage() {
                     onClick={agregarProducto} 
                     className="bg-gray-700 hover:bg-gray-600 text-white md:text-sm text-xs md:px-4 px-3 md:py-2 py-1.5"
                   >
-                    Agregar Producto
+                    {editingProducto ? 'Actualizar Producto' : 'Agregar Producto'}
                   </Button>
                 </div>
               </div>
@@ -1374,8 +1541,16 @@ export default function AdminPage() {
 
         {/* Sección: Gestión de Productos */}
         <div className="px-6 py-8">
-          <h1 className="text-3xl md:text-3xl text-2xl font-bold text-white mb-2">Gestión de Productos</h1>
-          <p className="text-gray-400 md:text-base text-sm">Administra las diferentes secciones de productos del marketplace</p>
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Productos</h1>
+            <button
+              onClick={() => openHelpPopup('gestion-productos')}
+              className="mb-2 w-6 h-6 md:w-8 md:h-8 rounded-full border border-yellow-400 bg-transparent hover:bg-yellow-400/10 transition-colors flex items-center justify-center"
+            >
+              <span className="text-yellow-400 font-bold text-sm md:text-base">?</span>
+            </button>
+          </div>
+          <p className="text-gray-400 text-xs md:text-base">Administra las diferentes secciones de productos del marketplace</p>
         </div>
 
         {/* Pestañas de Productos */}
@@ -1429,7 +1604,7 @@ export default function AdminPage() {
                 productos={productos.destacados}
                 onAgregarProducto={() => openModal('destacados')}
                 textoBotonAgregar="Añadir productos a la sección Destacados"
-                ProductoCard={ProductoCard}
+                ProductoCard={(props) => <ProductoCard {...props} section="destacados" />}
               />
             </TabsContent>
 
@@ -1441,7 +1616,7 @@ export default function AdminPage() {
                 productos={productos.ofertas}
                 onAgregarProducto={() => openModal('ofertas')}
                 textoBotonAgregar="Añadir productos con descuento a la sección Ofertas"
-                ProductoCard={ProductoCard}
+                ProductoCard={(props) => <ProductoCard {...props} section="ofertas" />}
               />
             </TabsContent>
 
@@ -1453,7 +1628,7 @@ export default function AdminPage() {
                 productos={productos.novedades}
                 onAgregarProducto={() => openModal('novedades')}
                 textoBotonAgregar="Añadir productos nuevos a la sección Novedades"
-                ProductoCard={ProductoCard}
+                ProductoCard={(props) => <ProductoCard {...props} section="novedades" />}
               />
             </TabsContent>
 
@@ -1465,7 +1640,7 @@ export default function AdminPage() {
                 productos={productos.tendencias}
                 onAgregarProducto={() => openModal('tendencias')}
                 textoBotonAgregar="Añadir productos populares a la sección Tendencias"
-                ProductoCard={ProductoCard}
+                ProductoCard={(props) => <ProductoCard {...props} section="tendencias" />}
               />
             </TabsContent>
 
@@ -1477,7 +1652,7 @@ export default function AdminPage() {
                 productos={productos['no-te-lo-pierdas']}
                 onAgregarProducto={() => openModal('no-te-lo-pierdas')}
                 textoBotonAgregar="Añadir productos especiales a la sección ¡No te lo Pierdas!"
-                ProductoCard={ProductoCard}
+                ProductoCard={(props) => <ProductoCard {...props} section="no-te-lo-pierdas" />}
               />
             </TabsContent>
 
@@ -1489,7 +1664,7 @@ export default function AdminPage() {
                 productos={productos.liquidaciones}
                 onAgregarProducto={() => openModal('liquidaciones')}
                 textoBotonAgregar="Añadir productos en liquidación a la sección Liquidaciones"
-                ProductoCard={ProductoCard}
+                ProductoCard={(props) => <ProductoCard {...props} section="liquidaciones" />}
               />
             </TabsContent>
           </div>
@@ -1501,8 +1676,16 @@ export default function AdminPage() {
 
       {/* Sección: Analytics Dashboard */}
       <div className="px-6 py-8">
-        <h1 className="md:text-3xl text-2xl font-bold text-white mb-2">Analytics Dashboard</h1>
-        <p className="text-gray-400 md:text-base text-sm">Estadísticas y métricas del rendimiento</p>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Analytics Dashboard</h1>
+          <button
+            onClick={() => openHelpPopup('analytics')}
+            className="mb-2 w-6 h-6 md:w-8 md:h-8 rounded-full border border-yellow-400 bg-transparent hover:bg-yellow-400/10 transition-colors flex items-center justify-center"
+          >
+            <span className="text-yellow-400 font-bold text-sm md:text-base">?</span>
+          </button>
+        </div>
+        <p className="text-gray-400 text-xs md:text-base">Estadísticas y métricas del rendimiento</p>
       </div>
 
       {/* Container Analytics */}
@@ -1678,8 +1861,8 @@ export default function AdminPage() {
         
         {/* Overlay Message */}
         <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="bg-white border-2 border-gray-400 rounded-lg md:px-4 px-3 md:py-4 py-3 shadow-lg text-center md:max-w-xs max-w-[280px]">
-            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1">¡Próximamente!</h3>
+          <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
             <p className="md:text-sm text-xs text-gray-600">Panel de análisis avanzado para monitorear el rendimiento y visualización de tus productos en tiempo real.</p>
           </div>
         </div>
@@ -1690,8 +1873,16 @@ export default function AdminPage() {
 
       {/* Sección: Banner publicitario */}
       <div className="px-6 py-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Banner publicitario</h1>
-        <p className="text-gray-400">Gestión de banners promocionales</p>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Banner publicitario</h1>
+          <button
+            onClick={() => openHelpPopup('banner')}
+            className="mb-2 w-6 h-6 md:w-8 md:h-8 rounded-full border border-yellow-400 bg-transparent hover:bg-yellow-400/10 transition-colors flex items-center justify-center"
+          >
+            <span className="text-yellow-400 font-bold text-sm md:text-base">?</span>
+          </button>
+        </div>
+        <p className="text-gray-400 text-xs md:text-base">Gestión de banners promocionales</p>
       </div>
 
       {/* Container Banner publicitario */}
@@ -1794,25 +1985,71 @@ export default function AdminPage() {
         
         {/* Overlay Message */}
         <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="bg-white border-2 border-gray-400 rounded-lg px-4 py-4 shadow-lg text-center max-w-xs">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">¡Próximamente!</h3>
-            <p className="text-sm text-gray-600">Sistema de gestión de banners promocionales para destacar productos y ofertas especiales en tu tienda virtual.</p>
+          <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
+            <p className="md:text-sm text-xs text-gray-600">Sistema de gestión de banners promocionales para destacar productos y ofertas especiales en tu tienda virtual.</p>
           </div>
         </div>
       </div>
+
+      {/* Modal de Ayuda */}
+      <Dialog open={showHelpPopup} onOpenChange={(open) => {
+        if (!open) {
+          closeHelpPopup()
+        }
+      }}>
+        <DialogContent className="bg-gray-800 border-gray-700 text-white md:max-w-2xl max-w-[95vw] md:max-h-[80vh] max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="relative">
+            <button
+              onClick={closeHelpPopup}
+              className="absolute right-0 top-0 rounded-sm opacity-70 hover:opacity-100 transition-opacity focus:outline-none"
+            >
+              <X className="h-4 w-4 text-gray-400 hover:text-white" />
+              <span className="sr-only">Cerrar</span>
+            </button>
+            <DialogTitle className="md:text-xl text-lg font-semibold text-yellow-400 flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 md:w-6 md:h-6" />
+              {helpContent?.title}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="md:mt-4 mt-3">
+            <p className="text-gray-300 md:text-base text-sm leading-relaxed">
+              {helpContent?.content}
+            </p>
+          </div>
+          
+          <div className="flex justify-end mt-6">
+            <Button 
+              onClick={closeHelpPopup}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white md:px-6 px-4 md:py-2 py-1.5 md:text-sm text-xs"
+            >
+              Entendido
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Separador entre secciones */}
       <div className="border-t border-gray-700 my-8"></div>
 
       {/* Sección: Gestión de Carruseles */}
       <div className="px-6 py-8 mb-4">
-        <h1 className="md:text-3xl text-2xl font-bold text-white mb-2">Gestión de Carruseles</h1>
-        <p className="text-gray-400 md:text-base text-sm">Administra las imágenes de los carruseles principales</p>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Carruseles</h1>
+          <button
+            onClick={() => openHelpPopup('carruseles')}
+            className="mb-2 w-6 h-6 md:w-8 md:h-8 rounded-full border border-yellow-400 bg-transparent hover:bg-yellow-400/10 transition-colors flex items-center justify-center"
+          >
+            <span className="text-yellow-400 font-bold text-sm md:text-base">?</span>
+          </button>
+        </div>
+        <p className="text-gray-400 text-xs md:text-base">Administra las imágenes de los carruseles principales</p>
       </div>
 
       {/* Pestañas de Carruseles */}
       <div className="px-6 mb-8 relative">
-        <Tabs defaultValue="carrusel1" className="w-full md:blur-[2px]">
+        <Tabs defaultValue="carrusel1" className="w-full blur-[2px]">
           <TabsList className="grid grid-cols-2 w-full md:max-w-md max-w-xs mx-auto md:px-6 px-3 md:mb-8 mb-6 bg-gray-800 border border-gray-700 rounded-lg p-1">
             <TabsTrigger 
               value="carrusel1" 
@@ -1833,7 +2070,7 @@ export default function AdminPage() {
             {/* Tab Carrusel 1 */}
             <TabsContent value="carrusel1" className="space-y-4">
               <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4">
-                <h2 className="md:text-xl text-lg font-semibold text-white md:mb-6 mb-4">Carrusel 1 - Imágenes (1-8)</h2>
+                <h2 className="text-base md:text-xl font-semibold text-white md:mb-6 mb-4">Carrusel 1 - Imágenes (1-8)</h2>
               
                 {/* Desktop Layout - 4 columns */}
                 <div className="hidden md:block">
@@ -1958,6 +2195,249 @@ export default function AdminPage() {
                   </div>
                 </div>
                 
+                {/* Mobile Layout - Responsive mode */}
+                <div className="md:hidden block">
+                  {/* Primera fila - 2 tarjetas + borde de la tercera */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {[0, 1].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 1}
+                        </div>
+                        
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel1[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
+                          
+                          {carouselImages.carrusel1[index] ? (
+                            <>
+                              <img 
+                                src={carouselImages.carrusel1[index]} 
+                                alt={`Carrusel 1 - Imagen ${index + 1}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                                onClick={() => openCarouselProductPopup('carrusel1', index)}
+                              />
+                              
+                              {/* Botón de configuración en la esquina superior izquierda */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openCarouselModal('carrusel1', index)
+                                }}
+                                className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                              >
+                                <Settings className="w-3 h-3 text-white" />
+                              </button>
+                              
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel1[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel1[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Segunda fila - 2 tarjetas */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {[2, 3].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 1}
+                        </div>
+                        
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel1[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
+                          
+                          {carouselImages.carrusel1[index] ? (
+                            <>
+                              <img 
+                                src={carouselImages.carrusel1[index]} 
+                                alt={`Carrusel 1 - Imagen ${index + 1}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                                onClick={() => openCarouselProductPopup('carrusel1', index)}
+                              />
+                              
+                              {/* Botón de configuración en la esquina superior izquierda */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openCarouselModal('carrusel1', index)
+                                }}
+                                className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                              >
+                                <Settings className="w-3 h-3 text-white" />
+                              </button>
+                              
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel1[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel1[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Tercera fila - 2 tarjetas */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {[4, 5].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 1}
+                        </div>
+                        
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel1[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
+                          
+                          {carouselImages.carrusel1[index] ? (
+                            <>
+                              <img 
+                                src={carouselImages.carrusel1[index]} 
+                                alt={`Carrusel 1 - Imagen ${index + 1}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                                onClick={() => openCarouselProductPopup('carrusel1', index)}
+                              />
+                              
+                              {/* Botón de configuración en la esquina superior izquierda */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openCarouselModal('carrusel1', index)
+                                }}
+                                className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                              >
+                                <Settings className="w-3 h-3 text-white" />
+                              </button>
+                              
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel1[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel1[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Cuarta fila - 2 tarjetas */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {[6, 7].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 1}
+                        </div>
+                        
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel1[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
+                          
+                          {carouselImages.carrusel1[index] ? (
+                            <>
+                              <img 
+                                src={carouselImages.carrusel1[index]} 
+                                alt={`Carrusel 1 - Imagen ${index + 1}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                                onClick={() => openCarouselProductPopup('carrusel1', index)}
+                              />
+                              
+                              {/* Botón de configuración en la esquina superior izquierda */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openCarouselModal('carrusel1', index)
+                                }}
+                                className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                              >
+                                <Settings className="w-3 h-3 text-white" />
+                              </button>
+                              
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel1[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel1[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
                 {/* Botón Guardar Cambios */}
                 <div className="flex justify-end md:mt-6 mt-4">
                   <Button 
@@ -1973,7 +2453,7 @@ export default function AdminPage() {
           {/* Tab Carrusel 2 */}
           <TabsContent value="carrusel2" className="space-y-4">
             <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4">
-              <h2 className="md:text-xl text-lg font-semibold text-white md:mb-6 mb-4">Carrusel 2 - Imágenes (9-16)</h2>
+              <h2 className="text-base md:text-xl font-semibold text-white md:mb-6 mb-4">Carrusel 2 - Imágenes (9-16)</h2>
               
               {/* Desktop Layout - 4 columns */}
               <div className="hidden md:block">
@@ -2098,6 +2578,249 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              {/* Mobile Layout - Responsive mode */}
+              <div className="md:hidden block">
+                {/* Primera fila - 2 tarjetas */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  {[0, 1].map((index) => (
+                    <div key={index} className="relative">
+                      {/* Círculo numerado en la esquina superior derecha */}
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                        {index + 9}
+                      </div>
+                      
+                      {/* Marco para imagen */}
+                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                        {!carouselImages.carrusel2[index] && (
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          />
+                        )}
+                        
+                        {carouselImages.carrusel2[index] ? (
+                          <>
+                            <img 
+                              src={carouselImages.carrusel2[index]} 
+                              alt={`Carrusel 2 - Imagen ${index + 9}`}
+                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                              onClick={() => openCarouselProductPopup('carrusel2', index)}
+                            />
+                            
+                            {/* Botón de configuración en la esquina superior izquierda */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                openCarouselModal('carrusel2', index)
+                              }}
+                              className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                            >
+                              <Settings className="w-3 h-3 text-white" />
+                            </button>
+                            
+                            {/* Precio en la esquina inferior derecha (si existe) */}
+                            {carouselProductData.carrusel2[index]?.precioActual && (
+                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                <span className="text-white text-xs font-semibold">
+                                  ${carouselProductData.carrusel2[index].precioActual}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <Plus className="w-8 h-8 mb-2" />
+                            <span className="text-sm">Subir imagen</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Segunda fila - 2 tarjetas */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  {[2, 3].map((index) => (
+                    <div key={index} className="relative">
+                      {/* Círculo numerado en la esquina superior derecha */}
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                        {index + 11}
+                      </div>
+                      
+                      {/* Marco para imagen */}
+                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                        {!carouselImages.carrusel2[index + 2] && (
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleCarouselImageUpload('carrusel2', index + 2, e)}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          />
+                        )}
+                        
+                        {carouselImages.carrusel2[index + 2] ? (
+                          <>
+                            <img 
+                              src={carouselImages.carrusel2[index + 2]} 
+                              alt={`Carrusel 2 - Imagen ${index + 11}`}
+                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                              onClick={() => openCarouselProductPopup('carrusel2', index + 2)}
+                            />
+                            
+                            {/* Botón de configuración en la esquina superior izquierda */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                openCarouselModal('carrusel2', index + 2)
+                              }}
+                              className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                            >
+                              <Settings className="w-3 h-3 text-white" />
+                            </button>
+                            
+                            {/* Precio en la esquina inferior derecha (si existe) */}
+                            {carouselProductData.carrusel2[index + 2]?.precioActual && (
+                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                <span className="text-white text-xs font-semibold">
+                                  ${carouselProductData.carrusel2[index + 2].precioActual}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <Plus className="w-8 h-8 mb-2" />
+                            <span className="text-sm">Subir imagen</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Tercera fila - 2 tarjetas */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  {[4, 5].map((index) => (
+                    <div key={index} className="relative">
+                      {/* Círculo numerado en la esquina superior derecha */}
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                        {index + 13}
+                      </div>
+                      
+                      {/* Marco para imagen */}
+                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                        {!carouselImages.carrusel2[index + 4] && (
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleCarouselImageUpload('carrusel2', index + 4, e)}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          />
+                        )}
+                        
+                        {carouselImages.carrusel2[index + 4] ? (
+                          <>
+                            <img 
+                              src={carouselImages.carrusel2[index + 4]} 
+                              alt={`Carrusel 2 - Imagen ${index + 13}`}
+                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                              onClick={() => openCarouselProductPopup('carrusel2', index + 4)}
+                            />
+                            
+                            {/* Botón de configuración en la esquina superior izquierda */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                openCarouselModal('carrusel2', index + 4)
+                              }}
+                              className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                            >
+                              <Settings className="w-3 h-3 text-white" />
+                            </button>
+                            
+                            {/* Precio en la esquina inferior derecha (si existe) */}
+                            {carouselProductData.carrusel2[index + 4]?.precioActual && (
+                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                <span className="text-white text-xs font-semibold">
+                                  ${carouselProductData.carrusel2[index + 4].precioActual}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <Plus className="w-8 h-8 mb-2" />
+                            <span className="text-sm">Subir imagen</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Cuarta fila - 2 tarjetas */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  {[6, 7].map((index) => (
+                    <div key={index} className="relative">
+                      {/* Círculo numerado en la esquina superior derecha */}
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                        {index + 15}
+                      </div>
+                      
+                      {/* Marco para imagen */}
+                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                        {!carouselImages.carrusel2[index + 6] && (
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleCarouselImageUpload('carrusel2', index + 6, e)}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          />
+                        )}
+                        
+                        {carouselImages.carrusel2[index + 6] ? (
+                          <>
+                            <img 
+                              src={carouselImages.carrusel2[index + 6]} 
+                              alt={`Carrusel 2 - Imagen ${index + 15}`}
+                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
+                              onClick={() => openCarouselProductPopup('carrusel2', index + 6)}
+                            />
+                            
+                            {/* Botón de configuración en la esquina superior izquierda */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                openCarouselModal('carrusel2', index + 6)
+                              }}
+                              className="absolute top-2 left-2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors z-20"
+                            >
+                              <Settings className="w-3 h-3 text-white" />
+                            </button>
+                            
+                            {/* Precio en la esquina inferior derecha (si existe) */}
+                            {carouselProductData.carrusel2[index + 6]?.precioActual && (
+                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                <span className="text-white text-xs font-semibold">
+                                  ${carouselProductData.carrusel2[index + 6].precioActual}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <Plus className="w-8 h-8 mb-2" />
+                            <span className="text-sm">Subir imagen</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
 
               
               {/* Botón Guardar Cambios */}
@@ -2114,10 +2837,10 @@ export default function AdminPage() {
         </div>
       </Tabs>
       
-      {/* Overlay Message - Solo visible en desktop */}
-      <div className="hidden md:flex absolute inset-0 items-center justify-center z-10">
-        <div className="bg-white border-2 border-gray-400 rounded-lg md:px-4 px-3 md:py-4 py-3 shadow-lg text-center md:max-w-xs max-w-[280px]">
-          <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1">¡Próximamente!</h3>
+      {/* Overlay Message - Visible en todos los modos */}
+      <div className="absolute inset-0 flex items-center justify-center z-10">
+        <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+          <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
           <p className="md:text-sm text-xs text-gray-600">Sistema avanzado de gestión de carruseles interactivos para mostrar contenido dinámico y promocional en la página principal.</p>
         </div>
       </div>
@@ -2327,9 +3050,9 @@ export default function AdminPage() {
 
       {/* Modal de Configuración de Producto del Carrusel */}
       <Dialog open={isCarouselModalOpen} onOpenChange={setIsCarouselModalOpen}>
-        <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-md max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-[95vw] md:max-w-md max-h-[95vh] md:max-h-[80vh] overflow-y-auto m-2 md:m-0">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">
+            <DialogTitle className="text-lg md:text-xl font-semibold">
               Configurar Producto del Carrusel
             </DialogTitle>
           </DialogHeader>
@@ -2349,7 +3072,17 @@ export default function AdminPage() {
           setSelectedCarouselItemForPopup(null)
         }
       }}>
-        <DialogContent className="max-w-4xl w-full max-h-[60vh] bg-gray-800 border-gray-700 text-white">
+        <DialogContent className="max-w-4xl w-full max-h-[60vh] bg-gray-800 border-gray-700 text-white relative">
+          {/* Blur effect overlay */}
+          <div className="absolute inset-0 bg-white bg-opacity-30 blur-[2px] z-20"></div>
+          
+          {/* Overlay Message */}
+          <div className="absolute inset-0 flex items-center justify-center z-30">
+            <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+              <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
+              <p className="md:text-sm text-xs text-gray-600">Vista detallada de productos del carrusel con información completa y opciones de visualización interactiva.</p>
+            </div>
+          </div>
           {/* Botón cerrar */}
           <button
             onClick={() => {
@@ -2363,7 +3096,7 @@ export default function AdminPage() {
           </button>
 
           {selectedCarouselProduct && (
-            <div className="overflow-y-auto max-h-[calc(60vh-2rem)] p-6">
+            <div className="overflow-y-auto max-h-[calc(60vh-2rem)] p-6 blur-[2px]">
               <div className="grid grid-cols-2 gap-6 mb-6">
                 {/* Columna Izquierda - Imagen del producto */}
                 <div className="col-span-1">
@@ -2390,6 +3123,63 @@ export default function AdminPage() {
                         </div>
                       );
                     })()}
+                  </div>
+                  
+                  {/* Información adicional del producto debajo de la imagen - mismo estilo */}
+                  <div className="space-y-2 pt-2 border-t border-gray-700 mt-4">
+                    <div className="space-y-1 text-xs">
+                      {/* Tallas de Calzado */}
+                      {selectedCarouselProduct.tallasCalzado && selectedCarouselProduct.tallasCalzado.length > 0 && (
+                        <div className="flex flex-col md:flex-row md:items-start gap-2">
+                          <span className="text-gray-400 md:min-w-[80px]">Tallas Calzado:</span>
+                          <div className="block md:hidden">
+                            <div className="grid grid-cols-6 gap-1 mt-1">
+                              {selectedCarouselProduct.tallasCalzado.map((talla) => (
+                                <span key={talla} className="bg-gray-600 text-white px-1 py-0.5 rounded text-[9px] text-center">
+                                  {talla}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <span className="hidden md:inline text-gray-300 text-[10px]">{selectedCarouselProduct.tallasCalzado.join(', ')}</span>
+                        </div>
+                      )}
+                      
+                      {/* Tallas de Ropa */}
+                      {selectedCarouselProduct.tallasRopa && selectedCarouselProduct.tallasRopa.length > 0 && (
+                        <div className="flex flex-col md:flex-row md:items-start gap-2">
+                          <span className="text-gray-400 md:min-w-[80px]">Tallas Ropa:</span>
+                          <div className="block md:hidden">
+                            <div className="grid grid-cols-4 gap-1 mt-1">
+                              {selectedCarouselProduct.tallasRopa.map((talla) => (
+                                <span key={talla} className="bg-gray-600 text-white px-1 py-0.5 rounded text-[9px] text-center">
+                                  {talla}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <span className="hidden md:inline text-gray-300 text-[10px]">{selectedCarouselProduct.tallasRopa.join(', ')}</span>
+                        </div>
+                      )}
+                      
+                      {/* Género */}
+                      {selectedCarouselProduct.genero && selectedCarouselProduct.genero !== 'generico' && (
+                        <div className="flex items-start gap-2">
+                          <span className="text-gray-400 min-w-[60px]">Género:</span>
+                          <span className="text-gray-300 capitalize">{selectedCarouselProduct.genero}</span>
+                        </div>
+                      )}
+                      
+                      {/* Medidas */}
+                      {selectedCarouselProduct.medidas && (
+                        <div className="flex items-start gap-2">
+                          <span className="text-gray-400 min-w-[60px]">Medidas:</span>
+                          <span className="text-gray-300">
+                            {selectedCarouselProduct.medidas} {selectedCarouselProduct.unidadMedida || 'cm'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -2429,51 +3219,67 @@ export default function AdminPage() {
                       </span>
                     )}
                   </div>
-
-                  {/* Información adicional del producto - sin título y más pequeña */}
-                  <div className="space-y-2 pt-2 border-t border-gray-700">
-                    <div className="space-y-1 text-xs">
-                      {/* Tallas de Calzado */}
-                      {selectedCarouselProduct.tallasCalzado && selectedCarouselProduct.tallasCalzado.length > 0 && (
-                        <div className="flex items-start gap-2">
-                          <span className="text-gray-400 min-w-[80px]">Tallas Calzado:</span>
-                          <span className="text-gray-300 text-[10px]">{selectedCarouselProduct.tallasCalzado.join(', ')}</span>
-                        </div>
-                      )}
-                      
-                      {/* Tallas de Ropa */}
-                      {selectedCarouselProduct.tallasRopa && selectedCarouselProduct.tallasRopa.length > 0 && (
-                        <div className="flex items-start gap-2">
-                          <span className="text-gray-400 min-w-[80px]">Tallas Ropa:</span>
-                          <span className="text-gray-300 text-[10px]">{selectedCarouselProduct.tallasRopa.join(', ')}</span>
-                        </div>
-                      )}
-                      
-                      {/* Género */}
-                      {selectedCarouselProduct.genero && selectedCarouselProduct.genero !== 'generico' && (
-                        <div className="flex items-start gap-2">
-                          <span className="text-gray-400 min-w-[60px]">Género:</span>
-                          <span className="text-gray-300 capitalize">{selectedCarouselProduct.genero}</span>
-                        </div>
-                      )}
-                      
-                      {/* Medidas */}
-                      {selectedCarouselProduct.medidas && (
-                        <div className="flex items-start gap-2">
-                          <span className="text-gray-400 min-w-[60px]">Medidas:</span>
-                          <span className="text-gray-300">
-                            {selectedCarouselProduct.medidas} {selectedCarouselProduct.unidadMedida || 'cm'}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
                 </div>
               </div>
               
 
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Confirmación de Eliminación */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="bg-gray-800 border-gray-700 text-white md:max-w-md max-w-[90vw] mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-center mb-4">
+              Confirmar Eliminación
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="text-center space-y-4">
+            {/* Ícono de advertencia */}
+            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            
+            {/* Mensaje principal */}
+            <div>
+              <h3 className="text-lg font-medium text-white mb-2">
+                ¿Estás seguro?
+              </h3>
+              <p className="text-gray-300 text-sm">
+                Esta acción eliminará permanentemente el producto:
+              </p>
+              {productToDelete && (
+                <p className="text-purple-400 font-medium mt-2">
+                  "{productToDelete.producto.nombre}"
+                </p>
+              )}
+              <p className="text-gray-400 text-xs mt-3">
+                Esta acción no se puede deshacer.
+              </p>
+            </div>
+            
+            {/* Botones */}
+            <div className="flex gap-3 justify-center pt-4">
+              <Button 
+                variant="outline" 
+                onClick={cancelarEliminacion}
+                className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600 px-6 py-2"
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={confirmarEliminacion}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2"
+              >
+                Sí, Eliminar
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -2590,6 +3396,37 @@ export default function AdminPage() {
           </div>
         </div>
       </footer>
+
+      {/* Modal de Ayuda */}
+      <Dialog open={showHelpPopup} onOpenChange={(open) => {
+        if (!open) {
+          closeHelpPopup()
+        }
+      }}>
+        <DialogContent className="bg-gray-800 border-gray-700 text-white md:max-w-2xl max-w-[95vw] md:max-h-[80vh] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="md:text-xl text-lg font-semibold text-yellow-400 flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 md:w-6 md:h-6" />
+              {helpContent?.title}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="md:mt-4 mt-3">
+            <p className="text-gray-300 md:text-base text-sm leading-relaxed text-justify">
+              {helpContent?.content}
+            </p>
+          </div>
+          
+          <div className="flex justify-end mt-6">
+            <Button 
+              onClick={closeHelpPopup}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white md:px-6 px-4 md:py-2 py-1.5 md:text-sm text-xs"
+            >
+              Entendido
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
