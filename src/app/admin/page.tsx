@@ -143,6 +143,18 @@ export default function AdminPage() {
     carrusel2: Array(8).fill(null)  // 8 productos para el carrusel 2
   })
   
+  // Estado para las imágenes de los banners
+  const [bannerImages, setBannerImages] = useState<(string | null)[]>([
+    null, // Banner 1
+    null  // Banner 2
+  ])
+  
+  // Estado para los precios de los banners
+  const [bannerPrices, setBannerPrices] = useState({
+    banner1: { current: '', previous: '' },
+    banner2: { current: '', previous: '' }
+  })
+  
   // Estado para el modal de datos del producto y producto seleccionado
   const [isCarouselModalOpen, setIsCarouselModalOpen] = useState(false)
   const [selectedCarouselItem, setSelectedCarouselItem] = useState<{type: 'carrusel1' | 'carrusel2', index: number} | null>(null)
@@ -302,6 +314,58 @@ export default function AdminPage() {
         }
       }
     })
+  }
+  
+  // Función para manejar la carga de imágenes de banners
+  const handleBannerImageUpload = (bannerIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setBannerImages(prev => {
+            const newImages = [...prev]
+            newImages[bannerIndex] = event.target?.result as string
+            return newImages
+          })
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+  
+  // Función para eliminar una imagen de banner
+  const handleDeleteBanner = (bannerIndex: number) => {
+    setBannerImages(prev => {
+      const newImages = [...prev]
+      newImages[bannerIndex] = null
+      return newImages
+    })
+    
+    // Reset prices
+    if (bannerIndex === 0) {
+      setBannerPrices(prev => ({
+        ...prev,
+        banner1: { current: '', previous: '' }
+      }))
+    } else {
+      setBannerPrices(prev => ({
+        ...prev,
+        banner2: { current: '', previous: '' }
+      }))
+    }
+  }
+  
+  // Función para guardar los datos del banner (simulación)
+  const handleSaveBanner = (bannerIndex: number) => {
+    // En una implementación real, aquí se enviarían los datos al servidor
+    console.log(`Banner ${bannerIndex + 1} guardado:`, {
+      image: bannerImages[bannerIndex],
+      prices: bannerIndex === 0 ? bannerPrices.banner1 : bannerPrices.banner2
+    })
+    
+    // Mostrar mensaje de éxito (en una implementación real)
+    alert(`Banner ${bannerIndex + 1} guardado exitosamente`)
   }
 
   // Función para manejar la carga de imágenes del carrusel
@@ -2813,11 +2877,27 @@ export default function AdminPage() {
             </div>
             
             {/* Marco rectangular para imagen */}
-            <div className="bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer">
-              <div className="text-center">
-                <Plus className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2" />
-                <p className="text-gray-400 text-xs md:text-sm">Agregar imagen</p>
-              </div>
+            <div className="relative bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer overflow-hidden">
+              {bannerImages[0] ? (
+                <img 
+                  src={bannerImages[0]} 
+                  alt="Banner 1" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => handleBannerImageUpload(0, e)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="text-center">
+                    <Plus className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2" />
+                    <p className="text-gray-400 text-xs md:text-sm">Agregar imagen</p>
+                  </div>
+                </>
+              )}
             </div>
             
             {/* Precios y botones responsive */}
@@ -2829,6 +2909,11 @@ export default function AdminPage() {
                   <input 
                     type="text" 
                     placeholder="$0.00" 
+                    value={bannerPrices.banner1.current}
+                    onChange={(e) => setBannerPrices(prev => ({
+                      ...prev,
+                      banner1: { ...prev.banner1, current: e.target.value }
+                    }))}
                     className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
                   />
                 </div>
@@ -2837,6 +2922,11 @@ export default function AdminPage() {
                   <input 
                     type="text" 
                     placeholder="$0.00" 
+                    value={bannerPrices.banner1.previous}
+                    onChange={(e) => setBannerPrices(prev => ({
+                      ...prev,
+                      banner1: { ...prev.banner1, previous: e.target.value }
+                    }))}
                     className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
                   />
                 </div>
@@ -2844,10 +2934,16 @@ export default function AdminPage() {
               
               {/* Botones debajo en mobile, a la derecha en desktop */}
               <div className="flex gap-2 justify-center md:justify-end">
-                <button className="bg-red-600 hover:bg-red-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors">
+                <button 
+                  onClick={() => handleDeleteBanner(0)}
+                  className="bg-red-600 hover:bg-red-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
+                >
                   Eliminar
                 </button>
-                <button className="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors">
+                <button 
+                  onClick={() => handleSaveBanner(0)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
+                >
                   Guardar
                 </button>
               </div>
@@ -2862,11 +2958,27 @@ export default function AdminPage() {
             </div>
             
             {/* Marco rectangular para imagen */}
-            <div className="bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer">
-              <div className="text-center">
-                <Plus className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2" />
-                <p className="text-gray-400 text-xs md:text-sm">Agregar imagen</p>
-              </div>
+            <div className="relative bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer overflow-hidden">
+              {bannerImages[1] ? (
+                <img 
+                  src={bannerImages[1]} 
+                  alt="Banner 2" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => handleBannerImageUpload(1, e)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="text-center">
+                    <Plus className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2" />
+                    <p className="text-gray-400 text-xs md:text-sm">Agregar imagen</p>
+                  </div>
+                </>
+              )}
             </div>
             
             {/* Precios y botones responsive */}
@@ -2878,6 +2990,11 @@ export default function AdminPage() {
                   <input 
                     type="text" 
                     placeholder="$0.00" 
+                    value={bannerPrices.banner2.current}
+                    onChange={(e) => setBannerPrices(prev => ({
+                      ...prev,
+                      banner2: { ...prev.banner2, current: e.target.value }
+                    }))}
                     className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
                   />
                 </div>
@@ -2886,6 +3003,11 @@ export default function AdminPage() {
                   <input 
                     type="text" 
                     placeholder="$0.00" 
+                    value={bannerPrices.banner2.previous}
+                    onChange={(e) => setBannerPrices(prev => ({
+                      ...prev,
+                      banner2: { ...prev.banner2, previous: e.target.value }
+                    }))}
                     className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
                   />
                 </div>
@@ -2893,10 +3015,16 @@ export default function AdminPage() {
               
               {/* Botones debajo en mobile, a la derecha en desktop */}
               <div className="flex gap-2 justify-center md:justify-end">
-                <button className="bg-red-600 hover:bg-red-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors">
+                <button 
+                  onClick={() => handleDeleteBanner(1)}
+                  className="bg-red-600 hover:bg-red-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
+                >
                   Eliminar
                 </button>
-                <button className="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors">
+                <button 
+                  onClick={() => handleSaveBanner(1)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
+                >
                   Guardar
                 </button>
               </div>
@@ -2908,7 +3036,7 @@ export default function AdminPage() {
 
       {/* Popup de Información del Producto */}
       <Dialog open={selectedProducto !== null} onOpenChange={(open) => !open && setSelectedProducto(null)}>
-        <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700 text-white">
+        <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700 text-white md:p-6 p-4">
           {/* Botón cerrar */}
           <button
             onClick={() => setSelectedProducto(null)}
@@ -2919,7 +3047,7 @@ export default function AdminPage() {
           </button>
 
           {selectedProducto && (
-            <div className="grid grid-cols-2 gap-6 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:p-6 p-2">
               {/* Columna Izquierda - Imagen y Info del Negocio (50%) */}
               <div className="col-span-1 space-y-4">
                 {/* Imagen del Producto */}
@@ -2932,7 +3060,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Información del Negocio - SIN TÍTULO */}
-                <div className="bg-gray-700 rounded-lg p-4 space-y-3">
+                <div className="bg-gray-700 rounded-lg md:p-4 p-3 space-y-3">
                   {/* Iconos de Contacto Clickeables en una sola línea */}
                   {(businessInfo.telefono || businessInfo.whatsapp || businessInfo.email || businessInfo.direccion) && (
                     <div className="flex gap-3 justify-center">
@@ -2940,10 +3068,10 @@ export default function AdminPage() {
                       {businessInfo.telefono && (
                         <a 
                           href={`tel:${businessInfo.telefono}`}
-                          className="flex items-center justify-center w-8 h-8 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors cursor-pointer"
+                          className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors cursor-pointer"
                           title={`Llamar a ${businessInfo.telefono}`}
                         >
-                          <Phone className="w-4 h-4 text-white" />
+                          <Phone className="w-3 h-3 md:w-4 md:h-4 text-white" />
                         </a>
                       )}
                       
@@ -2953,10 +3081,10 @@ export default function AdminPage() {
                           href={`https://wa.me/${businessInfo.whatsapp.replace(/\D/g, '')}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center w-8 h-8 bg-green-600 hover:bg-green-500 rounded-full transition-colors cursor-pointer"
+                          className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-green-600 hover:bg-green-500 rounded-full transition-colors cursor-pointer"
                           title={`Enviar WhatsApp a ${businessInfo.whatsapp}`}
                         >
-                          <MessageCircle className="w-4 h-4 text-white" />
+                          <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-white" />
                         </a>
                       )}
                       
@@ -2964,10 +3092,10 @@ export default function AdminPage() {
                       {businessInfo.email && (
                         <a 
                           href={`mailto:${businessInfo.email}`}
-                          className="flex items-center justify-center w-8 h-8 bg-purple-600 hover:bg-purple-500 rounded-full transition-colors cursor-pointer"
+                          className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-purple-600 hover:bg-purple-500 rounded-full transition-colors cursor-pointer"
                           title={`Enviar email a ${businessInfo.email}`}
                         >
-                          <Mail className="w-4 h-4 text-white" />
+                          <Mail className="w-3 h-3 md:w-4 md:h-4 text-white" />
                         </a>
                       )}
                       
@@ -2977,28 +3105,139 @@ export default function AdminPage() {
                           href={`https://www.mapcity.com/search?q=${encodeURIComponent(businessInfo.direccion)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center w-8 h-8 bg-red-600 hover:bg-red-500 rounded-full transition-colors cursor-pointer"
+                          className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-red-600 hover:bg-red-500 rounded-full transition-colors cursor-pointer"
                           title={`Ver ubicación: ${businessInfo.direccion}`}
                         >
-                          <MapPin className="w-4 h-4 text-white" />
+                          <MapPin className="w-3 h-3 md:w-4 md:h-4 text-white" />
                         </a>
                       )}
                     </div>
                   )}
                 </div>
+
+                {/* Información en 2 columnas para modo responsive */}
+                <div className="md:hidden grid grid-cols-2 gap-4 md:p-4 p-2">
+                  {/* Columna Izquierda - Información principal */}
+                  <div className="space-y-2 md:p-2 p-1">
+                    {/* Nombre del Negocio - ARRIBA DEL PRODUCTO CON SUBRAYADO */}
+                    {businessInfo.nombre && (
+                      <h3 className="text-xs font-medium text-gray-300 underline decoration-gray-500">
+                        {businessInfo.nombre}
+                      </h3>
+                    )}
+
+                    {/* Título del producto - más chico */}
+                    <h2 className="text-sm font-bold text-white leading-tight">
+                      {selectedProducto.nombre}
+                    </h2>
+
+                    {/* Categoría y Subcategoría */}
+                    <div className="flex items-center gap-1 text-[9px] text-gray-400">
+                      <span>{getCategoriaLabel(selectedProducto.categoria)}</span>
+                      <span>/</span>
+                      <span>{getSubcategoriaLabel(selectedProducto.subcategoria)}</span>
+                    </div>
+
+                    {/* Descripción - más pequeña */}
+                    <div>
+                      <p className="text-gray-300 text-[0.6rem] leading-snug text-justify">
+                        {selectedProducto.descripcion || 'Sin descripción disponible.'}
+                      </p>
+                    </div>
+
+                    {/* Precios */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-purple-400">
+                        ${selectedProducto.precioActual}
+                      </span>
+                      {selectedProducto.precioAnterior && (
+                        <span className="text-[0.6rem] text-gray-400 line-through">
+                          ${selectedProducto.precioAnterior}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Columna Derecha - Horarios y características */}
+                  <div className="space-y-3 md:p-2 p-1">
+                    {/* Horarios de Atención */}
+                    {(businessInfo.horarios.lunesViernes.inicio || businessInfo.horarios.sabado.inicio || businessInfo.horarios.domingo.inicio) && (
+                      <div>
+                        <h5 className="text-[0.65rem] font-medium text-gray-400 mb-1">Horarios:</h5>
+                        <div className="flex flex-col gap-1 text-[0.6rem]">
+                          {businessInfo.horarios.lunesViernes.inicio && businessInfo.horarios.lunesViernes.fin && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">L-V:</span>
+                              <span className="text-gray-400">{businessInfo.horarios.lunesViernes.inicio}-{businessInfo.horarios.lunesViernes.fin}</span>
+                            </div>
+                          )}
+                          {businessInfo.horarios.sabado.inicio && businessInfo.horarios.sabado.fin && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">S:</span>
+                              <span className="text-gray-400">{businessInfo.horarios.sabado.inicio}-{businessInfo.horarios.sabado.fin}</span>
+                            </div>
+                          )}
+                          {businessInfo.horarios.domingo.inicio && businessInfo.horarios.domingo.fin && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">D:</span>
+                              <span className="text-gray-400">{businessInfo.horarios.domingo.inicio}-{businessInfo.horarios.domingo.fin}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Información adicional del producto */}
+                    <div className="space-y-1 text-[0.6rem]">
+                      {/* Tallas de Calzado */}
+                      {selectedProducto.tallasCalzado && selectedProducto.tallasCalzado.length > 0 && (
+                        <div className="flex items-start gap-1">
+                          <span className="text-gray-400">Tallas Calzado:</span>
+                          <span className="text-gray-300">{selectedProducto.tallasCalzado.join(', ')}</span>
+                        </div>
+                      )}
+                      
+                      {/* Tallas de Ropa */}
+                      {selectedProducto.tallasRopa && selectedProducto.tallasRopa.length > 0 && (
+                        <div className="flex items-start gap-1">
+                          <span className="text-gray-400">Tallas Ropa:</span>
+                          <span className="text-gray-300">{selectedProducto.tallasRopa.join(', ')}</span>
+                        </div>
+                      )}
+                      
+                      {/* Género */}
+                      {selectedProducto.genero && selectedProducto.genero !== 'generico' && (
+                        <div className="flex items-start gap-1">
+                          <span className="text-gray-400">Género:</span>
+                          <span className="text-gray-300 capitalize">{selectedProducto.genero}</span>
+                        </div>
+                      )}
+                      
+                      {/* Medidas */}
+                      {selectedProducto.medidas && (
+                        <div className="flex items-start gap-1">
+                          <span className="text-gray-400">Medidas:</span>
+                          <span className="text-gray-300">
+                            {selectedProducto.medidas} {selectedProducto.unidadMedida || 'cm'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Columna Derecha - Información (50%) */}
-              <div className="col-span-1 space-y-2">
+              {/* Columna Derecha - Información (50%) - Solo visible en desktop */}
+              <div className="hidden md:block col-span-1 space-y-2 md:p-2 p-1">
                 {/* Nombre del Negocio - ARRIBA DEL PRODUCTO CON SUBRAYADO */}
                 {businessInfo.nombre && (
-                  <h3 className="text-sm font-medium text-gray-300 underline decoration-gray-500">
+                  <h3 className="text-xs md:text-sm font-medium text-gray-300 underline decoration-gray-500">
                     {businessInfo.nombre}
                   </h3>
                 )}
 
                 {/* Título del producto */}
-                <h2 className="text-lg font-bold text-white leading-tight mb-1">
+                <h2 className="text-base md:text-lg font-bold text-white leading-tight mb-1">
                   {selectedProducto.nombre}
                 </h2>
 
@@ -3011,14 +3250,14 @@ export default function AdminPage() {
 
                 {/* Descripción - más pequeña y líneas más juntas */}
                 <div className="mb-2">
-                  <p className="text-gray-300 text-xs leading-snug text-justify">
+                  <p className="text-gray-300 text-[0.65rem] md:text-xs leading-snug text-justify">
                     {selectedProducto.descripcion || 'Sin descripción disponible.'}
                   </p>
                 </div>
 
                 {/* Precios - más pequeños */}
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="text-base font-bold text-purple-400">
+                  <span className="text-sm md:text-base font-bold text-purple-400">
                     ${selectedProducto.precioActual}
                   </span>
                   {selectedProducto.precioAnterior && (
