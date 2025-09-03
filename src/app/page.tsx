@@ -6,6 +6,7 @@ import { HorizontalCarousel } from '@/components/horizontal-carousel'
 import { SkeletonCarousel } from '@/components/skeleton-carousel'
 import { ImageCarouselContinuous } from '@/components/image-carousel-continuous'
 import { ImageCarouselContinuous2 } from '@/components/image-carousel-continuous2'
+import { HeaderCarousel } from '@/components/header-carousel'
 import { InfoBannerCarousel } from '@/components/info-banner-carousel'
 import { Product } from '@/types/product'
 import { Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText } from 'lucide-react'
@@ -48,40 +49,29 @@ export default function Home() {
         showFloatingSearch={true}
       />
 
-      
-
-      {/* Carrusel Continuo de 12 Imágenes */}
-      <ImageCarouselContinuous 
-        images={[
-          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1483985988355-7647b8b3e340?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1551107696-a4b0c5a0b9b1?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1526170375885-4d8ec677e1c8?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1551024601-bec78aea804d?w=400&h=300&fit=crop",
-          "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&h=300&fit=crop"
+      {/* Nuevo Carrusel entre Header y Destacados */}
+      <HeaderCarousel 
+        sections={[
+          {
+            images: [
+              "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
+              "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=400&h=300&fit=crop"
+            ]
+          },
+          {
+            images: [
+              "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop",
+              "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop"
+            ]
+          },
+          {
+            images: [
+              "https://images.unsplash.com/photo-1551818255-e6e10975bc51?w=400&h=300&fit=crop",
+              "https://images.unsplash.com/photo-1526170375885-4d8ec677e1c8?w=400&h=300&fit=crop"
+            ]
+          }
         ]}
-        sourceNames={[
-          "TechStore Pro",
-          "Fashion Hub",
-          "Home & Garden",
-          "Sports World",
-          "Beauty Plus",
-          "Book Corner",
-          "Music Zone",
-          "Gadget Galaxy",
-          "Pet Paradise",
-          "Auto Parts",
-          "Health Store",
-          "Toy Kingdom"
-        ]}
-        showSource={true}
-        autoPlayInterval={6000}
+        autoPlayInterval={7000}
       />
 
       {/* Main Content */}
