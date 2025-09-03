@@ -2087,6 +2087,13 @@ export default function AdminPage() {
       {/* Pestañas de Carruseles */}
       <div className={`px-6 pb-4 relative ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
         <Tabs defaultValue="carrusel1" className={`w-full ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
+          {/* Overlay Message */}
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+              <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
+              <p className="md:text-sm text-xs text-gray-600">Sistema de gestión de carruseles para mostrar tus productos destacados en la página principal.</p>
+            </div>
+          </div>
           <TabsList className="grid grid-cols-2 w-full md:max-w-md max-w-xs mx-auto md:px-6 px-3 md:mb-8 mb-6 bg-gray-800 border border-gray-700 rounded-lg p-1">
             <TabsTrigger 
               value="carrusel1" 
@@ -2791,7 +2798,15 @@ export default function AdminPage() {
     </div>
 
     {/* Container Gestión de Banner */}
-    <div className={`px-6 pb-4 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'}`}>
+    <div className={`px-6 pb-4 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'} relative`}>
+      {/* Overlay Message - Colocado fuera del contenedor con distorsión */}
+      <div className="absolute inset-0 flex items-center justify-center z-20">
+        <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+          <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
+          <p className="md:text-sm text-xs text-gray-600">Sistema de gestión de banners para promocionar ofertas especiales en lugares destacados de tu página.</p>
+        </div>
+      </div>
+      
       <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative banner-distortion">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
           {/* Columna 1 - Banner 1 */}

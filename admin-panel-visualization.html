@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Solo a un CLICK</title>
+    <style>
+        :root {
+            --gray-900: #111827;
+            --gray-800: #1f2937;
+            --gray-700: #374151;
+            --gray-600: #4b5563;
+            --gray-400: #9ca3af;
+            --gray-300: #d1d5db;
+            --purple-900: #581c87;
+            --purple-600: #9333ea;
+            --blue-500: #3b82f6;
+            --yellow-300: #fde047;
+            --yellow-400: #facc15;
+            --red-400: #f87171;
+            --green-400: #4ade80;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--gray-900);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .admin-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, #facc15 100%);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            flex: 1;
+        }
+        
+        /* Desktop Layout */
+        .admin-layout {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            background-color: var(--gray-800);
+            border-right: 1px solid var(--gray-700);
+            padding: 24px;
+        }
+        
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 32px;
+        }
+        
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .nav-button {
+            width: 100%;
+            text-align: left;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background-color: transparent;
+            color: var(--gray-300);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+        
+        .nav-button:hover {
+            background-color: var(--gray-700);
+            color: white;
+        }
+        
+        .nav-button.active {
+            background-color: #2563eb;
+            color: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            overflow: auto;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            font-size: 30px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .help-button {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--yellow-400);
+            background: transparent;
+            color: var(--yellow-400);
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .section-description {
+            color: var(--gray-400);
+            margin-bottom: 32px;
+        }
+        
+        /* Tabs */
+        .tabs-list {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 32px;
+            background-color: var(--gray-800);
+            border: 1px solid var(--gray-700);
+            border-radius: 8px;
+            padding: 4px;
+        }
+        
+        .tab-button {
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: var(--gray-300);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .tab-button.active {
+            background-color: var(--gray-700);
+            color: white;
+        }
+        
+        /* Product Cards */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 24px;
+        }
+        
+        .product-card {
+            background-color: var(--gray-800);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--gray-700);
+        }
+        
+        .product-image {
+            height: 200px;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-700);
+        }
+        
+        .product-info {
+            padding: 16px;
+        }
+        
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .product-category {
+            font-size: 14px;
+            color: var(--gray-400);
+            margin-bottom: 12px;
+        }
+        
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .current-price {
+            color: #a78bfa;
+            font-weight: bold;
+        }
+        
+        .previous-price {
+            color: var(--gray-400);
+            text-decoration: line-through;
+            font-size: 14px;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .action-button {
+            flex: 1;
+            padding: 8px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .edit-button {
+            background-color: var(--gray-700);
+            color: white;
+        }
+        
+        .delete-button {
+            background-color: var(--red-400);
+            color: white;
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            padding: 24px;
+            background-color: var(--gray-800);
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .menu-button {
+            aspect-ratio: 1;
+            background-color: var(--gray-800);
+            border: 1px solid var(--gray-600);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .menu-button:hover {
+            background-color: var(--gray-700);
+        }
+        
+        .menu-icon {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 8px;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, #facc15 100%);
+            padding: 32px 24px;
+            margin-top: 48px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .footer-column h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .footer-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .footer-link:hover {
+            color: var(--yellow-300);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-layout {
+                display: block;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .tabs-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="admin-header">
+        <div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+        </div>
+        <h1 class="header-title">Panel Administrador</h1>
+        <div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
+    </header>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="menu-grid">
+            <button class="menu-button">
+                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="#9333ea" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Datos del Negocio</span>
+            </button>
+            <button class="menu-button">
+                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                </svg>
+                <span>Gestión de Productos</span>
+            </button>
+            <button class="menu-button">
+                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <path d="M21 15l-5-5L5 21"></path>
+                </svg>
+                <span>Gestión de Carruseles</span>
+            </button>
+            <button class="menu-button">
+                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                <span>Gestión de Banners</span>
+            </button>
+            <button class="menu-button">
+                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                <span>KPI's</span>
+            </button>
+            <button class="menu-button">
+                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span>Gestión de Usuarios</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Desktop Layout -->
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Panel de Administración</h2>
+            <nav class="sidebar-nav">
+                <button class="nav-button active">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    Datos del Negocio
+                </button>
+                <button class="nav-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                    </svg>
+                    Gestión de Productos
+                </button>
+                <button class="nav-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <path d="M21 15l-5-5L5 21"></path>
+                    </svg>
+                    Gestión de Carruseles
+                </button>
+                <button class="nav-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                        <line x1="9" y1="21" x2="9" y2="9"></line>
+                    </svg>
+                    Gestión de Banners
+                </button>
+                <button class="nav-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    KPI's
+                </button>
+                <button class="nav-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Gestión de Usuarios
+                </button>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="section-header">
+                <h2 class="section-title">Gestión de Productos</h2>
+                <button class="help-button">?</button>
+            </div>
+            <p class="section-description">Administra las diferentes secciones de productos del marketplace</p>
+            
+            <!-- Tabs -->
+            <div class="tabs-list">
+                <button class="tab-button active">Destacados</button>
+                <button class="tab-button">Ofertas</button>
+                <button class="tab-button">Novedades</button>
+                <button class="tab-button">Tendencias</button>
+                <button class="tab-button">¡No te lo Pierdas!</button>
+                <button class="tab-button">Liquidaciones</button>
+            </div>
+            
+            <!-- Product Grid -->
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-image">
+                        Imagen del producto
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">iPhone 15 Pro Max</h3>
+                        <p class="product-category">Electrónica / Smartphones</p>
+                        <div class="product-price">
+                            <span class="current-price">$1299.99</span>
+                            <span class="previous-price">$1499.99</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-button edit-button">Editar</button>
+                            <button class="action-button delete-button">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        Imagen del producto
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Camisa Formal Premium</h3>
+                        <p class="product-category">Ropa y Accesorios / Hombre</p>
+                        <div class="product-price">
+                            <span class="current-price">$29.99</span>
+                            <span class="previous-price">$59.99</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-button edit-button">Editar</button>
+                            <button class="action-button delete-button">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        Imagen del producto
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Consultoría Digital Empresarial</h3>
+                        <p class="product-category">Servicios Profesionales / Consultoría</p>
+                        <div class="product-price">
+                            <span class="current-price">$150.00</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-button edit-button">Editar</button>
+                            <button class="action-button delete-button">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        Imagen del producto
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Tesla Model 3 2024</h3>
+                        <p class="product-category">Vehículos / Autos</p>
+                        <div class="product-price">
+                            <span class="current-price">$89.99</span>
+                            <span class="previous-price">$99.99</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-button edit-button">Editar</button>
+                            <button class="action-button delete-button">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>Solo a un CLICK</h3>
+                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; line-height: 1.5;">
+                        Tu guía completa de comercios, servicios y eventos.
+                        Descubre todo lo que tu ciudad tiene para ofrecer.
+                    </p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Avisos Legales</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            Privacidad
+                        </a>
+                        <a href="#" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            Cookies
+                        </a>
+                        <a href="#" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2">
+                                <polyline points="1 4 1 10 7 10"></polyline>
+                                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                            </svg>
+                            Reembolso
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Información</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            Sobre Nosotros
+                        </a>
+                        <a href="#" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            Registra tu Negocio
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contacto</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            soloaunclick@gmail.com
+                        </a>
+                        <a href="#" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            +1 234 567 890
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="copyright">
+                © 2025 Solo a un CLICK. Todos los derechos reservados.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
