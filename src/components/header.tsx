@@ -153,103 +153,67 @@ export function Header({
           {/* Versión Desktop */}
           <div className="hidden sm:block py-8 px-6">
             <div className="flex items-center justify-between">
-              {/* Icono de Home en el extremo izquierdo */}
-              <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
-                <Home className="h-6 w-6 text-white hover:text-yellow-300 transition-colors" />
+              {/* Título aún más a la izquierda con filas casi juntas */}
+              <div className="flex flex-col items-start cursor-pointer -ml-12 -mt-3" onClick={() => router.push('/')}>
+                <h1 className="text-2xl font-bold leading-tight text-white mb-0 pb-0">Solo a</h1>
+                <h1 className="text-5xl font-bold leading-tight text-yellow-300 mt-0 pt-0 -mt-3">un CLICK</h1>
               </div>
 
-              {/* Título centrado y más grande */}
-              <div className="flex flex-col items-center cursor-pointer flex-1" onClick={() => router.push('/')}>
-                <h1 className="text-2xl font-bold leading-tight text-white">Solo a</h1>
-                <h1 className="text-5xl font-bold leading-tight text-yellow-300">un CLICK</h1>
-              </div>
-
-              {/* Sección de usuario en el extremo derecho */}
-              <div className="flex items-center space-x-3">
-                <div className="relative modal-container">
-                  <button 
-                    onClick={toggleUserMenu}
-                    className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors cursor-pointer"
-                  >
-                    <User className="h-5 w-5" />
-                    <span className="text-sm font-medium">Usuario</span>
-                  </button>
-
-                  {/* Menú desplegable de usuario */}
-                  {showUserMenu && (
-                    <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                      <div className="py-1">
-                        <div className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                          <LogOut className="w-4 h-4" />
-                          <span>Cerrar sesión</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+              {/* Buscador centrado y más angosto con mayor margen izquierdo */}
+              <div className="flex justify-center flex-1 max-w-md ml-20">
+                <div className="w-full">
+                  <SearchBar 
+                    value={searchTerm} 
+                    onChange={onSearchTermChange}
+                    placeholder="Buscar productos, tiendas, categorías..."
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* Buscador debajo del título */}
-            <div className="flex justify-center mt-6">
-              <div className="max-w-lg w-full">
-                <SearchBar 
-                  value={searchTerm} 
-                  onChange={onSearchTermChange}
-                  placeholder="Buscar productos, tiendas, categorías..."
-                />
+              {/* Nuevo diseño de banner publicitario */}
+              <div className="relative overflow-hidden bg-purple-900 rounded-l-xl shadow-xl border-l-4 border-yellow-400 -mr-6 transform hover:scale-105 transition-all duration-300 w-48">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-400 rotate-45 translate-x-8 -translate-y-8"></div>
+                <div className="relative z-10 py-3 px-5">
+                  <p className="text-sm font-bold text-white mb-1">¡PROMOCIONA</p>
+                  <p className="text-lg font-extrabold text-white">TU NEGOCIO!</p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Versión Móvil */}
           <div className="sm:hidden w-full">
-            {/* Primera fila: Icono home, título centrado y usuario */}
-            <div className="flex items-center justify-between px-4 py-4">
-              {/* Icono de Home en el extremo izquierdo */}
-              <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
-                <Home className="h-5 w-5 text-white hover:text-yellow-300 transition-colors" />
+            {/* Primera fila: Título y buscador centrados uno al lado del otro */}
+            <div className="flex items-center justify-center px-4 py-3 space-x-8">
+              {/* Título con filas casi juntas */}
+              <div className="flex flex-col items-center cursor-pointer -mt-2" onClick={() => router.push('/')}>
+                <h1 className="text-lg font-bold leading-tight text-white mb-0 pb-0">Solo a</h1>
+                <h1 className="text-2xl font-bold leading-tight text-yellow-300 mt-0 pt-0 -mt-2">un CLICK</h1>
               </div>
 
-              {/* Título centrado */}
-              <div className="flex flex-col items-center cursor-pointer flex-1" onClick={() => router.push('/')}>
-                <h1 className="text-lg font-bold leading-tight text-white">Solo a</h1>
-                <h1 className="text-2xl font-bold leading-tight text-yellow-300">un CLICK</h1>
-              </div>
-
-              {/* Sección de usuario en el extremo derecho */}
-              <div className="flex items-center">
-                <div className="relative modal-container">
-                  <button 
-                    onClick={toggleUserMenu}
-                    className="flex items-center text-white/90 hover:text-white transition-colors cursor-pointer"
-                  >
-                    <User className="h-5 w-5" />
-                  </button>
-
-                  {/* Menú desplegable de usuario */}
-                  {showUserMenu && (
-                    <div className="absolute top-full right-0 mt-2 w-36 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                      <div className="py-1">
-                        <div className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                          <LogOut className="w-4 h-4" />
-                          <span>Cerrar sesión</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+              {/* Buscador */}
+              <div className="flex-1 max-w-[180px]">
+                <SearchBar 
+                  value={searchTerm} 
+                  onChange={onSearchTermChange}
+                  placeholder="Buscar..."
+                  className="text-sm"
+                />
               </div>
             </div>
 
-            {/* Segunda fila: Buscador (siempre presente) */}
-            <div className="px-4 pb-4">
-              <SearchBar 
-                value={searchTerm} 
-                onChange={onSearchTermChange}
-                placeholder="Buscar productos..."
-                className="text-sm"
-              />
+            {/* Segunda fila: Banner publicitario más alto */}
+            <div className="flex justify-center py-2 px-4 mb-2">
+              {/* Banner publicitario - ligeramente más angosto y más bajo */}
+              <div className="relative overflow-hidden bg-purple-900 rounded-xl shadow-lg border-l-2 border-r-2 border-yellow-400 transform hover:scale-105 transition-all duration-300 w-11/12">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-400 rotate-45 translate-x-6 -translate-y-6"></div>
+                <div className="relative z-10 py-3 px-4 flex justify-center">
+                  <div className="text-center">
+                    <p className="text-sm font-bold text-white leading-tight mb-1">¡PROMOCIONA</p>
+                    <p className="text-lg font-extrabold text-white leading-tight">TU NEGOCIO!</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
