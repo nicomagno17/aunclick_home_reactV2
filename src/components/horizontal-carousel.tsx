@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { ProductCard } from './product-card-simple'
+import { AdminProductCard } from '@/components/admin-product-card'
 import { Product } from '@/types/product'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -24,18 +24,18 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
 
   // Configuración responsive
   const getViewportConfig = () => {
-    if (typeof window === 'undefined') return { width: 240, gap: 20, visible: 4 }
+    if (typeof window === 'undefined') return { width: 176, gap: 12, visible: 4 }
     
     const windowWidth = window.innerWidth
     if (windowWidth < 640) {
       // Mobile
-      return { width: 160, gap: 12, visible: 2.5 }
+      return { width: 112, gap: 12, visible: 2.5 }
     } else if (windowWidth < 1024) {
       // Tablet
-      return { width: 200, gap: 16, visible: 3.5 }
+      return { width: 150, gap: 16, visible: 3.5 }
     } else {
       // Desktop
-      return { width: 240, gap: 20, visible: 4 }
+      return { width: 176, gap: 12, visible: 4 }
     }
   }
 
@@ -207,7 +207,7 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
           onMouseLeave={handleEnd}
         >
           <div 
-            className="flex gap-3 sm:gap-4 md:gap-5 pb-2"
+            className="flex gap-3 pb-2"
             style={{
               width: `${products.length * (config.width + config.gap) - config.gap}px`
             }}
@@ -219,7 +219,7 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
                 style={{ width: config.width }}
                 onClick={() => handleUserInteraction()}
               >
-                <ProductCard product={product} />
+                <AdminProductCard producto={product} />
               </div>
             ))}
           </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { ProductCard } from './product-card-simple'
+import { AdminProductCard } from '@/components/admin-product-card'
 import { Product } from '@/types/product'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -295,7 +295,7 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
           <div className={`grid ${visibleCardsPerRow === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-2 sm:gap-4 md:gap-6`}>
             {visibleProductsRow1.map((product) => (
               <div key={`${cardKeyPrefix}-row1-${product.id}`} onClick={() => handleCardInteractionForRow(1)}>
-                <ProductCard product={product} />
+                <AdminProductCard producto={product} />
               </div>
             ))}
           </div>
@@ -329,7 +329,7 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
           <div className={`grid ${visibleCardsPerRow === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-2 sm:gap-4 md:gap-6`}>
             {visibleProductsRow2.map((product) => (
               <div key={`${cardKeyPrefix}-row2-${product.id}`} onClick={() => handleCardInteractionForRow(2)}>
-                <ProductCard product={product} />
+                <AdminProductCard producto={product} />
               </div>
             ))}
           </div>
