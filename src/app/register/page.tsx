@@ -156,8 +156,8 @@ export default function RegisterPage() {
 
   const closeWelcomePopup = () => {
     setShowWelcomePopup(false)
-    // Redirect to admin panel or dashboard
-    window.location.href = '/admin'
+    // Redirect to login page instead of admin panel
+    window.location.href = '/login'
   }
 
   return (
