@@ -1,6 +1,3 @@
-
-#!/usr/bin/env tsx
-
 import { testAllConnections, testDatabaseQueries, testCRUDOperations } from './src/lib/database-test'
 import { closeMySQLPool } from './src/lib/database'
 

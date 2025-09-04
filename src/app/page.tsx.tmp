@@ -17,13 +17,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
 
-
-
   useEffect(() => {
     fetchProducts()
   }, [])
-
-
 
   const fetchProducts = async () => {
     try {
@@ -36,8 +32,6 @@ export default function Home() {
       setLoading(false)
     }
   }
-
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -98,6 +92,16 @@ export default function Home() {
               title="Tendencias"
               subtitle="Lo más buscado y deseado actualmente"
               cardCount={10}
+            />
+            <SkeletonCarousel
+              title="¡No te lo Pierdas!"
+              subtitle="Oportunidades únicas que no puedes dejar pasar"
+              cardCount={10}
+            />
+            <SkeletonCarousel
+              title="Liquidaciones"
+              subtitle="Precios increíbles en productos seleccionados"
+              cardCount={8}
             />
           </>
         ) : (
@@ -393,37 +397,21 @@ export default function Home() {
               </section>
             </InfoBannerCarousel>     
 
-            {loading ? (
-              <SkeletonCarousel
-                title="¡No te lo Pierdas!"
-                subtitle="Oportunidades únicas que no puedes dejar pasar"
-                cardCount={10}
-              />
-            ) : (
-              /* Sección ¡No te lo Pierdas! */
-              <HorizontalCarousel
-                title="¡No te lo Pierdas!"
-                subtitle="Oportunidades únicas que no puedes dejar pasar"
-                products={products.slice(6, 16)}
-                cardKeyPrefix="no-te-lo-pierdas"
-              />
-            )}
+            {/* Sección ¡No te lo Pierdas! */}
+            <HorizontalCarousel
+              title="¡No te lo Pierdas!"
+              subtitle="Oportunidades únicas que no puedes dejar pasar"
+              products={products.slice(6, 16)}
+              cardKeyPrefix="no-te-lo-pierdas"
+            />
 
-            {loading ? (
-              <SkeletonCarousel
-                title="Liquidaciones"
-                subtitle="Precios increíbles en productos seleccionados"
-                cardCount={8}
-              />
-            ) : (
-              /* Sección Liquidaciones */
-              <HorizontalCarousel
-                title="Liquidaciones"
-                subtitle="Precios increíbles en productos seleccionados"
-                products={products.slice(4, 12)}
-                cardKeyPrefix="liquidaciones"
-              />
-            )}
+            {/* Sección Liquidaciones */}
+            <HorizontalCarousel
+              title="Liquidaciones"
+              subtitle="Precios increíbles en productos seleccionados"
+              products={products.slice(4, 12)}
+              cardKeyPrefix="liquidaciones"
+            />
           </>
         )}
       </main>
@@ -541,6 +529,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
     </div>
   )
 }
