@@ -23,6 +23,8 @@ export default function LoginPage() {
     // For now, simulate successful login and redirect to home page
     // In a real app, you would validate credentials with your backend
     localStorage.setItem('isAuthenticated', 'true')
+    // Store the username for display in the admin panel
+    localStorage.setItem('userName', formData.usernameOrEmail)
     window.location.href = '/'
   }
 

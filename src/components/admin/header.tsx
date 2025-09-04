@@ -3,20 +3,40 @@
 import Link from 'next/link'
 import { Home, LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 export function AdminHeader() {
+  const router = useRouter()
   const pathname = usePathname()
   const isActive = (path: string) => pathname === path
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [userName, setUserName] = useState('Usuario')
 
-  // This would typically come from your auth context
-  const userName = 'Admin User' // Replace with actual user name from your auth context
+  // Get user name from localStorage or use default
+  useEffect(() => {
+    // In a real application, this would come from your auth context
+    // For now, we'll use a default name or get it from localStorage
+    const storedUserName = localStorage.getItem('userName') || 'Usuario'
+    setUserName(storedUserName)
+  }, [])
 
   // Toggle user menu
   const toggleUserMenu = () => {
     setShowUserMenu(!showUserMenu)
+  }
+
+  // Handle logout
+  const handleLogout = () => {
+    // Clear authentication state
+    localStorage.setItem('isAuthenticated', 'false')
+    localStorage.removeItem('userName')
+    
+    // Close menu
+    setShowUserMenu(false)
+    
+    // Redirect to login page
+    router.push('/login')
   }
 
   // Close menu when clicking outside
@@ -86,7 +106,10 @@ export function AdminHeader() {
                     <User className="w-4 h-4 text-purple-400" />
                     <span>Mi Perfil</span>
                   </div>
-                  <div className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer transition-colors">
+                  <div 
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
+                  >
                     <LogOut className="w-4 h-4 text-red-400" />
                     <span>Cerrar sesión</span>
                   </div>

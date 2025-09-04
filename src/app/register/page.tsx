@@ -156,9 +156,8 @@ export default function RegisterPage() {
 
   const closeWelcomePopup = () => {
     setShowWelcomePopup(false)
-    // Set authentication state and redirect to home page to show authenticated state
-    localStorage.setItem('isAuthenticated', 'true')
-    window.location.href = '/'
+    // Redirect to login page instead of setting authentication state
+    window.location.href = '/login'
   }
 
   return (
@@ -885,7 +884,7 @@ export default function RegisterPage() {
                       onClick={closeWelcomePopup}
                       className="px-6 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-900 font-bold rounded-lg hover:from-yellow-500 hover:to-orange-600 transition-all shadow-lg"
                     >
-                      Ir al Panel de Administración
+                      Continuar
                     </button>
                   </div>
                 </div>
