@@ -156,8 +156,9 @@ export default function RegisterPage() {
 
   const closeWelcomePopup = () => {
     setShowWelcomePopup(false)
-    // Redirect to login page instead of admin panel
-    window.location.href = '/login'
+    // Set authentication state and redirect to home page to show authenticated state
+    localStorage.setItem('isAuthenticated', 'true')
+    window.location.href = '/'
   }
 
   return (

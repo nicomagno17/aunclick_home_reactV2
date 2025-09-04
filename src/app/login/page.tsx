@@ -20,12 +20,14 @@ export default function LoginPage() {
     e.preventDefault()
     // Handle login logic here
     console.log('Login attempt:', formData)
-    // For now, redirect to admin panel after successful login
-    window.location.href = '/admin'
+    // For now, simulate successful login and redirect to home page
+    // In a real app, you would validate credentials with your backend
+    localStorage.setItem('isAuthenticated', 'true')
+    window.location.href = '/'
   }
 
   const handleCancel = () => {
-    // Redirect back to home page or registration page
+    // Redirect back to home page
     window.location.href = '/'
   }
 

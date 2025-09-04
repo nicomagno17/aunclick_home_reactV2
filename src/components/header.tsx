@@ -36,6 +36,15 @@ export function Header({
   // Estado para el menú de usuario
   const [showUserMenu, setShowUserMenu] = useState(false)
 
+  // Estado de autenticación (using localStorage for persistence)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  // Check authentication status on component mount
+  useEffect(() => {
+    const authStatus = localStorage.getItem('isAuthenticated') === 'true'
+    setIsAuthenticated(authStatus)
+  }, [])
+
   // Función para cerrar todos los modales
   const closeAllModals = () => {
     setShowCategorias(false)
@@ -93,6 +102,15 @@ export function Header({
       closeAllModals()
       setShowUserMenu(true)
     }
+  }
+
+  // Función para cerrar sesión
+  const handleLogout = () => {
+    setIsAuthenticated(false)
+    localStorage.setItem('isAuthenticated', 'false')
+    closeAllModals()
+    // Redirigir a la página principal
+    router.push('/')
   }
 
   // Efecto para cerrar modales al hacer clic fuera
@@ -300,20 +318,38 @@ export function Header({
                 </div>
               </div>
 
-              {/* Enlaces al lado derecho: Registrarse, Ingresar con iconos */}
+              {/* Enlaces al lado derecho: Panel de administrador o Registrarse/Ingresar */}
               <div className="flex items-center space-x-4">
-                <Link href="/register" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                  </svg>
-                  <span>Registrarse</span>
-                </Link>
-                <div className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  </svg>
-                  <span>Ingresar</span>
-                </div>
+                {isAuthenticated ? (
+                  <>
+                    <Link href="/admin" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
+                      <User className="w-4 h-4" />
+                      <span>Panel de administrador</span>
+                    </Link>
+                    <button 
+                      onClick={handleLogout}
+                      className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Cerrar sesión</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/register" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                      </svg>
+                      <span>Registrarse</span>
+                    </Link>
+                    <Link href="/login" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                      </svg>
+                      <span>Ingresar</span>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -410,18 +446,48 @@ export function Header({
               {showMobileMenu && (
                 <div className="absolute top-full right-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                   <div className="py-1">
-                    <Link href="/register" className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                      </svg>
-                      <span>Registrarse</span>
-                    </Link>
-                    <div className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                      </svg>
-                      <span>Ingresar</span>
-                    </div>
+                    {isAuthenticated ? (
+                      <>
+                        <Link 
+                          href="/admin" 
+                          className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
+                          onClick={closeAllModals}
+                        >
+                          <User className="w-3 h-3" />
+                          <span>Panel de administrador</span>
+                        </Link>
+                        <button 
+                          onClick={handleLogout}
+                          className="flex items-center space-x-2 w-full px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer text-left"
+                        >
+                          <LogOut className="w-3 h-3" />
+                          <span>Cerrar sesión</span>
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link 
+                          href="/register" 
+                          className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
+                          onClick={closeAllModals}
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                          </svg>
+                          <span>Registrarse</span>
+                        </Link>
+                        <Link 
+                          href="/login" 
+                          className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
+                          onClick={closeAllModals}
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                          </svg>
+                          <span>Ingresar</span>
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
