@@ -31,6 +31,8 @@ export default function RegisterPage() {
     businessFeature: '', // Replacing horarios with caracteristica del negocio
   })
   const [showWelcomePopup, setShowWelcomePopup] = useState(false)
+  const [showPasswordHelp, setShowPasswordHelp] = useState(false)
+  const [errors, setErrors] = useState<{[key: string]: boolean}>({})
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -38,6 +40,15 @@ export default function RegisterPage() {
       ...prev,
       [name]: value
     }))
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[name]
+        return newErrors
+      })
+    }
   }
 
   // Auto-fill function with sample data
@@ -78,8 +89,58 @@ export default function RegisterPage() {
     }
   }
 
+  // Validation function for each step
+  const validateStep = (step: number) => {
+    const newErrors: {[key: string]: boolean} = {}
+    
+    if (step === 1) {
+      if (!formData.firstName.trim()) newErrors.firstName = true
+      if (!formData.lastName.trim()) newErrors.lastName = true
+      if (!formData.rut.trim()) newErrors.rut = true
+      if (!formData.birthDate) newErrors.birthDate = true
+      if (!formData.gender) newErrors.gender = true
+      if (!formData.phone.trim()) newErrors.phone = true
+      if (!formData.region) newErrors.region = true
+      if (!formData.commune) newErrors.commune = true
+      if (!formData.address.trim()) newErrors.address = true
+    } else if (step === 2) {
+      if (!formData.username.trim()) newErrors.username = true
+      if (!formData.email.trim()) {
+        newErrors.email = true
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        newErrors.email = true
+      }
+      if (!formData.password) {
+        newErrors.password = true
+      } else if (!/^(?=.*[A-Z])(?=.*\d).{8,}$/.test(formData.password)) {
+        newErrors.password = true
+      }
+      if (!formData.confirmPassword) {
+        newErrors.confirmPassword = true
+      } else if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = true
+      }
+    } else if (step === 3) {
+      if (!formData.businessName.trim()) newErrors.businessName = true
+      if (!formData.businessAddress.trim()) newErrors.businessAddress = true
+      if (!formData.businessPhone.trim()) newErrors.businessPhone = true
+      if (!formData.businessEmail.trim()) {
+        newErrors.businessEmail = true
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.businessEmail)) {
+        newErrors.businessEmail = true
+      }
+      if (!formData.businessOwner.trim()) newErrors.businessOwner = true
+      if (!formData.businessFeature.trim()) newErrors.businessFeature = true
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const nextStep = () => {
-    setStep(step + 1)
+    if (validateStep(step)) {
+      setStep(step + 1)
+    }
   }
 
   const prevStep = () => {
@@ -158,9 +219,14 @@ export default function RegisterPage() {
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                      className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                        errors.firstName 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-white/30 focus:ring-yellow-400'
+                      }`}
                       placeholder="Tu nombre"
                     />
+                    {errors.firstName && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                   </div>
                   <div>
                     <label htmlFor="lastName" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1">
@@ -172,9 +238,14 @@ export default function RegisterPage() {
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                      className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                        errors.lastName 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-white/30 focus:ring-yellow-400'
+                      }`}
                       placeholder="Tus apellidos"
                     />
+                    {errors.lastName && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                   </div>
                 </div>
 
@@ -190,9 +261,14 @@ export default function RegisterPage() {
                       name="rut"
                       value={formData.rut}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                      className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                        errors.rut 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-white/30 focus:ring-yellow-400'
+                      }`}
                       placeholder="12.345.678-9"
                     />
+                    {errors.rut && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                   </div>
                   <div>
                     <label htmlFor="gender" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1">
@@ -203,13 +279,18 @@ export default function RegisterPage() {
                       name="gender"
                       value={formData.gender}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                      className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                        errors.gender 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-white/30 focus:ring-yellow-400'
+                      }`}
                     >
                       <option value="" className="bg-purple-900">Selecciona tu sexo</option>
                       <option value="masculino" className="bg-purple-900">Masculino</option>
                       <option value="femenino" className="bg-purple-900">Femenino</option>
                       <option value="otro" className="bg-purple-900">Otro</option>
                     </select>
+                    {errors.gender && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                   </div>
                 </div>
 
@@ -225,8 +306,13 @@ export default function RegisterPage() {
                       name="birthDate"
                       value={formData.birthDate}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                      className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                        errors.birthDate 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-white/30 focus:ring-yellow-400'
+                      }`}
                     />
+                    {errors.birthDate && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                   </div>
                   <div>
                     <label htmlFor="phone" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1">
@@ -238,9 +324,14 @@ export default function RegisterPage() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                      className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                        errors.phone 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-white/30 focus:ring-yellow-400'
+                      }`}
                       placeholder="+56 9 1234 5678"
                     />
+                    {errors.phone && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                   </div>
                 </div>
 
@@ -255,7 +346,11 @@ export default function RegisterPage() {
                       name="region"
                       value={formData.region}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                      className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                        errors.region 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-white/30 focus:ring-yellow-400'
+                      }`}
                     >
                       <option value="" className="bg-purple-900">Selecciona tu región</option>
                       <option value="metropolitana" className="bg-purple-900">Región Metropolitana</option>
@@ -263,6 +358,7 @@ export default function RegisterPage() {
                       <option value="biobio" className="bg-purple-900">Región del Biobío</option>
                       {/* Add more regions as needed */}
                     </select>
+                    {errors.region && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                   </div>
                   <div>
                     <label htmlFor="commune" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1">
@@ -273,7 +369,11 @@ export default function RegisterPage() {
                       name="commune"
                       value={formData.commune}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                      className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                        errors.commune 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-white/30 focus:ring-yellow-400'
+                      }`}
                     >
                       <option value="" className="bg-purple-900">Selecciona tu comuna</option>
                       <option value="santiago" className="bg-purple-900">Santiago</option>
@@ -281,6 +381,7 @@ export default function RegisterPage() {
                       <option value="providencia" className="bg-purple-900">Providencia</option>
                       {/* Add more communes as needed */}
                     </select>
+                    {errors.commune && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                   </div>
                 </div>
 
@@ -295,9 +396,14 @@ export default function RegisterPage() {
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.address 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    }`}
                     placeholder="Tu dirección completa"
                   />
+                  {errors.address && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                 </div>
 
                 {/* Auto-fill and Next buttons */}
@@ -335,15 +441,20 @@ export default function RegisterPage() {
                     name="username"
                     value={formData.username}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.username 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    }`}
                     placeholder="Nombre de usuario único"
                   />
+                  {errors.username && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                 </div>
 
-                {/* Second Row: Correo Electrónico */}
+                {/* Second Row: Correo Electrónico Personal */}
                 <div>
                   <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1">
-                    Correo Electrónico
+                    Correo Electrónico Personal
                   </label>
                   <input
                     type="email"
@@ -351,9 +462,20 @@ export default function RegisterPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.email 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    }`}
                     placeholder="tu@email.com"
                   />
+                  {errors.email && (
+                    <p className="text-white text-xs mt-1">
+                      {!formData.email.trim() 
+                        ? '(Este campo es requerido)' 
+                        : '(Formato de correo inválido)'}
+                    </p>
+                  )}
                 </div>
 
                 {/* Third Row: Correo Electrónico de Respaldo */}
@@ -367,25 +489,52 @@ export default function RegisterPage() {
                     name="backupEmail"
                     value={formData.backupEmail}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.backupEmail 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    }`}
                     placeholder="respaldo@email.com"
                   />
+                  {errors.backupEmail && (
+                    <p className="text-white text-xs mt-1">(Formato de correo inválido)</p>
+                  )}
                 </div>
 
                 {/* Fourth Row: Contraseña */}
                 <div>
-                  <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1">
-                    Contraseña (Por lo menos una Mayúscula y un número)
-                  </label>
+                  <div className="flex items-center gap-2 mb-1">
+                    <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-200">
+                      Contraseña
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswordHelp(true)}
+                      className="w-4 h-4 rounded-full border border-yellow-400 bg-transparent hover:bg-yellow-400/10 transition-colors flex items-center justify-center text-yellow-400 text-xs font-bold"
+                    >
+                      ?
+                    </button>
+                  </div>
                   <input
                     type="password"
                     id="password"
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.password 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    }`}
                     placeholder="Contraseña segura"
                   />
+                  {errors.password && (
+                    <p className="text-white text-xs mt-1">
+                      {!formData.password
+                        ? '(Este campo es requerido)'
+                        : '(La contraseña debe tener al menos 8 caracteres, una mayúscula y un número)'}
+                    </p>
+                  )}
                 </div>
 
                 {/* Fifth Row: Repetir Contraseña */}
@@ -399,10 +548,58 @@ export default function RegisterPage() {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.confirmPassword 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    }`}
                     placeholder="Repite tu contraseña"
                   />
+                  {errors.confirmPassword && (
+                    <p className="text-white text-xs mt-1">
+                      {!formData.confirmPassword
+                        ? '(Este campo es requerido)'
+                        : '(Las contraseñas deben coincidir)'}
+                    </p>
+                  )}
                 </div>
+
+                {/* Password Help Popup */}
+                {showPasswordHelp && (
+                  <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+                    <div className="bg-gradient-to-br from-purple-900 to-indigo-900 rounded-xl sm:rounded-2xl border border-white/20 p-6 sm:p-8 max-w-md w-full shadow-2xl">
+                      <div className="text-center">
+                        <h3 className="text-lg sm:text-xl font-bold text-white mb-4">Requisitos de Contraseña</h3>
+                        <p className="text-gray-200 mb-4">
+                          La contraseña debe cumplir con los siguientes requisitos:
+                        </p>
+                        <ul className="text-gray-200 text-left mb-4 space-y-2">
+                          <li className="flex items-start gap-2">
+                            <span className="text-yellow-400">•</span>
+                            <span>Mínimo 8 caracteres</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-yellow-400">•</span>
+                            <span>Al menos una letra mayúscula</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-yellow-400">•</span>
+                            <span>Al menos un número</span>
+                          </li>
+                        </ul>
+                        <p className="text-gray-200 mb-4">
+                          <strong>Ejemplo:</strong> Password123
+                        </p>
+                        <button
+                          onClick={() => setShowPasswordHelp(false)}
+                          className="px-6 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-900 font-bold rounded-lg hover:from-yellow-500 hover:to-orange-600 transition-all shadow-lg"
+                        >
+                          Entendido
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Auto-fill and Next/Previous buttons */}
                 <div className="flex justify-between items-center mt-4 sm:mt-6 md:mt-8">
@@ -448,9 +645,14 @@ export default function RegisterPage() {
                     name="businessName"
                     value={formData.businessName}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.businessName 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    }`}
                     placeholder="Ingresa el nombre del negocio"
                   />
+                  {errors.businessName && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                 </div>
 
                 {/* Second Row: Dirección */}
@@ -464,9 +666,14 @@ export default function RegisterPage() {
                     name="businessAddress"
                     value={formData.businessAddress}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.businessAddress 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    }`}
                     placeholder="Ingresa la dirección completa"
                   />
+                  {errors.businessAddress && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                 </div>
 
                 {/* Third Row: Teléfono y WhatsApp - Same row on all screen sizes */}
@@ -481,9 +688,14 @@ export default function RegisterPage() {
                       name="businessPhone"
                       value={formData.businessPhone}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                      className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                        errors.businessPhone 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-white/30 focus:ring-yellow-400'
+                      }`}
                       placeholder="Ingresa el número"
                     />
+                    {errors.businessPhone && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                   </div>
                   <div>
                     <label htmlFor="businessWhatsApp" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1">
@@ -501,10 +713,10 @@ export default function RegisterPage() {
                   </div>
                 </div>
 
-                {/* Fourth Row: Email */}
+                {/* Fourth Row: Email del Negocio */}
                 <div>
                   <label htmlFor="businessEmail" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1">
-                    Email
+                    Email del Negocio
                   </label>
                   <input
                     type="email"
@@ -512,9 +724,20 @@ export default function RegisterPage() {
                     name="businessEmail"
                     value={formData.businessEmail}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
-                    placeholder="Ingresa el correo electrónico"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.businessEmail 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    }`}
+                    placeholder="Ingresa el correo electrónico del negocio"
                   />
+                  {errors.businessEmail && (
+                    <p className="text-white text-xs mt-1">
+                      {!formData.businessEmail.trim() 
+                        ? '(Este campo es requerido)' 
+                        : '(Formato de correo inválido)'}
+                    </p>
+                  )}
                 </div>
 
                 {/* Fifth Row: Nombre del Responsable del Negocio */}
@@ -528,9 +751,14 @@ export default function RegisterPage() {
                     name="businessOwner"
                     value={formData.businessOwner}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.businessOwner 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    }`}
                     placeholder="Ingresa el nombre del responsable del negocio"
                   />
+                  {errors.businessOwner && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                 </div>
 
                 {/* Sixth Row: Característica del Negocio (replacing horarios) */}
@@ -543,9 +771,14 @@ export default function RegisterPage() {
                     name="businessFeature"
                     value={formData.businessFeature}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border border-white/30 rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-yellow-400 min-h-[100px]"
+                    className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/20 border rounded-lg text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-1 sm:focus:ring-2 ${
+                      errors.businessFeature 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-white/30 focus:ring-yellow-400'
+                    } min-h-[100px]`}
                     placeholder="Describe una característica distintiva de tu negocio"
                   />
+                  {errors.businessFeature && <p className="text-white text-xs mt-1">(Este campo es requerido)</p>}
                 </div>
 
                 {/* Auto-fill and Next/Previous buttons */}
