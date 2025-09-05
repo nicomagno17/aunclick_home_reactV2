@@ -1,0 +1,50 @@
+RESUMEN DEL PROYECTO - DETERMINAR GENERACIÓN POR EDAD
+
+ARCHIVOS CREADOS:
+
+1. generaciones.c
+   - Programa principal en lenguaje C
+   - Implementa las tres estructuras de control solicitadas:
+     * Múltiples sentencias IF independientes
+     * Cadena de IF...ELSE
+     * Estructura SWITCH (usando variable categórica)
+   - Completamente comentado en español
+
+2. generaciones.py
+   - Versión en Python del mismo programa
+   - Más fácil de ejecutar en la mayoría de sistemas
+   - Simula la estructura SWITCH con diccionario
+
+3. demo_generaciones.html
+   - Versión web interactiva que funciona en cualquier navegador
+   - Permite probar la funcionalidad inmediatamente
+   - Incluye explicaciones sobre cómo funciona
+
+4. README_COMPILACION.txt
+   - Instrucciones detalladas para compilar y ejecutar los programas
+   - Múltiples opciones para diferentes entornos
+
+5. ejecutar_programa.bat
+   - Script de Windows para facilitar la instalación de Python
+   - Automatiza el proceso de ejecución
+
+6. EJEMPLO_EJECUCION.txt
+   - Ejemplos de salidas del programa con diferentes entradas
+   - Muestra casos normales y casos especiales
+
+FUNCIONALIDAD:
+
+El programa determina a qué generación pertenece una persona según su edad:
+- Niños de posguerra (1930-1948)
+- Baby Boomers (1949-1968)
+- Generación X (1969-1980)
+- Millennials (1981-1993)
+- Generación Z y Alpha (1994 en adelante)
+
+ESTRUCTURAS DE CONTROL IMPLEMENTADAS:
+
+1. IF: Múltiples condiciones independientes
+2. IF...ELSE: Condiciones excluyentes en cadena
+3. SWITCH: Selección múltiple (simulada en Python)
+
+TODOS LOS ARCHIVOS ESTÁN COMPLETAMENTE COMENTADOS EN ESPAÑOL PARA FACILITAR SU COMPRENSIÓN.

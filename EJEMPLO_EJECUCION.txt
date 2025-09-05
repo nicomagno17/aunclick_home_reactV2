@@ -1,0 +1,34 @@
+EJEMPLO DE EJECUCIÓN DEL PROGRAMA:
+
+Por favor, ingresa tu edad: 25
+
+=== Usando estructura IF ===
+Perteneces a las Generaciones Z y Alpha
+
+=== Usando estructura IF...ELSE ===
+Perteneces a las Generaciones Z y Alpha
+
+=== Usando estructura SWITCH (simulada con diccionario) ===
+Perteneces a las Generaciones Z y Alpha
+
+---
+
+OTRO EJEMPLO:
+
+Por favor, ingresa tu edad: 45
+
+=== Usando estructura IF ===
+Perteneces a la Generación Millennials
+
+=== Usando estructura IF...ELSE ===
+Perteneces a la Generación Millennials
+
+=== Usando estructura SWITCH (simulada con diccionario) ===
+Perteneces a la Generación Millennials
+
+---
+
+EJEMPLO CON EDAD FUERA DE RANGO:
+
+Por favor, ingresa tu edad: -5
+Error: La edad no puede ser negativa.

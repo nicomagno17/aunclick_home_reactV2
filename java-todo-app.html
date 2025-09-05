@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización del Código Java ToDo App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .code-container {
+            padding: 20px;
+            overflow-x: auto;
+        }
+        pre {
+            margin: 0;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .comment { color: #608b4e; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .class-name { color: #4ec9b0; }
+        .method { color: #dcdcaa; }
+        .annotation { color: #c586c0; }
+        .explanation {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        .explanation h2 {
+            color: #2575fc;
+            margin-top: 0;
+        }
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .feature {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .feature h3 {
+            margin-top: 0;
+            color: #6a11cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Visualización del Código Java ToDo App</h1>
+            <p>Aplicación de escritorio con interfaz gráfica Swing</p>
+        </div>
+        <div class="code-container">
+            <pre><code><span class="comment">// Importación de librerías necesarias</span>
+<span class="keyword">import</span> javax.swing.*;                     <span class="comment">// Componentes gráficos (botones, texto, paneles, etc.)</span>
+<span class="keyword">import</span> java.awt.*;                        <span class="comment">// Manejo de diseño visual (layout)</span>
+<span class="keyword">import</span> java.awt.event.*;                  <span class="comment">// Manejo de eventos (clics, acciones, etc.)</span>
+<span class="keyword">import</span> java.util.ArrayList;               <span class="comment">// Lista dinámica para almacenar estados de tareas</span>
+
+<span class="comment">// Clase principal que hereda de JFrame (ventana)</span>
+<span class="keyword">public</span> <span class="keyword">class</span> <span class="class-name">ToDoApp</span> <span class="keyword">extends</span> JFrame {
+
+    <span class="keyword">private</span> DefaultListModel&lt;String&gt; taskModel;  <span class="comment">// Modelo de datos para la lista de tareas</span>
+    <span class="keyword">private</span> JList&lt;String&gt; taskList;              <span class="comment">// Lista visual de tareas</span>
+    <span class="keyword">private</span> JTextField taskInput;                <span class="comment">// Campo de entrada para nuevas tareas</span>
+    <span class="keyword">private</span> JComboBox&lt;String&gt; filterComboBox;    <span class="comment">// Filtro para mostrar tareas</span>
+    <span class="keyword">private</span> ArrayList&lt;Boolean&gt; completedStatus;  <span class="comment">// Estado de cada tarea (completada o no)</span>
+
+    <span class="comment">// Constructor</span>
+    <span class="keyword">public</span> <span class="method">ToDoApp</span>() {
+        setTitle(<span class="string">"Agenda de Actividades"</span>);
+        setSize(<span class="number">500</span>, <span class="number">400</span>);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(<span class="keyword">new</span> BorderLayout());
+
+        taskModel = <span class="keyword">new</span> DefaultListModel&lt;&gt;();
+        taskList = <span class="keyword">new</span> JList&lt;&gt;(taskModel);
+        JScrollPane scrollPane = <span class="keyword">new</span> JScrollPane(taskList);
+        completedStatus = <span class="keyword">new</span> ArrayList&lt;&gt;();
+
+        <span class="comment">// Panel superior (entrada + agregar)</span>
+        JPanel topPanel = <span class="keyword">new</span> JPanel();
+        taskInput = <span class="keyword">new</span> JTextField(<span class="number">25</span>);
+        JButton addButton = <span class="keyword">new</span> JButton(<span class="string">"Agregar"</span>);
+        topPanel.add(taskInput);
+        topPanel.add(addButton);
+
+        <span class="comment">// Panel del medio (lista de tareas)</span>
+        JPanel middlePanel = <span class="keyword">new</span> JPanel(<span class="keyword">new</span> BorderLayout());
+        middlePanel.add(scrollPane, BorderLayout.CENTER);
+
+        <span class="comment">// Panel inferior (acciones y filtro)</span>
+        JPanel bottomPanel = <span class="keyword">new</span> JPanel();
+        JButton editButton = <span class="keyword">new</span> JButton(<span class="string">"Editar"</span>);
+        JButton completeButton = <span class="keyword">new</span> JButton(<span class="string">"Marcar como Completada"</span>);
+        JButton deleteButton = <span class="keyword">new</span> JButton(<span class="string">"Eliminar"</span>);
+        filterComboBox = <span class="keyword">new</span> JComboBox&lt;&gt;(<span class="keyword">new</span> String[]{<span class="string">"Todas"</span>, <span class="string">"Pendientes"</span>, <span class="string">"Completadas"</span>});
+
+        bottomPanel.add(editButton);
+        bottomPanel.add(completeButton);
+        bottomPanel.add(deleteButton);
+        bottomPanel.add(<span class="keyword">new</span> JLabel(<span class="string">"Filtrar:"</span>));
+        bottomPanel.add(filterComboBox);
+
+        <span class="comment">// Agregar los paneles a la ventana principal</span>
+        add(topPanel, BorderLayout.NORTH);
+        add(middlePanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        <span class="comment">// Acción del botón Agregar</span>
+        addButton.addActionListener(e -> {
+            String task = taskInput.getText().trim();
+            <span class="keyword">if</span> (!task.isEmpty()) {
+                taskModel.addElement(task);
+                completedStatus.add(<span class="keyword">false</span>);
+                taskInput.setText(<span class="string">""</span>);
+            }
+        });
+
+        <span class="comment">// Acción del botón Eliminar</span>
+        deleteButton.addActionListener(e -> {
+            <span class="keyword">int</span> index = taskList.getSelectedIndex();
+            <span class="keyword">if</span> (index != -<span class="number">1</span>) {
+                <span class="keyword">int</span> actualIndex = taskModel.indexOf(taskList.getSelectedValue());
+                taskModel.remove(actualIndex);
+                completedStatus.remove(actualIndex);
+            }
+        });
+
+        <span class="comment">// Acción del botón Marcar como Completada</span>
+        completeButton.addActionListener(e -> {
+            <span class="keyword">int</span> index = taskList.getSelectedIndex();
+            <span class="keyword">if</span> (index != -<span class="number">1</span>) {
+                <span class="keyword">int</span> actualIndex = taskModel.indexOf(taskList.getSelectedValue());
+                String task = taskModel.getElementAt(actualIndex);
+                <span class="keyword">boolean</span> completed = completedStatus.get(actualIndex);
+                completedStatus.set(actualIndex, !completed);
+                taskModel.setElementAt((!completed ? <span class="string">"[✔] "</span> : <span class="string">""</span>) + task.replaceFirst(<span class="string">"\\[✔\\] "</span>, <span class="string">""</span>), actualIndex);
+            }
+        });
+
+        <span class="comment">// Acción del botón Editar</span>
+        editButton.addActionListener(e -> {
+            <span class="keyword">int</span> index = taskList.getSelectedIndex();
+            <span class="keyword">if</span> (index != -<span class="number">1</span>) {
+                <span class="keyword">int</span> actualIndex = taskModel.indexOf(taskList.getSelectedValue());
+                String current = taskModel.get(actualIndex).replaceFirst(<span class="string">"\\[✔\\] "</span>, <span class="string">""</span>);
+                String newTask = JOptionPane.showInputDialog(<span class="string">"Editar tarea:"</span>, current);
+                <span class="keyword">if</span> (newTask != <span class="keyword">null</span> && !newTask.trim().isEmpty()) {
+                    <span class="keyword">boolean</span> completed = completedStatus.get(actualIndex);
+                    taskModel.set(actualIndex, (completed ? <span class="string">"[✔] "</span> : <span class="string">""</span>) + newTask.trim());
+                }
+            }
+        });
+
+        <span class="comment">// Acción del filtro ComboBox</span>
+        filterComboBox.addActionListener(e -> applyFilter());
+    }
+
+    <span class="comment">// Método para aplicar el filtro de visualización</span>
+    <span class="keyword">private</span> <span class="keyword">void</span> <span class="method">applyFilter</span>() {
+        String selected = (String) filterComboBox.getSelectedItem();
+        DefaultListModel&lt;String&gt; filteredModel = <span class="keyword">new</span> DefaultListModel&lt;&gt;();
+
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; taskModel.size(); i++) {
+            <span class="keyword">boolean</span> completed = completedStatus.get(i);
+            String task = taskModel.getElementAt(i);
+
+            <span class="keyword">if</span> (selected.equals(<span class="string">"Todas"</span>) ||
+                (selected.equals(<span class="string">"Pendientes"</span>) && !completed) ||
+                (selected.equals(<span class="string">"Completadas"</span>) && completed)) {
+                filteredModel.addElement(task);
+            }
+        }
+
+        taskList.setModel(filteredModel);
+    }
+
+    <span class="comment">// Método principal: lanza la aplicación</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="method">main</span>(String[] args) {
+        SwingUtilities.invokeLater(() -> <span class="keyword">new</span> ToDoApp().setVisible(<span class="keyword">true</span>));
+    }
+}
+</code></pre>
+        </div>
+        <div class="explanation">
+            <h2>Características de la Aplicación</h2>
+            <div class="feature-list">
+                <div class="feature">
+                    <h3>Interfaz de Usuario</h3>
+                    <p>La aplicación utiliza componentes Swing para crear una interfaz gráfica de escritorio con:</p>
+                    <ul>
+                        <li>Campo de texto para ingresar nuevas tareas</li>
+                        <li>Lista desplazable para mostrar las tareas</li>
+                        <li>Botones para acciones (Agregar, Editar, Completar, Eliminar)</li>
+                        <li>Combo box para filtrar tareas</li>
+                    </ul>
+                </div>
+                <div class="feature">
+                    <h3>Funcionalidades</h3>
+                    <p>La aplicación permite gestionar tareas con las siguientes operaciones:</p>
+                    <ul>
+                        <li>Agregar nuevas tareas</li>
+                        <li>Editar tareas existentes</li>
+                        <li>Marcar tareas como completadas</li>
+                        <li>Eliminar tareas</li>
+                        <li>Filtrar tareas por estado (Todas, Pendientes, Completadas)</li>
+                    </ul>
+                </div>
+                <div class="feature">
+                    <h3>Estructura de Datos</h3>
+                    <p>La aplicación utiliza estructuras de datos apropiadas para gestionar el estado:</p>
+                    <ul>
+                        <li>DefaultListModel para almacenar las tareas</li>
+                        <li>ArrayList para mantener el estado de completado de cada tarea</li>
+                        <li>JList para la visualización de la lista</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
