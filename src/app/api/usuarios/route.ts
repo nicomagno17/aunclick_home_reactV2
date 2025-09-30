@@ -1,8 +1,16 @@
 
 import { NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/database'
+import { createUsuarioSchema } from '@/schemas'
+import { ZodError } from 'zod'
+import { requireRole, handleAuthError } from '@/lib/auth-helpers'
 
 export async function GET() {
+  // Verificar autorización - solo admin y moderadores pueden ver lista de usuarios
+  const authResult = await requireRole(['admin', 'moderador'])
+  const authError = handleAuthError(authResult)
+  if (authError) return authError
+
   try {
     // Consultar usuarios de la base de datos
     const usuarios = await executeQuery(`
@@ -37,7 +45,7 @@ export async function GET() {
     
     return NextResponse.json({
       success: false,
-      error: error instanceof Error ? error.message : 'Error desconocido al obtener usuarios',
+      error: 'Error al obtener usuarios',
       usuarios: [],
       timestamp: new Date().toISOString()
     }, { status: 500 })
@@ -47,20 +55,36 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { email, nombre, apellidos, telefono, password_hash, rol = 'usuario' } = body
-
-    if (!email || !nombre || !password_hash) {
+    
+    // Validar datos con Zod
+    const validation = createUsuarioSchema.safeParse(body)
+    
+    if (!validation.success) {
       return NextResponse.json({
         success: false,
-        error: 'Email, nombre y password_hash son requeridos'
+        error: 'Datos de entrada inválidos',
+        details: validation.error.format()
       }, { status: 400 })
     }
+    
+    const validatedData = validation.data
 
-    // Insertar nuevo usuario
+// Insertar nuevo usuario con datos validados y sanitizados
+    // Forzar rol = 'usuario' para registro público (previene que usuarios se asignen roles especiales)
     const result = await executeQuery(`
-      INSERT INTO usuarios (email, nombre, apellidos, telefono, password_hash, rol, estado)
-      VALUES (?, ?, ?, ?, ?, ?, 'pendiente_verificacion')
-    `, [email, nombre, apellidos, telefono, password_hash, rol])
+      INSERT INTO usuarios (email, nombre, apellidos, telefono, password_hash, rol, estado, preferencias, metadata)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      validatedData.email,
+      validatedData.nombre,
+      validatedData.apellidos || null,
+      validatedData.telefono || null,
+      validatedData.password_hash,
+      'usuario', // Forzar rol de usuario normal para registro público
+      'pendiente_verificacion', // Forzar estado pendiente de verificación
+      JSON.stringify(validatedData.preferencias || {}),
+      JSON.stringify(validatedData.metadata || {})
+    ])
 
     return NextResponse.json({
       success: true,
@@ -74,7 +98,7 @@ export async function POST(request: Request) {
     
     return NextResponse.json({
       success: false,
-      error: error instanceof Error ? error.message : 'Error desconocido al crear usuario',
+      error: 'Error al crear usuario',
       timestamp: new Date().toISOString()
     }, { status: 500 })
   }

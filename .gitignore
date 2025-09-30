@@ -30,8 +30,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# environment variables (contains sensitive credentials)
+# .env* will ignore any env files like .env, .env.local, .env.production
 .env*
+!/.env.example
 
 # vercel
 .vercel

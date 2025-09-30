@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1)
@@ -164,17 +165,26 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900">
       <div className="container mx-auto py-4 px-2 sm:py-6 sm:px-4 md:py-8 md:px-6">
         <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-4 sm:mb-6 md:mb-8">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">Registro de Usuario</h1>
-            <p className="text-xs sm:text-sm md:text-base text-gray-200">
-              {step === 1 
-                ? 'Información personal' 
-                : step === 2
-                ? 'Información de acceso'
-                : step === 3
-                ? 'Información del negocio'
-                : 'Términos y condiciones'}
-            </p>
+          <div className="flex justify-between items-center mb-4 sm:mb-6 md:mb-8">
+            <Link href="/" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              <span>Volver al inicio</span>
+            </Link>
+            <div className="text-center">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">Registro de Usuario</h1>
+              <p className="text-xs sm:text-sm md:text-base text-gray-200">
+                {step === 1
+                  ? 'Información personal'
+                  : step === 2
+                  ? 'Información de acceso'
+                  : step === 3
+                  ? 'Información del negocio'
+                  : 'Términos y condiciones'}
+              </p>
+            </div>
+            <div className="w-32"></div> {/* Spacer for alignment */}
           </div>
 
           {/* Progress Bar */}

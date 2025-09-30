@@ -1,6 +1,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getMySQLPool } from '@/lib/database'
+import { createProductoSchema, updateProductoSchema } from '@/schemas'
+import { ZodError } from 'zod'
+import { getSession, requireRole, canAccessNegocio, canAccessProducto, handleAuthError } from '@/lib/auth-helpers'
 
 // GET /api/productos - Obtener todos los productos
 export async function GET(request: NextRequest) {
@@ -19,7 +22,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
     
     let whereConditions = ['p.deleted_at IS NULL']
-    let queryParams = []
+    let queryParams: any[] = []
     
     if (negocio_id) {
       whereConditions.push('p.negocio_id = ?')
@@ -98,45 +101,37 @@ export async function POST(request: NextRequest) {
   let connection
   
   try {
+    // Verificar autenticación y autorización
+    const session = await getSession()
+    
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Autenticación requerida' },
+        { status: 401 }
+      )
+    }
+    
+    // Verificar que el usuario tiene rol adecuado
+    if (!['propietario_negocio', 'admin'].includes(session.user?.rol)) {
+      return NextResponse.json(
+        { error: 'No tienes permisos para crear productos' },
+        { status: 403 }
+      )
+    }
+
     const data = await request.json()
-    console.log('Creando producto:', data)
-
-    // Validaciones básicas
-    if (!data.nombre || !data.negocio_id || !data.categoria_id) {
-      return NextResponse.json(
-        { error: 'Los campos nombre, negocio_id y categoria_id son requeridos' },
-        { status: 400 }
-      )
+    
+    // Validar datos con Zod
+    const validation = createProductoSchema.safeParse(data)
+    
+    if (!validation.success) {
+      return NextResponse.json({
+        error: 'Datos de entrada inválidos',
+        details: validation.error.format()
+      }, { status: 400 })
     }
-
-    // Validaciones de tipos y rangos
-    if (data.precio < 0) {
-      return NextResponse.json(
-        { error: 'El precio debe ser mayor o igual a 0' },
-        { status: 400 }
-      )
-    }
-
-    if (data.precio_antes !== undefined && data.precio_antes < 0) {
-      return NextResponse.json(
-        { error: 'El precio anterior debe ser mayor o igual a 0' },
-        { status: 400 }
-      )
-    }
-
-    if (data.stock_disponible < 0) {
-      return NextResponse.json(
-        { error: 'El stock disponible debe ser mayor o igual a 0' },
-        { status: 400 }
-      )
-    }
-
-    if (data.peso !== undefined && data.peso < 0) {
-      return NextResponse.json(
-        { error: 'El peso debe ser mayor o igual a 0' },
-        { status: 400 }
-      )
-    }
+    
+    const validatedData = validation.data
 
     const pool = getMySQLPool()
     connection = await pool.getConnection()
@@ -144,7 +139,7 @@ export async function POST(request: NextRequest) {
     // Verificar que el negocio y categoría existen
     const [negocioCheck] = await connection.execute(
       'SELECT id FROM negocios WHERE id = ? AND deleted_at IS NULL',
-      [data.negocio_id]
+      [validatedData.negocio_id]
     )
     
     if ((negocioCheck as any[]).length === 0) {
@@ -154,9 +149,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Verificar que el usuario tiene acceso al negocio (ownership)
+    if (session.user.rol !== 'admin') {
+      const canAccess = await canAccessNegocio(session, validatedData.negocio_id)
+      if (!canAccess) {
+        return NextResponse.json(
+          { error: 'No tienes permisos para crear productos en este negocio' },
+          { status: 403 }
+        )
+      }
+    }
+
     const [categoriaCheck] = await connection.execute(
       'SELECT id FROM categorias_productos WHERE id = ?',
-      [data.categoria_id]
+      [validatedData.categoria_id]
     )
     
     if ((categoriaCheck as any[]).length === 0) {
@@ -169,7 +175,7 @@ export async function POST(request: NextRequest) {
     // Verificar que el slug es único para este negocio
     const [slugCheck] = await connection.execute(
       'SELECT id FROM productos WHERE slug = ? AND negocio_id = ? AND deleted_at IS NULL',
-      [data.slug, data.negocio_id]
+      [validatedData.slug, validatedData.negocio_id]
     )
     
     if ((slugCheck as any[]).length > 0) {
@@ -179,33 +185,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Preparar datos para inserción
+    // Preparar datos para inserción con datos validados y sanitizados
     const insertData = {
-      negocio_id: data.negocio_id,
-      categoria_id: data.categoria_id,
-      nombre: data.nombre,
-      slug: data.slug,
-      descripcion: data.descripcion || null,
-      descripcion_corta: data.descripcion_corta || null,
-      precio: data.precio,
-      precio_antes: data.precio_antes || null,
-      moneda: data.moneda || 'COP',
-      sku: data.sku || null,
-      stock_disponible: data.stock_disponible || 0,
-      maneja_stock: data.maneja_stock ? 1 : 0,
-      stock_minimo: data.stock_minimo || 0,
-      peso: data.peso || null,
-      dimensiones: data.dimensiones ? JSON.stringify(data.dimensiones) : null,
-      estado: data.estado || 'borrador',
-      destacado: data.destacado ? 1 : 0,
-      permite_personalizacion: data.permite_personalizacion ? 1 : 0,
-      seo_title: data.seo_title || null,
-      seo_description: data.seo_description || null,
-      seo_keywords: data.seo_keywords || null,
-      atributos: data.atributos ? JSON.stringify(data.atributos) : null,
-      opciones_personalizacion: data.opciones_personalizacion ? JSON.stringify(data.opciones_personalizacion) : null,
-      metadata: data.metadata ? JSON.stringify(data.metadata) : null,
-      fecha_disponibilidad: data.fecha_disponibilidad ? new Date(data.fecha_disponibilidad).toISOString().split('T')[0] : null
+      negocio_id: validatedData.negocio_id,
+      categoria_id: validatedData.categoria_id,
+      nombre: validatedData.nombre,
+      slug: validatedData.slug,
+      descripcion: validatedData.descripcion || null,
+      descripcion_corta: validatedData.descripcion_corta || null,
+      precio: validatedData.precio,
+      precio_antes: validatedData.precio_antes ?? null,
+      moneda: validatedData.moneda,
+      sku: validatedData.sku || null,
+      stock_disponible: validatedData.stock_disponible,
+      maneja_stock: validatedData.maneja_stock ? 1 : 0,
+      stock_minimo: validatedData.stock_minimo,
+      peso: validatedData.peso ?? null,
+      dimensiones: validatedData.dimensiones ? JSON.stringify(validatedData.dimensiones) : null,
+      estado: validatedData.estado,
+      destacado: validatedData.destacado ? 1 : 0,
+      permite_personalizacion: validatedData.permite_personalizacion ? 1 : 0,
+      seo_title: validatedData.seo_title || null,
+      seo_description: validatedData.seo_description || null,
+      seo_keywords: validatedData.seo_keywords || null,
+      atributos: validatedData.atributos ? JSON.stringify(validatedData.atributos) : null,
+      opciones_personalizacion: validatedData.opciones_personalizacion ? JSON.stringify(validatedData.opciones_personalizacion) : null,
+      metadata: validatedData.metadata ? JSON.stringify(validatedData.metadata) : null,
+      fecha_disponibilidad: validatedData.fecha_disponibilidad ? new Date(validatedData.fecha_disponibilidad).toISOString().split('T')[0] : null
     }
 
     // Insertar producto
@@ -308,7 +314,38 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    // Verificar autenticación
+    const session = await getSession()
+    
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Autenticación requerida' },
+        { status: 401 }
+      )
+    }
+    
+    // Verificar que el usuario tiene rol adecuado
+    if (!['propietario_negocio', 'admin'].includes(session.user?.rol)) {
+      return NextResponse.json(
+        { error: 'No tienes permisos para modificar productos' },
+        { status: 403 }
+      )
+    }
+
     const data = await request.json()
+    
+    // Validar datos con Zod (permite actualizaciones parciales)
+    const validation = updateProductoSchema.safeParse(data)
+    
+    if (!validation.success) {
+      return NextResponse.json({
+        error: 'Datos de entrada inválidos',
+        details: validation.error.format()
+      }, { status: 400 })
+    }
+    
+    const validatedData = validation.data
+    
     const pool = getMySQLPool()
     connection = await pool.getConnection()
 
@@ -325,9 +362,20 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    // Verificar que el usuario tiene acceso al producto (ownership)
+    if (session.user.rol !== 'admin') {
+      const canAccess = await canAccessProducto(session, Number(id))
+      if (!canAccess) {
+        return NextResponse.json(
+          { error: 'No tienes permisos para modificar este producto' },
+          { status: 403 }
+        )
+      }
+    }
+
     // Construir query de actualización dinámicamente
-    const updateFields = []
-    const updateValues = []
+    const updateFields: string[] = []
+    const updateValues: any[] = []
 
     // Lista de campos actualizables
     const allowedFields = [
@@ -340,18 +388,20 @@ export async function PUT(request: NextRequest) {
     ]
 
     for (const field of allowedFields) {
-      if (data[field] !== undefined) {
+      if (validatedData[field] !== undefined) {
         updateFields.push(`${field} = ?`)
         
         // Manejar campos especiales
         if (['maneja_stock', 'destacado', 'permite_personalizacion'].includes(field)) {
-          updateValues.push(data[field] ? 1 : 0)
+          updateValues.push(validatedData[field] ? 1 : 0)
         } else if (['dimensiones', 'atributos', 'opciones_personalizacion', 'metadata'].includes(field)) {
-          updateValues.push(data[field] ? JSON.stringify(data[field]) : null)
+          updateValues.push(validatedData[field] ? JSON.stringify(validatedData[field]) : null)
         } else if (field === 'fecha_disponibilidad') {
-          updateValues.push(data[field] ? new Date(data[field]).toISOString().split('T')[0] : null)
+          updateValues.push(validatedData[field] ? new Date(validatedData[field]).toISOString().split('T')[0] : null)
+        } else if (field === 'precio_antes' || field === 'peso') {
+          updateValues.push(validatedData[field] ?? null)
         } else {
-          updateValues.push(data[field])
+          updateValues.push(validatedData[field])
         }
       }
     }
@@ -417,6 +467,24 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
+    // Verificar autenticación
+    const session = await getSession()
+    
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Autenticación requerida' },
+        { status: 401 }
+      )
+    }
+    
+    // Verificar que el usuario tiene rol adecuado
+    if (!['propietario_negocio', 'admin'].includes(session.user?.rol)) {
+      return NextResponse.json(
+        { error: 'No tienes permisos para eliminar productos' },
+        { status: 403 }
+      )
+    }
+
     const pool = getMySQLPool()
     connection = await pool.getConnection()
 
@@ -431,6 +499,17 @@ export async function DELETE(request: NextRequest) {
         { error: 'Producto no encontrado' },
         { status: 404 }
       )
+    }
+
+    // Verificar que el usuario tiene acceso al producto (ownership)
+    if (session.user.rol !== 'admin') {
+      const canAccess = await canAccessProducto(session, Number(id))
+      if (!canAccess) {
+        return NextResponse.json(
+          { error: 'No tienes permisos para eliminar este producto' },
+          { status: 403 }
+        )
+      }
     }
 
     // Soft delete

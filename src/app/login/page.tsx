@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -28,20 +29,25 @@ export default function LoginPage() {
     window.location.href = '/'
   }
 
-  const handleCancel = () => {
-    // Redirect back to home page
-    window.location.href = '/'
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900">
       <div className="container mx-auto py-4 px-2 sm:py-6 sm:px-4 md:py-8 md:px-6">
         <div className="max-w-md mx-auto">
-          <div className="text-center mb-4 sm:mb-6 md:mb-8">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">Iniciar Sesión</h1>
-            <p className="text-xs sm:text-sm md:text-base text-gray-200">
-              Ingresa tus credenciales para acceder
-            </p>
+          <div className="flex justify-between items-center mb-4 sm:mb-6 md:mb-8">
+            <Link href="/" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              <span>Volver atrás</span>
+            </Link>
+            <div className="text-center">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">Iniciar Sesión</h1>
+              <p className="text-xs sm:text-sm md:text-base text-gray-200">
+                Ingresa tus credenciales para acceder
+              </p>
+            </div>
+            <div className="w-24"></div> {/* Spacer for alignment */}
           </div>
 
           {/* Login Form */}
@@ -90,17 +96,10 @@ export default function LoginPage() {
               </div>
 
               {/* Buttons */}
-              <div className="flex gap-2 sm:gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="flex-1 px-3 py-1.5 sm:px-6 sm:py-2 text-xs sm:text-sm bg-white/20 text-gray-200 rounded-lg hover:bg-white/30 transition-colors border border-white/30"
-                >
-                  Cancelar
-                </button>
+              <div className="mt-6">
                 <button
                   type="submit"
-                  className="flex-1 px-3 py-1.5 sm:px-6 sm:py-2 text-xs sm:text-sm bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-900 font-bold rounded-lg hover:from-yellow-500 hover:to-orange-600 transition-all shadow-md sm:shadow-lg"
+                  className="w-full px-3 py-1.5 sm:px-6 sm:py-2 text-xs sm:text-sm bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-900 font-bold rounded-lg hover:from-yellow-500 hover:to-orange-600 transition-all shadow-md sm:shadow-lg"
                 >
                   Aceptar
                 </button>

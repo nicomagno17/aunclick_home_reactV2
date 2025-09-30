@@ -1,13 +1,30 @@
 
 import mysql from 'mysql2/promise'
 
-// Configuración de conexión directa a MySQL
+// Validate required environment variables and fail fast with a helpful message
+function validateEnvVariables() {
+  const required = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD', 'DB_NAME']
+  const missing = required.filter((key) => !process.env[key])
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missing.join(', ')}.\n` +
+        `Create a local ".env.local" file based on ".env.example" and set these variables, or set them in your environment.`
+    )
+  }
+}
+
+validateEnvVariables()
+
+/**
+ * MySQL connection pool configuration.
+ * All values are required and read from environment variables.
+ */
 const mysqlConfig = {
-  host: process.env.DB_HOST || '45.236.129.200',
-  port: parseInt(process.env.DB_PORT || '3306'),
-  user: process.env.DB_USER || 'pcornej0',
-  password: process.env.DB_PASSWORD || 'Pcornejo@2025',
-  database: process.env.DB_NAME || 'aunClick_prod',
+  host: process.env.DB_HOST!,
+  port: parseInt(process.env.DB_PORT!),
+  user: process.env.DB_USER!,
+  password: process.env.DB_PASSWORD!,
+  database: process.env.DB_NAME!,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
