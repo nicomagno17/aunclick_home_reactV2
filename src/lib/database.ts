@@ -1,5 +1,6 @@
 
 import mysql from 'mysql2/promise'
+import logger from './logger'
 
 // Validate required environment variables and fail fast with a helpful message
 function validateEnvVariables() {
@@ -55,9 +56,25 @@ export const executeQuery = async <T = any>(
   query: string,
   params?: any[]
 ): Promise<T[]> => {
+  const startTime = Date.now()
   const pool = getMySQLPool()
-  const [rows] = await pool.execute(query, params)
-  return rows as T[]
+  
+  try {
+    const [rows] = await pool.execute(query, params)
+    const duration = Date.now() - startTime
+    
+    await logger.logDatabaseQuery(query, duration, { rowCount: (rows as T[]).length })
+    
+    return rows as T[]
+  } catch (error) {
+    const duration = Date.now() - startTime
+    await logger.error('Database query failed', error as Error, { 
+      query: query.substring(0, 200), 
+      duration, 
+      params: params ? '(params provided)' : '(no params)' 
+    })
+    throw error
+  }
 }
 
 // Función helper para ejecutar una sola query
@@ -74,9 +91,27 @@ export const insertAndGetId = async (
   query: string,
   params?: any[]
 ): Promise<number> => {
+  const startTime = Date.now()
   const pool = getMySQLPool()
-  const [result] = await pool.execute(query, params)
-  return (result as any).insertId
+  
+  try {
+    const [result] = await pool.execute(query, params)
+    const duration = Date.now() - startTime
+    const insertId = (result as any).insertId
+    
+    await logger.logDatabaseQuery(query, duration, { insertId })
+    
+    return insertId
+  } catch (error) {
+    const duration = Date.now() - startTime
+    await logger.error('Database query failed', error as Error, { 
+      query: query.substring(0, 200), 
+      duration, 
+      params: params ? '(params provided)' : '(no params)'.substring(0, 200),
+      operation: 'insertAndGetId'
+    })
+    throw error
+  }
 }
 
 // Función helper para contar registros
@@ -84,10 +119,28 @@ export const countRecords = async (
   query: string,
   params?: any[]
 ): Promise<number> => {
+  const startTime = Date.now()
   const pool = getMySQLPool()
-  const [rows] = await pool.execute(query, params)
-  const result = rows as any[]
-  return result[0]?.count || 0
+  
+  try {
+    const [rows] = await pool.execute(query, params)
+    const duration = Date.now() - startTime
+    const result = rows as any[]
+    const count = result[0]?.count || 0
+    
+    await logger.logDatabaseQuery(query, duration, { count })
+    
+    return count
+  } catch (error) {
+    const duration = Date.now() - startTime
+    await logger.error('Database query failed', error as Error, { 
+      query: query.substring(0, 200), 
+      duration, 
+      params: params ? '(params provided)' : '(no params)',
+      operation: 'countRecords'
+    })
+    throw error
+  }
 }
 
 export default {

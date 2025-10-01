@@ -140,12 +140,17 @@ export function Header({
       const header = document.querySelector('header')
       if (header) {
         const headerRect = header.getBoundingClientRect()
-        // Mostrar barra flotante si el header no está visible
-        setShowFloatingSearchBar(headerRect.bottom < 0)
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+        // Prevenir scroll negativo y mostrar barra flotante si el header no está visible
+        if (scrollTop < 0) {
+          window.scrollTo(0, 0)
+          return
+        }
+        setShowFloatingSearchBar(headerRect.bottom <= 0 && scrollTop > 0)
       }
     }
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     handleScroll() // Verificar estado inicial
 
     return () => {

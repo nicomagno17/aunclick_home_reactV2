@@ -1,20 +1,30 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
+// Define LoginForm interface for type safety
+interface LoginForm {
+  usernameOrEmail: string
+  password: string
+}
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({
+  const router = useRouter()
+  const [formData, setFormData] = useState<LoginForm>({
     usernameOrEmail: '',
     password: '',
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+    // Type guard to ensure name is keyof LoginForm
+    if (name in formData) {
+      setFormData(prev => ({
+        ...prev,
+        [name as keyof LoginForm]: value
+      }))
+    }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -26,7 +36,7 @@ export default function LoginPage() {
     localStorage.setItem('isAuthenticated', 'true')
     // Store the username for display in the admin panel
     localStorage.setItem('userName', formData.usernameOrEmail)
-    window.location.href = '/'
+    router.push('/')
   }
 
 
@@ -35,12 +45,15 @@ export default function LoginPage() {
       <div className="container mx-auto py-4 px-2 sm:py-6 sm:px-4 md:py-8 md:px-6">
         <div className="max-w-md mx-auto">
           <div className="flex justify-between items-center mb-4 sm:mb-6 md:mb-8">
-            <Link href="/" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
+            <button 
+              onClick={() => router.push('/')}
+              className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
               </svg>
               <span>Volver atrás</span>
-            </Link>
+            </button>
             <div className="text-center">
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">Iniciar Sesión</h1>
               <p className="text-xs sm:text-sm md:text-base text-gray-200">

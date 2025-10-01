@@ -13,9 +13,14 @@ import {
 import { createPlanSuscripcionSchema } from '@/schemas';
 import { ZodError } from 'zod';
 import { requireRole, handleAuthError } from '@/lib/auth-helpers';
+import logger, { setCorrelationContextFromRequest } from '@/lib/logger'
+import { handleError, validationError, successResponse } from '@/lib/error-handler'
 
 // GET para obtener todos los planes o con filtros
 export async function GET(request: Request) {
+  // Set correlation context from request headers
+  setCorrelationContextFromRequest(request)
+  
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
@@ -36,6 +41,13 @@ export async function GET(request: Request) {
       where.nombre = `%${searchParams.get('nombre')}%`;
     }
     
+    await logger.debug('Fetching subscription plans', { 
+      endpoint: '/api/planes-suscripcion', 
+      method: 'GET', 
+      filters: where, 
+      pagination: { page, limit, orderBy, orderDirection } 
+    });
+    
     // Obtener datos con paginación y filtros
     const data = await selectWithOptions('planes_suscripcion', '*', {
       page, 
@@ -47,22 +59,35 @@ export async function GET(request: Request) {
     
     // Contar total de registros para metadata de paginación
     const total = await countWithConditions('planes_suscripcion', where);
+
+    await logger.info(`Retrieved ${data.length} subscription plans`, { 
+      endpoint: '/api/planes-suscripcion', 
+      method: 'GET', 
+      total, 
+      page, 
+      limit 
+    });
     
-    return NextResponse.json({ 
-      data, 
+    return successResponse({ 
+      planes: data, 
       total,
       page,
       limit,
       totalPages: Math.ceil(total / limit)
     });
   } catch (error) {
-    console.error('Error al obtener planes de suscripción:', error);
-    return NextResponse.json({ error: 'Error al procesar la solicitud' }, { status: 500 });
+    return handleError(error as Error, { 
+      endpoint: '/api/planes-suscripcion', 
+      method: 'GET' 
+    });
   }
 }
 
 // POST para crear un nuevo plan
 export async function POST(request: Request) {
+  // Set correlation context from request headers
+  setCorrelationContextFromRequest(request)
+  
   try {
     // Verificar autorización - solo admins pueden crear planes
     const authResult = await requireRole(['admin'])
@@ -71,14 +96,20 @@ export async function POST(request: Request) {
 
     const data = await request.json();
     
+    await logger.debug('Creating new subscription plan', { 
+      endpoint: '/api/planes-suscripcion', 
+      method: 'POST', 
+      nombre: data.nombre 
+    });
+    
     // Validar datos con Zod
     const validation = createPlanSuscripcionSchema.safeParse(data);
     
     if (!validation.success) {
-      return NextResponse.json({
-        error: 'Datos de entrada inválidos',
-        details: validation.error.format()
-      }, { status: 400 });
+      return validationError('Datos de entrada inválidos', validation.error.format(), { 
+        endpoint: '/api/planes-suscripcion', 
+        method: 'POST' 
+      });
     }
     
     const validatedData = validation.data;
@@ -96,9 +127,18 @@ export async function POST(request: Request) {
       [id]
     );
     
-    return NextResponse.json(newPlan, { status: 201 });
+    await logger.info('Subscription plan created successfully', { 
+      endpoint: '/api/planes-suscripcion', 
+      method: 'POST', 
+      planId: id, 
+      nombre: validatedData.nombre 
+    });
+    
+    return successResponse(newPlan, 201);
   } catch (error) {
-    console.error('Error al crear plan de suscripción:', error);
-    return NextResponse.json({ error: 'Error al crear el plan de suscripción' }, { status: 500 });
+    return handleError(error as Error, { 
+      endpoint: '/api/planes-suscripcion', 
+      method: 'POST' 
+    });
   }
 }

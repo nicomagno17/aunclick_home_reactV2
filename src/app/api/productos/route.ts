@@ -4,9 +4,14 @@ import { getMySQLPool } from '@/lib/database'
 import { createProductoSchema, updateProductoSchema } from '@/schemas'
 import { ZodError } from 'zod'
 import { getSession, requireRole, canAccessNegocio, canAccessProducto, handleAuthError } from '@/lib/auth-helpers'
+import logger, { setCorrelationContextFromRequest } from '@/lib/logger'
+import { handleError, validationError, authenticationError, authorizationError, notFoundError, successResponse } from '@/lib/error-handler'
 
 // GET /api/productos - Obtener todos los productos
 export async function GET(request: NextRequest) {
+  // Set correlation context from request headers
+  setCorrelationContextFromRequest(request)
+  
   let connection
   
   try {
@@ -45,6 +50,13 @@ export async function GET(request: NextRequest) {
       queryParams.push(searchTerm, searchTerm, searchTerm)
     }
     
+    await logger.debug('Fetching products', { 
+      endpoint: '/api/productos', 
+      method: 'GET', 
+      filters: { negocio_id, categoria_id, estado, search }, 
+      pagination: { page, limit } 
+    })
+    
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : ''
     
     // Consulta para contar total de registros
@@ -75,20 +87,27 @@ export async function GET(request: NextRequest) {
     const finalParams = [...queryParams, limit, offset]
     const [rows] = await connection.execute(query, finalParams)
     
-    return NextResponse.json({
-      data: rows,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit)
+    await logger.info(`Retrieved ${rows.length} products`, { 
+      endpoint: '/api/productos', 
+      total, 
+      page, 
+      limit 
+    })
+    
+    return successResponse({ 
+      productos: rows, 
+      total, 
+      page, 
+      limit, 
+      totalPages: Math.ceil(total / limit) 
     })
     
   } catch (error) {
-    console.error('Error al obtener productos:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    return handleError(error as Error, { 
+      endpoint: '/api/productos', 
+      method: 'GET', 
+      filters: { negocio_id: (new URL(request.url)).searchParams.get('negocio_id') } 
+    })
   } finally {
     if (connection) {
       connection.release()
@@ -98,6 +117,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/productos - Crear nuevo producto
 export async function POST(request: NextRequest) {
+  // Set correlation context from request headers
+  setCorrelationContextFromRequest(request)
+  
   let connection
   
   try {
@@ -105,30 +127,38 @@ export async function POST(request: NextRequest) {
     const session = await getSession()
     
     if (!session) {
-      return NextResponse.json(
-        { error: 'Autenticación requerida' },
-        { status: 401 }
-      )
+      return authenticationError('Autenticación requerida', { endpoint: '/api/productos', method: 'POST' })
     }
     
     // Verificar que el usuario tiene rol adecuado
     if (!['propietario_negocio', 'admin'].includes(session.user?.rol)) {
-      return NextResponse.json(
-        { error: 'No tienes permisos para crear productos' },
-        { status: 403 }
-      )
+      return authorizationError('No tienes permisos para crear productos', { 
+        endpoint: '/api/productos', 
+        method: 'POST', 
+        userId: session.user.id, 
+        userRole: session.user?.rol 
+      })
     }
 
     const data = await request.json()
+    
+    await logger.debug('Creating new product', { 
+      endpoint: '/api/productos', 
+      method: 'POST', 
+      userId: session.user.id, 
+      negocioId: data.negocio_id, 
+      nombre: data.nombre 
+    })
     
     // Validar datos con Zod
     const validation = createProductoSchema.safeParse(data)
     
     if (!validation.success) {
-      return NextResponse.json({
-        error: 'Datos de entrada inválidos',
-        details: validation.error.format()
-      }, { status: 400 })
+      return validationError('Datos de entrada inválidos', validation.error.format(), { 
+        endpoint: '/api/productos', 
+        method: 'POST', 
+        userId: session.user.id 
+      })
     }
     
     const validatedData = validation.data
@@ -143,20 +173,19 @@ export async function POST(request: NextRequest) {
     )
     
     if ((negocioCheck as any[]).length === 0) {
-      return NextResponse.json(
-        { error: 'El negocio especificado no existe' },
-        { status: 400 }
-      )
+      return notFoundError('Negocio', { endpoint: '/api/productos', method: 'POST', negocioId: validatedData.negocio_id.toString() })
     }
 
     // Verificar que el usuario tiene acceso al negocio (ownership)
     if (session.user.rol !== 'admin') {
       const canAccess = await canAccessNegocio(session, validatedData.negocio_id)
       if (!canAccess) {
-        return NextResponse.json(
-          { error: 'No tienes permisos para crear productos en este negocio' },
-          { status: 403 }
-        )
+        return authorizationError('No tienes permisos para crear productos en este negocio', { 
+          endpoint: '/api/productos', 
+          method: 'POST', 
+          userId: session.user.id?.toString(), 
+          negocioId: validatedData.negocio_id.toString() 
+        })
       }
     }
 
@@ -166,10 +195,7 @@ export async function POST(request: NextRequest) {
     )
     
     if ((categoriaCheck as any[]).length === 0) {
-      return NextResponse.json(
-        { error: 'La categoría especificada no existe' },
-        { status: 400 }
-      )
+      return notFoundError('Categoría', { endpoint: '/api/productos', method: 'POST', categoriaId: validatedData.categoria_id.toString() })
     }
 
     // Verificar que el slug es único para este negocio
@@ -268,30 +294,22 @@ export async function POST(request: NextRequest) {
       WHERE p.id = ?
     `, [insertId])
 
-    return NextResponse.json((newProduct as any[])[0], { status: 201 })
+    await logger.info('Product created successfully', { 
+      endpoint: '/api/productos', 
+      method: 'POST', 
+      productId: insertId, 
+      userId: session.user.id?.toString(), 
+      negocioId: validatedData.negocio_id.toString(), 
+      nombre: validatedData.nombre 
+    })
+
+    return successResponse((newProduct as any[])[0], 201)
 
   } catch (error) {
-    console.error('Error al crear producto:', error)
-    
-    // Manejo específico de errores de MySQL
-    if ((error as any).code === 'ER_DUP_ENTRY') {
-      return NextResponse.json(
-        { error: 'Ya existe un producto con estos datos únicos' },
-        { status: 400 }
-      )
-    }
-    
-    if ((error as any).code === 'ER_NO_REFERENCED_ROW_2') {
-      return NextResponse.json(
-        { error: 'Referencia inválida a negocio o categoría' },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Error al crear el producto' },
-      { status: 500 }
-    )
+    return handleError(error as Error, { 
+      endpoint: '/api/productos', 
+      method: 'POST'
+    })
   } finally {
     if (connection) {
       connection.release()
@@ -301,6 +319,9 @@ export async function POST(request: NextRequest) {
 
 // PUT /api/productos/[id] - Actualizar producto
 export async function PUT(request: NextRequest) {
+  // Set correlation context from request headers
+  setCorrelationContextFromRequest(request)
+  
   let connection
   
   try {
@@ -308,40 +329,45 @@ export async function PUT(request: NextRequest) {
     const id = searchParams.get('id')
     
     if (!id) {
-      return NextResponse.json(
-        { error: 'ID del producto es requerido' },
-        { status: 400 }
-      )
+      return validationError('ID del producto es requerido', undefined, { endpoint: '/api/productos', method: 'PUT' })
     }
 
     // Verificar autenticación
     const session = await getSession()
     
     if (!session) {
-      return NextResponse.json(
-        { error: 'Autenticación requerida' },
-        { status: 401 }
-      )
+      return authenticationError('Autenticación requerida', { endpoint: '/api/productos', method: 'PUT' })
     }
     
     // Verificar que el usuario tiene rol adecuado
     if (!['propietario_negocio', 'admin'].includes(session.user?.rol)) {
-      return NextResponse.json(
-        { error: 'No tienes permisos para modificar productos' },
-        { status: 403 }
-      )
+      return authorizationError('No tienes permisos para modificar productos', { 
+        endpoint: '/api/productos', 
+        method: 'PUT', 
+        userId: session.user.id?.toString(), 
+        userRole: session.user?.rol 
+      })
     }
 
     const data = await request.json()
+    
+    await logger.debug('Updating product', { 
+      endpoint: '/api/productos', 
+      method: 'PUT', 
+      productId: id, 
+      userId: session.user.id?.toString(), 
+      fieldsToUpdate: Object.keys(data) 
+    })
     
     // Validar datos con Zod (permite actualizaciones parciales)
     const validation = updateProductoSchema.safeParse(data)
     
     if (!validation.success) {
-      return NextResponse.json({
-        error: 'Datos de entrada inválidos',
-        details: validation.error.format()
-      }, { status: 400 })
+      return validationError('Datos de entrada inválidos', validation.error.format(), { 
+        endpoint: '/api/productos', 
+        method: 'PUT', 
+        userId: session.user.id?.toString() 
+      })
     }
     
     const validatedData = validation.data
@@ -437,14 +463,21 @@ export async function PUT(request: NextRequest) {
       WHERE p.id = ?
     `, [id])
 
-    return NextResponse.json((updatedProduct as any[])[0])
+    await logger.info('Product updated successfully', { 
+      endpoint: '/api/productos', 
+      method: 'PUT', 
+      productId: id, 
+      userId: session?.user?.id?.toString(), 
+      fieldsUpdated: Object.keys(validatedData) 
+    })
+
+    return successResponse((updatedProduct as any[])[0])
 
   } catch (error) {
-    console.error('Error al actualizar producto:', error)
-    return NextResponse.json(
-      { error: 'Error al actualizar el producto' },
-      { status: 500 }
-    )
+    return handleError(error as Error, { 
+      endpoint: '/api/productos', 
+      method: 'PUT' 
+    })
   } finally {
     if (connection) {
       connection.release()
@@ -454,6 +487,9 @@ export async function PUT(request: NextRequest) {
 
 // DELETE /api/productos/[id] - Eliminar producto (soft delete)
 export async function DELETE(request: NextRequest) {
+  // Set correlation context from request headers
+  setCorrelationContextFromRequest(request)
+  
   let connection
   
   try {
@@ -461,30 +497,33 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get('id')
     
     if (!id) {
-      return NextResponse.json(
-        { error: 'ID del producto es requerido' },
-        { status: 400 }
-      )
+      return validationError('ID del producto es requerido', undefined, { endpoint: '/api/productos', method: 'DELETE' })
     }
 
     // Verificar autenticación
     const session = await getSession()
     
     if (!session) {
-      return NextResponse.json(
-        { error: 'Autenticación requerida' },
-        { status: 401 }
-      )
+      return authenticationError('Autenticación requerida', { endpoint: '/api/productos', method: 'DELETE' })
     }
     
     // Verificar que el usuario tiene rol adecuado
     if (!['propietario_negocio', 'admin'].includes(session.user?.rol)) {
-      return NextResponse.json(
-        { error: 'No tienes permisos para eliminar productos' },
-        { status: 403 }
-      )
+      return authorizationError('No tienes permisos para eliminar productos', { 
+        endpoint: '/api/productos', 
+        method: 'DELETE', 
+        userId: session.user.id?.toString(), 
+        userRole: session.user?.rol 
+      })
     }
 
+    await logger.debug('Deleting product', { 
+      endpoint: '/api/productos', 
+      method: 'DELETE', 
+      productId: id, 
+      userId: session.user.id?.toString() 
+    })
+    
     const pool = getMySQLPool()
     connection = await pool.getConnection()
 
@@ -495,10 +534,7 @@ export async function DELETE(request: NextRequest) {
     )
     
     if ((productCheck as any[]).length === 0) {
-      return NextResponse.json(
-        { error: 'Producto no encontrado' },
-        { status: 404 }
-      )
+      return notFoundError('Producto', { endpoint: '/api/productos', method: 'DELETE', productId: id })
     }
 
     // Verificar que el usuario tiene acceso al producto (ownership)
@@ -518,14 +554,20 @@ export async function DELETE(request: NextRequest) {
       [id]
     )
 
-    return NextResponse.json({ message: 'Producto eliminado correctamente' })
+    await logger.info('Product deleted successfully', { 
+      endpoint: '/api/productos', 
+      method: 'DELETE', 
+      productId: id, 
+      userId: session?.user?.id?.toString() 
+    })
+
+    return successResponse({ message: 'Producto eliminado correctamente' })
 
   } catch (error) {
-    console.error('Error al eliminar producto:', error)
-    return NextResponse.json(
-      { error: 'Error al eliminar el producto' },
-      { status: 500 }
-    )
+    return handleError(error as Error, { 
+      endpoint: '/api/productos', 
+      method: 'DELETE' 
+    })
   } finally {
     if (connection) {
       connection.release()

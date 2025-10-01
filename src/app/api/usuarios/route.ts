@@ -4,14 +4,21 @@ import { executeQuery } from '@/lib/database'
 import { createUsuarioSchema } from '@/schemas'
 import { ZodError } from 'zod'
 import { requireRole, handleAuthError } from '@/lib/auth-helpers'
+import logger, { setCorrelationContextFromRequest } from '@/lib/logger'
+import { handleError, validationError, successResponse } from '@/lib/error-handler'
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Set correlation context from request headers
+  setCorrelationContextFromRequest(request)
+  
   // Verificar autorización - solo admin y moderadores pueden ver lista de usuarios
   const authResult = await requireRole(['admin', 'moderador'])
   const authError = handleAuthError(authResult)
   if (authError) return authError
 
   try {
+    await logger.info('Fetching users list', { endpoint: '/api/usuarios', method: 'GET' })
+    
     // Consultar usuarios de la base de datos
     const usuarios = await executeQuery(`
       SELECT 
@@ -33,43 +40,34 @@ export async function GET() {
       LIMIT 50
     `)
 
-    return NextResponse.json({
-      success: true,
-      usuarios,
-      total: usuarios.length,
-      timestamp: new Date().toISOString()
-    })
+    await logger.info(`Retrieved ${usuarios.length} users`, { endpoint: '/api/usuarios', count: usuarios.length })
+    
+    return successResponse({ usuarios, total: usuarios.length })
     
   } catch (error) {
-    console.error('Error al obtener usuarios:', error)
-    
-    return NextResponse.json({
-      success: false,
-      error: 'Error al obtener usuarios',
-      usuarios: [],
-      timestamp: new Date().toISOString()
-    }, { status: 500 })
+    return handleError(error as Error, { endpoint: '/api/usuarios', method: 'GET' })
   }
 }
 
 export async function POST(request: Request) {
   try {
+    // Set correlation context from request headers
+    setCorrelationContextFromRequest(request)
+    
     const body = await request.json()
+    
+    await logger.debug('Creating new user', { endpoint: '/api/usuarios', method: 'POST', email: body.email })
     
     // Validar datos con Zod
     const validation = createUsuarioSchema.safeParse(body)
     
     if (!validation.success) {
-      return NextResponse.json({
-        success: false,
-        error: 'Datos de entrada inválidos',
-        details: validation.error.format()
-      }, { status: 400 })
+      return validationError('Datos de entrada inválidos', validation.error.format(), { endpoint: '/api/usuarios', method: 'POST' })
     }
     
     const validatedData = validation.data
 
-// Insertar nuevo usuario con datos validados y sanitizados
+    // Insertar nuevo usuario con datos validados y sanitizados
     // Forzar rol = 'usuario' para registro público (previene que usuarios se asignen roles especiales)
     const result = await executeQuery(`
       INSERT INTO usuarios (email, nombre, apellidos, telefono, password_hash, rol, estado, preferencias, metadata)
@@ -86,20 +84,12 @@ export async function POST(request: Request) {
       JSON.stringify(validatedData.metadata || {})
     ])
 
-    return NextResponse.json({
-      success: true,
-      message: 'Usuario creado exitosamente',
-      userId: (result as any).insertId,
-      timestamp: new Date().toISOString()
-    })
+    const userId = (result as any).insertId
+    await logger.info('User created successfully', { endpoint: '/api/usuarios', method: 'POST', userId, email: validatedData.email })
+
+    return successResponse({ message: 'Usuario creado exitosamente', userId }, 201)
     
   } catch (error) {
-    console.error('Error al crear usuario:', error)
-    
-    return NextResponse.json({
-      success: false,
-      error: 'Error al crear usuario',
-      timestamp: new Date().toISOString()
-    }, { status: 500 })
+    return handleError(error as Error, { endpoint: '/api/usuarios', method: 'POST' })
   }
 }
