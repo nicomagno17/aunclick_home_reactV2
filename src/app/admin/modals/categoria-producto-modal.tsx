@@ -18,9 +18,9 @@ const formSchema = z.object({
     .regex(/^[a-z0-9-]+$/, 'El slug solo puede contener letras minúsculas, números y guiones'),
   descripcion: z.string().optional(),
   parent_id: z.string().optional(),
-  nivel: z.coerce.number().int().min(1, 'El nivel debe ser al menos 1').max(5, 'El nivel no puede ser mayor a 5'),
-  activo: z.boolean().default(true),
-  orden: z.coerce.number().int().min(1, 'El orden debe ser al menos 1'),
+  nivel: z.number().int().min(1, 'El nivel debe ser al menos 1').max(5, 'El nivel no puede ser mayor a 5'),
+  activo: z.boolean(),
+  orden: z.number().int().min(1, 'El orden debe ser al menos 1'),
   metadata: z.string().optional(),
 })
 
@@ -33,9 +33,9 @@ interface CategoriaProductoModalProps {
   categoriasList?: any[] // Lista de categorías para seleccionar como padre
 }
 
-export default function CategoriaProductoModal({ 
-  open, 
-  onOpenChange, 
+export default function CategoriaProductoModal({
+  open,
+  onOpenChange,
   categoriaToEdit,
   categoriasList = [] // Idealmente cargar desde la API
 }: CategoriaProductoModalProps) {
@@ -75,7 +75,7 @@ export default function CategoriaProductoModal({
   const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nombre = e.target.value;
     form.setValue('nombre', nombre);
-    
+
     // Solo actualizar el slug si el usuario no lo ha modificado manualmente
     if (!form.getValues('slug') || form.getValues('slug') === generateSlug(form.getValues('nombre'))) {
       form.setValue('slug', generateSlug(nombre));
@@ -86,19 +86,19 @@ export default function CategoriaProductoModal({
     try {
       setIsSaving(true)
       console.log('Datos del formulario:', data)
-      
+
       // Convertir el metadata de string a JSON
       const formattedData = {
         ...data,
         metadata: data.metadata ? JSON.parse(data.metadata) : {}
       }
-      
+
       // Aquí iría la lógica para guardar en la base de datos
       // await createCategoriaProducto(formattedData) o await updateCategoriaProducto(formattedData)
-      
+
       // Simular una operación asíncrona
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      
+
       setIsSaving(false)
       onOpenChange(false)
     } catch (error) {
@@ -128,7 +128,7 @@ export default function CategoriaProductoModal({
                 <FormItem>
                   <FormLabel>Nombre</FormLabel>
                   <FormControl>
-                    <Input 
+                    <Input
                       placeholder="Nombre de la categoría"
                       {...field}
                       onChange={handleNombreChange}
@@ -185,8 +185,8 @@ export default function CategoriaProductoModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoría Padre</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -218,8 +218,8 @@ export default function CategoriaProductoModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nivel Jerárquico</FormLabel>
-                  <Select 
-                    onValueChange={(value) => field.onChange(parseInt(value))} 
+                  <Select
+                    onValueChange={(value) => field.onChange(parseInt(value))}
                     defaultValue={field.value.toString()}
                   >
                     <FormControl>

@@ -7,26 +7,26 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { VisuallyHidden } from '@/components/ui/visually-hidden'
-import { 
-  Clock, 
-  Calendar, 
-  Mail, 
-  Phone, 
-  MessageCircle, 
-  Users, 
-  Store, 
-  HelpCircle, 
-  Shield, 
-  Cookie, 
-  RefreshCw, 
-  FileText, 
-  MapPin, 
-  Settings, 
-  ChevronLeft, 
-  ChevronRight, 
-  BarChart3, 
-  Image, 
-  ShoppingBag, 
+import {
+  Clock,
+  Calendar,
+  Mail,
+  Phone,
+  MessageCircle,
+  Users,
+  Store,
+  HelpCircle,
+  Shield,
+  Cookie,
+  RefreshCw,
+  FileText,
+  MapPin,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+  BarChart3,
+  Image,
+  ShoppingBag,
   ArrowLeft,
   Plus,
   X
@@ -53,7 +53,7 @@ export default function AdminPage() {
       opacity: 0.7;
     }
   `;
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedSection, setSelectedSection] = useState('')
   const [activeContainer, setActiveContainer] = useState<string | null>(null)
@@ -64,7 +64,7 @@ export default function AdminPage() {
     medidas: false
   })
   const [descripcion, setDescripcion] = useState('')
-  
+
   // Estados para los campos del formulario
   const [productoData, setProductoData] = useState({
     tipoNegocio: '',
@@ -92,21 +92,21 @@ export default function AdminPage() {
 
   // Estado para la imagen cargada
   const [imagenProducto, setImagenProducto] = useState<string | null>(null)
-  
+
   // Estado para el popup de información del producto
   const [selectedProducto, setSelectedProducto] = useState<any | null>(null)
-  
+
   // Estado para el producto en edición
   const [editingProducto, setEditingProducto] = useState<any | null>(null)
-  
+
   // Estado para el modal de confirmación de eliminación
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [productToDelete, setProductToDelete] = useState<{producto: any, section: string} | null>(null)
-  
+  const [productToDelete, setProductToDelete] = useState<{ producto: any, section: string } | null>(null)
+
   // Estado para el popup de ayuda
   const [showHelpPopup, setShowHelpPopup] = useState(false)
-  const [helpContent, setHelpContent] = useState<{title: string, content: string} | null>(null)
-  
+  const [helpContent, setHelpContent] = useState<{ title: string, content: string } | null>(null)
+
   // Contenido de ayuda para cada sección
   const helpContentData = {
     'datos-negocio': {
@@ -131,19 +131,19 @@ export default function AdminPage() {
       content: 'Los banners publicitarios te permiten destacar productos especiales o promociones en la página principal de tu negocio. Puedes configurar hasta 2 banners con imágenes atractivas y precios especiales. Estos banners aparecen de forma prominente para captar la atención de los visitantes y dirigir el tráfico hacia tus productos más importantes o ofertas especiales.'
     }
   }
-  
+
   // Función para abrir popup de ayuda
   const openHelpPopup = (sectionKey: keyof typeof helpContentData) => {
     setHelpContent(helpContentData[sectionKey])
     setShowHelpPopup(true)
   }
-  
+
   // Función para cerrar popup de ayuda
   const closeHelpPopup = () => {
     setShowHelpPopup(false)
     setHelpContent(null)
   }
-  
+
   // Estado para información del negocio
   const [businessInfo, setBusinessInfo] = useState({
     nombre: '',
@@ -158,43 +158,43 @@ export default function AdminPage() {
       domingo: { inicio: '', fin: '' }
     }
   })
-  
+
   // Estado para las imágenes de los carruseles
   const [carouselImages, setCarouselImages] = useState({
     carrusel1: Array(8).fill(null), // 8 espacios para el carrusel 1 (índices 1-8)
     carrusel2: Array(8).fill(null)  // 8 espacios para el carrusel 2 (índices 9-16)
   })
-  
+
   // Estado para los precios de las imágenes de los carruseles
   const [carouselPrices, setCarouselPrices] = useState({
     carrusel1: Array(8).fill(''), // 8 precios para el carrusel 1
     carrusel2: Array(8).fill('')  // 8 precios para el carrusel 2
   })
-  
+
   // Estado para el enfoque de los inputs de precio
   const [priceFocus, setPriceFocus] = useState({
     carrusel1: Array(8).fill(false), // 8 estados de enfoque para el carrusel 1
     carrusel2: Array(8).fill(false)  // 8 estados de enfoque para el carrusel 2
   })
-  
+
   // Estado para los datos de productos del carrusel
   const [carouselProductData, setCarouselProductData] = useState({
     carrusel1: Array(8).fill(null), // 8 productos para el carrusel 1
     carrusel2: Array(8).fill(null)  // 8 productos para el carrusel 2
   })
-  
+
   // Estado para los títulos de los carruseles
   const [carouselTitles, setCarouselTitles] = useState({
     carrusel1: '',
     carrusel2: ''
   })
-  
+
   // Estado para las URLs de imagen de los carruseles
   const [carouselImageUrls, setCarouselImageUrls] = useState({
     carrusel1: '',
     carrusel2: ''
   })
-  
+
   // Estado para los enlaces de los carruseles
   const [carouselLinks, setCarouselLinks] = useState({
     carrusel1: '',
@@ -205,15 +205,15 @@ export default function AdminPage() {
     null, // Banner 1
     null  // Banner 2
   ])
-  
+
   // Estado para los precios de los banners
   const [bannerPrices, setBannerPrices] = useState({
     banner1: { current: '', previous: '' },
     banner2: { current: '', previous: '' }
   })
-  
-  
-  
+
+
+
 
 
   const openModal = (section: string) => {
@@ -248,7 +248,7 @@ export default function AdminPage() {
   const openEditModal = (producto: any, section: string) => {
     setSelectedSection(section)
     setEditingProducto(producto)
-    
+
     // Pre-llenar todos los campos con los datos existentes
     setProductoData({
       tipoNegocio: producto.tipoNegocio || '',
@@ -263,10 +263,10 @@ export default function AdminPage() {
       precioActual: producto.precioActual || '',
       precioAnterior: producto.precioAnterior || ''
     })
-    
+
     setDescripcion(producto.descripcion || '')
     setImagenProducto(producto.imagen || null)
-    
+
     // Activar opciones según los datos existentes
     setOpcionesProducto({
       tallasCalzado: Boolean(producto.tallasCalzado && producto.tallasCalzado.length > 0),
@@ -274,7 +274,7 @@ export default function AdminPage() {
       genero: Boolean(producto.genero && producto.genero !== 'generico'),
       medidas: Boolean(producto.medidas)
     })
-    
+
     // Pre-cargar imagen en el contenedor
     if (producto.imagen) {
       setTimeout(() => {
@@ -286,7 +286,7 @@ export default function AdminPage() {
         }
       }, 100)
     }
-    
+
     setIsModalOpen(true)
   }
 
@@ -352,7 +352,7 @@ export default function AdminPage() {
     setProductoData(prev => {
       const currentTallas = prev[tipo]
       const isSelected = currentTallas.includes(talla)
-      
+
       if (isSelected) {
         // Remover talla si ya está seleccionada
         return {
@@ -368,7 +368,7 @@ export default function AdminPage() {
       }
     })
   }
-  
+
   // Función para manejar la carga de imágenes de banners
   const handleBannerImageUpload = (bannerIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -386,7 +386,7 @@ export default function AdminPage() {
       reader.readAsDataURL(file)
     }
   }
-  
+
   // Función para eliminar una imagen de banner
   const handleDeleteBanner = (bannerIndex: number) => {
     setBannerImages(prev => {
@@ -394,7 +394,7 @@ export default function AdminPage() {
       newImages[bannerIndex] = null
       return newImages
     })
-    
+
     // Reset prices
     if (bannerIndex === 0) {
       setBannerPrices(prev => ({
@@ -408,7 +408,7 @@ export default function AdminPage() {
       }))
     }
   }
-  
+
   // Función para guardar los datos del banner (simulación)
   const handleSaveBanner = (bannerIndex: number) => {
     // En una implementación real, aquí se enviarían los datos al servidor
@@ -416,7 +416,7 @@ export default function AdminPage() {
       image: bannerImages[bannerIndex],
       prices: bannerIndex === 0 ? bannerPrices.banner1 : bannerPrices.banner2
     })
-    
+
     // Mostrar mensaje de éxito (en una implementación real)
     alert(`Banner ${bannerIndex + 1} guardado exitosamente`)
   }
@@ -461,9 +461,9 @@ export default function AdminPage() {
     }))
   }
 
-  
 
-  
+
+
 
   // Función para guardar cambios del carrusel
   const handleSaveCarousel = (carruselType: 'carrusel1' | 'carrusel2') => {
@@ -473,7 +473,7 @@ export default function AdminPage() {
     // Aquí iría la lógica para guardar en la base de datos
     alert(`Cambios guardados para ${carruselType === 'carrusel1' ? 'Carrusel 1' : 'Carrusel 2'}`)
   }
-  
+
 
   // Función de autollenado para información del negocio
   const autollenarNegocio = () => {
@@ -582,7 +582,7 @@ export default function AdminPage() {
     }
 
     const ejemplo = ejemplos[selectedSection as keyof typeof ejemplos] || ejemplos.destacados
-    
+
     setProductoData({
       tipoNegocio: ejemplo.tipoNegocio,
       categoria: ejemplo.categoria,
@@ -596,10 +596,10 @@ export default function AdminPage() {
       precioActual: ejemplo.precioActual,
       precioAnterior: ejemplo.precioAnterior
     })
-    
+
     setDescripcion(ejemplo.descripcion)
     setImagenProducto(ejemplo.imagen)
-    
+
     // Activar opciones según el ejemplo
     setOpcionesProducto({
       tallasCalzado: ejemplo.tallas !== 'No aplica' && ejemplo.categoria === 'ropa' && ejemplo.subcategoria === 'calzado',
@@ -627,7 +627,7 @@ export default function AdminPage() {
 
       setProductos(prev => ({
         ...prev,
-        [selectedSection]: prev[selectedSection as keyof typeof prev].map((p: any) => 
+        [selectedSection]: prev[selectedSection as keyof typeof prev].map((p: any) =>
           p.id === editingProducto.id ? productoActualizado : p
         )
       }))
@@ -676,13 +676,13 @@ export default function AdminPage() {
       <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow md:w-44 w-28 md:h-auto h-auto">
         {/* Parte superior con imagen - ocupa todo el espacio */}
         <div className="md:h-40 h-24 bg-white overflow-hidden">
-          <img 
-            src={producto.imagen} 
+          <img
+            src={producto.imagen}
             alt={producto.nombre}
             className="w-full h-full object-contain bg-gray-100"
           />
         </div>
-        
+
         {/* Parte inferior con información - ultra compacta */}
         <div className="md:p-1.5 md:pb-1 p-1 pb-0.5">
           {/* Fila con categoría y subcategoría centradas */}
@@ -691,21 +691,21 @@ export default function AdminPage() {
             <span className="mx-0.5">/</span>
             <span className="text-center truncate max-w-[35%]">{getSubcategoriaLabel(producto.subcategoria)}</span>
           </div>
-          
+
           {/* Nombre del producto */}
           <div className="md:mb-1 mb-0.5">
             <h3 className="md:text-[10px] text-[8px] font-semibold text-gray-100 leading-tight line-clamp-2 text-center">
               {producto.nombre}
             </h3>
           </div>
-          
+
           {/* Fila con precios */}
           <div className="flex items-center justify-between md:mb-1 mb-0.5">
             {/* Precio actual */}
             <div className="text-purple-400 font-bold md:text-xs text-[9px]">
               ${producto.precioActual}
             </div>
-            
+
             {/* Precio anterior tachado */}
             {producto.precioAnterior && (
               <div className="relative">
@@ -718,25 +718,25 @@ export default function AdminPage() {
               </div>
             )}
           </div>
-          
+
           {/* Botón +Información */}
-          <button 
+          <button
             onClick={() => setSelectedProducto(producto)}
             className="w-full bg-gray-700 hover:bg-gray-600 text-white md:py-0.5 py-0 md:px-1 px-0.5 rounded transition-colors md:text-[9px] text-[7px] font-medium md:mt-1 mt-0.5 md:mb-1 mb-0.5"
           >
             +Información
           </button>
-          
+
           {/* Botones de Editar y Eliminar */}
           {section && (
             <div className="flex gap-1">
-              <button 
+              <button
                 onClick={() => openEditModal(producto, section)}
                 className="flex-1 bg-blue-600 hover:bg-blue-500 text-white md:py-0.5 py-0 md:px-1 px-0.5 rounded transition-colors md:text-[8px] text-[6px] font-medium"
               >
                 Editar
               </button>
-              <button 
+              <button
                 onClick={() => abrirConfirmacionEliminar(producto, section)}
                 className="flex-1 bg-red-600 hover:bg-red-500 text-white md:py-0.5 py-0 md:px-1 px-0.5 rounded transition-colors md:text-[8px] text-[6px] font-medium"
               >
@@ -765,7 +765,7 @@ export default function AdminPage() {
   const handleDescripcionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const texto = e.target.value
     const palabras = contarPalabras(texto)
-    
+
     // Limitar a 50 palabras
     if (palabras <= 50) {
       setDescripcion(texto)
@@ -914,13 +914,13 @@ export default function AdminPage() {
     <div className="min-h-screen bg-gray-900">
       {/* Banner Distortion Styles */}
       <style dangerouslySetInnerHTML={{ __html: bannerDistortionStyle }} />
-      
+
       {/* Responsive Menu - Only shows on mobile */}
       <div className="md:hidden block">
         {!activeContainer ? (
           <div className="p-6">
             {/* Removed the "Panel de Administración" title as it's already in the header */}
-            
+
             {/* Uniform-sized buttons grid */}
             <div className="space-y-4 mb-4">
               {/* First row - 2 buttons */}
@@ -932,7 +932,7 @@ export default function AdminPage() {
                   <Store className="w-8 h-8 text-blue-400 mb-2" />
                   <span className="text-white text-sm font-medium">Datos del Negocio</span>
                 </button>
-                
+
                 <button
                   onClick={() => setActiveContainer('gestion-productos')}
                   className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
@@ -941,17 +941,17 @@ export default function AdminPage() {
                   <span className="text-white text-sm font-medium">Gestión de Productos</span>
                 </button>
               </div>
-              
+
               {/* Second row - 2 buttons */}
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setActiveContainer('gestion-banner')}
                   className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
                 >
-                  <Image className="w-8 h-8 text-yellow-400 mb-2" />
+                  <Image className="w-8 h-8 text-yellow-400 mb-2" alt="Gestión de Banner" />
                   <span className="text-white text-sm font-medium">Gestión de Banner</span>
                 </button>
-                
+
                 <button
                   onClick={() => setActiveContainer('analytics')}
                   className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
@@ -960,7 +960,7 @@ export default function AdminPage() {
                   <span className="text-white text-sm font-medium">Analytics Dashboard</span>
                 </button>
               </div>
-              
+
               {/* Third row - 1 centered button */}
               <div className="flex justify-center">
                 <button
@@ -1009,56 +1009,56 @@ export default function AdminPage() {
             <h2 className="text-base md:text-xl font-semibold text-white mb-4">Información General</h2>
             <div className="flex justify-between items-center mb-6">
               <p className="text-gray-400 text-xs md:text-base">Ingresa los datos básicos del negocio</p>
-              <Button 
+              <Button
                 onClick={autollenarNegocio}
                 className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 md:text-sm text-xs"
               >
                 Auto Llenar Datos
               </Button>
             </div>
-            
+
             {/* Formulario único */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="entidad-nombre" className="text-gray-300 md:text-sm text-xs">Nombre del Negocio</Label>
-                  <Input 
-                    id="entidad-nombre" 
+                  <Input
+                    id="entidad-nombre"
                     placeholder="Ingresa el nombre del negocio"
                     value={businessInfo.nombre}
                     onChange={(e) => handleBusinessInfoChange('nombre', e.target.value)}
                     className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="entidad-direccion" className="text-gray-300 md:text-sm text-xs">Dirección</Label>
-                  <Input 
-                    id="entidad-direccion" 
+                  <Input
+                    id="entidad-direccion"
                     placeholder="Ingresa la dirección completa"
                     value={businessInfo.direccion}
                     onChange={(e) => handleBusinessInfoChange('direccion', e.target.value)}
                     className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                   />
                 </div>
-                
+
                 {/* Teléfono y WhatsApp en la misma fila */}
                 <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="entidad-telefono" className="text-gray-300 md:text-sm text-xs">Teléfono</Label>
-                    <Input 
-                      id="entidad-telefono" 
+                    <Input
+                      id="entidad-telefono"
                       placeholder="Ingresa el número"
                       value={businessInfo.telefono}
                       onChange={(e) => handleBusinessInfoChange('telefono', e.target.value)}
                       className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="entidad-whatsapp" className="text-gray-300 md:text-sm text-xs">WhatsApp</Label>
-                    <Input 
-                      id="entidad-whatsapp" 
+                    <Input
+                      id="entidad-whatsapp"
                       placeholder="Ingresa el número"
                       value={businessInfo.whatsapp}
                       onChange={(e) => handleBusinessInfoChange('whatsapp', e.target.value)}
@@ -1066,11 +1066,11 @@ export default function AdminPage() {
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="entidad-email" className="text-gray-300 md:text-sm text-xs">Email</Label>
-                  <Input 
-                    id="entidad-email" 
+                  <Input
+                    id="entidad-email"
                     type="email"
                     placeholder="Ingresa el correo electrónico"
                     value={businessInfo.email}
@@ -1079,26 +1079,26 @@ export default function AdminPage() {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="entidad-responsable" className="text-gray-300 md:text-sm text-xs">Nombre del Responsable del Negocio</Label>
-                  <Input 
-                    id="entidad-responsable" 
+                  <Input
+                    id="entidad-responsable"
                     placeholder="Ingresa el nombre del responsable del negocio"
                     value={businessInfo.responsable}
                     onChange={(e) => handleBusinessInfoChange('responsable', e.target.value)}
                     className="mt-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 md:text-sm text-xs"
                   />
                 </div>
-                
+
                 {/* Sección de Horarios */}
                 <div>
                   <Label className="text-gray-300 md:text-sm text-xs flex items-center gap-2 mb-3">
                     <Clock className="w-4 h-4" />
                     Horarios de Atención
                   </Label>
-                  
+
                   <div className="bg-gray-700 border border-gray-600 rounded-lg p-4 space-y-3">
                     {/* Lunes a Viernes */}
                     <div className="flex items-center gap-3">
@@ -1106,7 +1106,7 @@ export default function AdminPage() {
                       {/* Responsive: Mostrar "L a V" en móvil */}
                       <Label className="text-gray-400 text-xs w-16 md:hidden block">L a V</Label>
                       <div className="flex items-center gap-2 flex-1">
-                        <Input 
+                        <Input
                           id="horario-lv-inicio"
                           type="time"
                           value={businessInfo.horarios.lunesViernes.inicio}
@@ -1114,7 +1114,7 @@ export default function AdminPage() {
                           className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 md:w-28 w-20 md:text-sm text-xs [&::-webkit-datetime-edit-ampm-field]:lowercase [&::-webkit-datetime-edit-ampm-field]:text-xs"
                         />
                         <span className="text-gray-400 md:text-sm text-xs">a</span>
-                        <Input 
+                        <Input
                           id="horario-lv-fin"
                           type="time"
                           value={businessInfo.horarios.lunesViernes.fin}
@@ -1123,14 +1123,14 @@ export default function AdminPage() {
                         />
                       </div>
                     </div>
-                    
+
                     {/* Sábado */}
                     <div className="flex items-center gap-3">
                       <Label className="text-gray-400 md:text-sm text-xs md:w-32 w-16 md:block hidden">Sábado</Label>
                       {/* Responsive: Mostrar "Sab." en móvil */}
                       <Label className="text-gray-400 text-xs w-16 md:hidden block">Sab.</Label>
                       <div className="flex items-center gap-2 flex-1">
-                        <Input 
+                        <Input
                           id="horario-sabado-inicio"
                           type="time"
                           value={businessInfo.horarios.sabado.inicio}
@@ -1138,7 +1138,7 @@ export default function AdminPage() {
                           className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 md:w-28 w-20 md:text-sm text-xs [&::-webkit-datetime-edit-ampm-field]:lowercase [&::-webkit-datetime-edit-ampm-field]:text-xs"
                         />
                         <span className="text-gray-400 md:text-sm text-xs">a</span>
-                        <Input 
+                        <Input
                           id="horario-sabado-fin"
                           type="time"
                           value={businessInfo.horarios.sabado.fin}
@@ -1147,14 +1147,14 @@ export default function AdminPage() {
                         />
                       </div>
                     </div>
-                    
+
                     {/* Domingo */}
                     <div className="flex items-center gap-3">
                       <Label className="text-gray-400 md:text-sm text-xs md:w-32 w-16 md:block hidden">Domingo</Label>
                       {/* Responsive: Mostrar "Dom." en móvil */}
                       <Label className="text-gray-400 text-xs w-16 md:hidden block">Dom.</Label>
                       <div className="flex items-center gap-2 flex-1">
-                        <Input 
+                        <Input
                           id="horario-domingo-inicio"
                           type="time"
                           value={businessInfo.horarios.domingo.inicio}
@@ -1162,7 +1162,7 @@ export default function AdminPage() {
                           className="bg-gray-600 border-gray-500 text-white placeholder-gray-400 md:w-28 w-20 md:text-sm text-xs [&::-webkit-datetime-edit-ampm-field]:lowercase [&::-webkit-datetime-edit-ampm-field]:text-xs"
                         />
                         <span className="text-gray-400 md:text-sm text-xs">a</span>
-                        <Input 
+                        <Input
                           id="horario-domingo-fin"
                           type="time"
                           value={businessInfo.horarios.domingo.fin}
@@ -1175,7 +1175,7 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-6 flex justify-end">
               <Button className="bg-gray-700 hover:bg-gray-600 text-white md:text-sm text-xs md:px-4 px-3 md:py-2 py-1">
                 Guardar Información
@@ -1219,7 +1219,7 @@ export default function AdminPage() {
                 {editingProducto ? 'Editar Producto' : `Agregar Producto a ${selectedSection}`}
               </DialogTitle>
             </DialogHeader>
-            
+
             <div className="md:space-y-6 space-y-4">
               {/* Cargar imagen */}
               <div>
@@ -1323,7 +1323,7 @@ export default function AdminPage() {
                 <Label htmlFor="producto-nombre" className="text-gray-300 mb-2 block md:text-sm text-xs">
                   Nombre o Título del Producto
                 </Label>
-                <Input 
+                <Input
                   id="producto-nombre"
                   value={productoData.nombre}
                   onChange={(e) => handleProductoDataChange('nombre', e.target.value)}
@@ -1348,13 +1348,12 @@ export default function AdminPage() {
                         checked={opcionesProducto.genero}
                         onChange={() => toggleOpcion('genero')}
                       />
-                      <label 
+                      <label
                         htmlFor="opcion-genero"
-                        className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
-                          opcionesProducto.genero 
-                            ? 'bg-blue-500 border-blue-500' 
+                        className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.genero
+                            ? 'bg-blue-500 border-blue-500'
                             : 'border-gray-400 hover:border-gray-300'
-                        }`}
+                          }`}
                         onClick={(e) => {
                           e.preventDefault();
                           toggleOpcion('genero');
@@ -1380,13 +1379,12 @@ export default function AdminPage() {
                         checked={opcionesProducto.medidas}
                         onChange={() => toggleOpcion('medidas')}
                       />
-                      <label 
+                      <label
                         htmlFor="opcion-medidas"
-                        className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
-                          opcionesProducto.medidas 
-                            ? 'bg-blue-500 border-blue-500' 
+                        className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.medidas
+                            ? 'bg-blue-500 border-blue-500'
                             : 'border-gray-400 hover:border-gray-300'
-                        }`}
+                          }`}
                         onClick={(e) => {
                           e.preventDefault();
                           toggleOpcion('medidas');
@@ -1412,13 +1410,12 @@ export default function AdminPage() {
                         checked={opcionesProducto.tallasCalzado}
                         onChange={() => toggleOpcion('tallasCalzado')}
                       />
-                      <label 
+                      <label
                         htmlFor="opcion-tallas-calzado"
-                        className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
-                          opcionesProducto.tallasCalzado 
-                            ? 'bg-blue-500 border-blue-500' 
+                        className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.tallasCalzado
+                            ? 'bg-blue-500 border-blue-500'
                             : 'border-gray-400 hover:border-gray-300'
-                        }`}
+                          }`}
                         onClick={(e) => {
                           e.preventDefault();
                           toggleOpcion('tallasCalzado');
@@ -1444,13 +1441,12 @@ export default function AdminPage() {
                         checked={opcionesProducto.tallasRopa}
                         onChange={() => toggleOpcion('tallasRopa')}
                       />
-                      <label 
+                      <label
                         htmlFor="opcion-tallas-ropa"
-                        className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${
-                          opcionesProducto.tallasRopa 
-                            ? 'bg-blue-500 border-blue-500' 
+                        className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.tallasRopa
+                            ? 'bg-blue-500 border-blue-500'
                             : 'border-gray-400 hover:border-gray-300'
-                        }`}
+                          }`}
                         onClick={(e) => {
                           e.preventDefault();
                           toggleOpcion('tallasRopa');
@@ -1501,7 +1497,7 @@ export default function AdminPage() {
                               Medidas
                             </Label>
                             <div className="flex items-center gap-2">
-                              <Input 
+                              <Input
                                 id="medidas"
                                 type="number"
                                 value={productoData.medidas}
@@ -1537,11 +1533,10 @@ export default function AdminPage() {
                               key={talla}
                               type="button"
                               onClick={() => handleTallaToggle('tallasCalzado', talla)}
-                              className={`px-1 py-0.5 text-xs rounded transition-colors text-center ${
-                                productoData.tallasCalzado.includes(talla)
+                              className={`px-1 py-0.5 text-xs rounded transition-colors text-center ${productoData.tallasCalzado.includes(talla)
                                   ? 'bg-blue-500 text-white'
                                   : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
-                              }`}
+                                }`}
                             >
                               {talla}
                             </button>
@@ -1567,11 +1562,10 @@ export default function AdminPage() {
                               key={talla}
                               type="button"
                               onClick={() => handleTallaToggle('tallasRopa', talla === 'T.Única' ? 'Talla Única' : talla)}
-                              className={`px-1 py-0.5 text-xs rounded transition-colors text-center ${
-                                productoData.tallasRopa.includes(talla === 'T.Única' ? 'Talla Única' : talla)
+                              className={`px-1 py-0.5 text-xs rounded transition-colors text-center ${productoData.tallasRopa.includes(talla === 'T.Única' ? 'Talla Única' : talla)
                                   ? 'bg-blue-500 text-white'
                                   : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
-                              }`}
+                                }`}
                             >
                               {talla}
                             </button>
@@ -1598,7 +1592,7 @@ export default function AdminPage() {
                     </Label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-                      <Input 
+                      <Input
                         id="precio-actual"
                         type="number"
                         value={productoData.precioActual}
@@ -1616,7 +1610,7 @@ export default function AdminPage() {
                     </Label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-                      <Input 
+                      <Input
                         id="precio-anterior"
                         type="number"
                         value={productoData.precioAnterior}
@@ -1635,13 +1629,12 @@ export default function AdminPage() {
                   <Label htmlFor="descripcion" className="text-gray-300">
                     Descripción
                   </Label>
-                  <span className={`text-sm ${
-                    contarPalabras(descripcion) > 45 
-                      ? 'text-yellow-400' 
-                      : contarPalabras(descripcion) > 48 
-                        ? 'text-red-400' 
+                  <span className={`text-sm ${contarPalabras(descripcion) > 45
+                      ? 'text-yellow-400'
+                      : contarPalabras(descripcion) > 48
+                        ? 'text-red-400'
                         : 'text-gray-400'
-                  }`}>
+                    }`}>
                     {contarPalabras(descripcion)}/50 palabras
                   </span>
                 </div>
@@ -1655,14 +1648,13 @@ export default function AdminPage() {
                 />
                 <div className="mt-1">
                   <div className="w-full bg-gray-600 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        contarPalabras(descripcion) > 48 
-                          ? 'bg-red-500' 
-                          : contarPalabras(descripcion) > 45 
-                            ? 'bg-yellow-500' 
+                    <div
+                      className={`h-2 rounded-full transition-all duration-300 ${contarPalabras(descripcion) > 48
+                          ? 'bg-red-500'
+                          : contarPalabras(descripcion) > 45
+                            ? 'bg-yellow-500'
                             : 'bg-blue-500'
-                      }`}
+                        }`}
                       style={{ width: `${(contarPalabras(descripcion) / 50) * 100}%` }}
                     ></div>
                   </div>
@@ -1673,19 +1665,19 @@ export default function AdminPage() {
               <div className="space-y-3 pt-4">
                 {/* Primera fila: Botón Auto llenado solo */}
                 <div className="flex justify-center">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={autollenarCampos}
                     className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600 md:text-sm text-xs md:px-4 px-3 md:py-2 py-1.5"
                   >
                     Autollenado
                   </Button>
                 </div>
-                
+
                 {/* Segunda fila: Cancelar y Agregar Producto */}
                 <div className="flex justify-center gap-3">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => {
                       setIsModalOpen(false)
                       setEditingProducto(null)
@@ -1694,8 +1686,8 @@ export default function AdminPage() {
                   >
                     Cancelar
                   </Button>
-                  <Button 
-                    onClick={agregarProducto} 
+                  <Button
+                    onClick={agregarProducto}
                     className="bg-gray-700 hover:bg-gray-600 text-white md:text-sm text-xs md:px-4 px-3 md:py-2 py-1.5"
                   >
                     {editingProducto ? 'Actualizar Producto' : 'Agregar Producto'}
@@ -1723,38 +1715,38 @@ export default function AdminPage() {
         {/* Pestañas de Productos */}
         <Tabs defaultValue="destacados" className={`w-full pb-4 ${activeContainer === 'gestion-productos' ? 'block' : 'hidden md:block'}`}>
           <TabsList className="grid md:grid-cols-6 grid-cols-3 md:w-full w-11/12 md:max-w-4xl max-w-sm mx-auto px-6 mb-8 bg-gray-800 border border-gray-700 rounded-lg p-1 md:h-auto h-auto md:gap-0 gap-y-1">
-            <TabsTrigger 
-              value="destacados" 
+            <TabsTrigger
+              value="destacados"
               className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               Destacados
             </TabsTrigger>
-            <TabsTrigger 
-              value="ofertas" 
+            <TabsTrigger
+              value="ofertas"
               className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               Ofertas
             </TabsTrigger>
-            <TabsTrigger 
-              value="novedades" 
+            <TabsTrigger
+              value="novedades"
               className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               Novedades
             </TabsTrigger>
-            <TabsTrigger 
-              value="tendencias" 
+            <TabsTrigger
+              value="tendencias"
               className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               Tendencias
             </TabsTrigger>
-            <TabsTrigger 
-              value="no-te-lo-pierdas" 
+            <TabsTrigger
+              value="no-te-lo-pierdas"
               className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               ¡No te lo Pierdas!
             </TabsTrigger>
-            <TabsTrigger 
-              value="liquidaciones" 
+            <TabsTrigger
+              value="liquidaciones"
               className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-[10px] md:py-2 py-1 md:px-3 px-1"
             >
               Liquidaciones
@@ -1873,7 +1865,7 @@ export default function AdminPage() {
                   <p className="md:text-xs text-[10px] text-blue-400">+8% vs ayer</p>
                 </div>
               </div>
-              
+
               {/* Segunda fila de KPIs */}
               <div className="grid grid-cols-2 md:gap-4 gap-2">
                 <div className="bg-gray-700 rounded-lg md:p-4 p-2 text-center">
@@ -1892,43 +1884,43 @@ export default function AdminPage() {
             {/* Columna 2 - KPI con Gráfico de Barras Verticales */}
             <div className="bg-gray-700 rounded-lg md:p-4 p-3 flex flex-col">
               <h3 className="md:text-sm text-xs font-medium text-white md:mb-2 mb-1">Visualizaciones del Mes</h3>
-              
+
               {/* Container del gráfico que ocupa todo el espacio disponible */}
               <div className="flex-1 flex flex-col justify-end">
                 <div className="flex items-end justify-center md:space-x-2 space-x-1 md:h-32 h-20">
                   {/* Barra Semana 1 */}
                   <div className="flex flex-col items-center h-full justify-end">
-                    <div className="bg-blue-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{height: '60%'}}>
+                    <div className="bg-blue-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{ height: '60%' }}>
                       <span className="text-white md:text-xs text-[8px] font-semibold">230</span>
                     </div>
                     <span className="md:text-xs text-[8px] text-gray-300 mt-1">S1</span>
                   </div>
-                  
+
                   {/* Barra Semana 2 */}
                   <div className="flex flex-col items-center h-full justify-end">
-                    <div className="bg-green-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{height: '80%'}}>
+                    <div className="bg-green-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{ height: '80%' }}>
                       <span className="text-white md:text-xs text-[8px] font-semibold">310</span>
                     </div>
                     <span className="md:text-xs text-[8px] text-gray-300 mt-1">S2</span>
                   </div>
-                  
+
                   {/* Barra Semana 3 */}
                   <div className="flex flex-col items-center h-full justify-end">
-                    <div className="bg-purple-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{height: '100%'}}>
+                    <div className="bg-purple-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{ height: '100%' }}>
                       <span className="text-white md:text-xs text-[8px] font-semibold">380</span>
                     </div>
                     <span className="md:text-xs text-[8px] text-gray-300 mt-1">S3</span>
                   </div>
-                  
+
                   {/* Barra Semana 4 */}
                   <div className="flex flex-col items-center h-full justify-end">
-                    <div className="bg-orange-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{height: '70%'}}>
+                    <div className="bg-orange-500 md:w-16 w-8 rounded-t-sm flex items-end justify-center pb-1" style={{ height: '70%' }}>
                       <span className="text-white md:text-xs text-[8px] font-semibold">280</span>
                     </div>
                     <span className="md:text-xs text-[8px] text-gray-300 mt-1">S4</span>
                   </div>
                 </div>
-                
+
                 {/* Información en la parte inferior */}
                 <div className="text-center md:mt-3 mt-2">
                   <span className="md:text-xs text-[10px] text-green-400">+22% vs mes anterior</span>
@@ -1951,7 +1943,7 @@ export default function AdminPage() {
                   <p className="md:text-xs text-[10px] text-green-400">+3 esta semana</p>
                 </div>
               </div>
-              
+
               {/* Segunda fila de KPIs */}
               <div className="grid grid-cols-2 md:gap-4 gap-2">
                 <div className="bg-gray-700 rounded-lg md:p-4 p-2 text-center">
@@ -2011,9 +2003,9 @@ export default function AdminPage() {
                   <span className="text-gray-300">{Object.values(productos).flat().length} / 7</span>
                 </div>
                 <div className="w-full bg-gray-600 rounded-full md:h-3 h-2">
-                  <div 
-                    className="bg-gradient-to-r from-purple-500 to-blue-500 md:h-3 h-2 rounded-full transition-all duration-300" 
-                    style={{width: `${Math.min((Object.values(productos).flat().length / 7) * 100, 100)}%`}}
+                  <div
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 md:h-3 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min((Object.values(productos).flat().length / 7) * 100, 100)}%` }}
                   ></div>
                 </div>
                 <p className="md:text-xs text-[10px] text-gray-400 md:mt-1 mt-0.5">
@@ -2023,7 +2015,7 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Overlay Message */}
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
@@ -2054,15 +2046,15 @@ export default function AdminPage() {
               {helpContent?.title}
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="md:mt-4 mt-3">
             <p className="text-gray-300 md:text-base text-sm leading-relaxed text-justify">
               {helpContent?.content}
             </p>
           </div>
-          
+
           <div className="flex justify-end mt-6">
-            <Button 
+            <Button
               onClick={closeHelpPopup}
               className="bg-yellow-600 hover:bg-yellow-700 text-white md:px-6 px-4 md:py-2 py-1.5 md:text-sm text-xs"
             >
@@ -2095,14 +2087,14 @@ export default function AdminPage() {
             </div>
           </div>
           <TabsList className="grid grid-cols-2 w-full md:max-w-md max-w-xs mx-auto md:px-6 px-3 md:mb-8 mb-6 bg-gray-800 border border-gray-700 rounded-lg p-1">
-            <TabsTrigger 
-              value="carrusel1" 
+            <TabsTrigger
+              value="carrusel1"
               className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-xs"
             >
               Carrusel 1
             </TabsTrigger>
-            <TabsTrigger 
-              value="carrusel2" 
+            <TabsTrigger
+              value="carrusel2"
               className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300 hover:text-white hover:bg-gray-700 transition-colors md:text-sm text-xs"
             >
               Carrusel 2
@@ -2115,7 +2107,7 @@ export default function AdminPage() {
             <TabsContent value="carrusel1" className="space-y-4">
               <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative banner-distortion">
                 <h2 className="text-base md:text-xl font-semibold text-white md:mb-6 mb-4">Carrusel 1 - Imágenes (1-8)</h2>
-                
+
                 {/* Desktop Layout - 4 columns */}
                 <div className="hidden md:block">
                   {/* Primera fila - 4 marcos */}
@@ -2126,7 +2118,7 @@ export default function AdminPage() {
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
                           {index + 1}
                         </div>
-                        
+
                         {/* Marco para imagen */}
                         <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
                           {!carouselImages.carrusel1[index] && (
@@ -2137,19 +2129,19 @@ export default function AdminPage() {
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             />
                           )}
-                          
+
                           {carouselImages.carrusel1[index] ? (
                             <>
-                              <img 
-                                src={carouselImages.carrusel1[index]} 
+                              <img
+                                src={carouselImages.carrusel1[index]}
                                 alt={`Carrusel 1 - Imagen ${index + 1}`}
                                 className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                                
+
                               />
-                              
+
                               {/* Botón de configuración en la esquina superior izquierda */}
-                              
-                              
+
+
                               {/* Precio en la esquina inferior derecha (si existe) */}
                               {carouselProductData.carrusel1[index]?.precioActual && (
                                 <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
@@ -2169,7 +2161,7 @@ export default function AdminPage() {
                       </div>
                     ))}
                   </div>
-                  
+
                   {/* Segunda fila - 4 marcos */}
                   <div className="grid grid-cols-4 gap-4 mb-6">
                     {[4, 5, 6, 7].map((index) => (
@@ -2178,7 +2170,7 @@ export default function AdminPage() {
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
                           {index + 1}
                         </div>
-                        
+
                         {/* Marco para imagen */}
                         <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
                           {!carouselImages.carrusel1[index] && (
@@ -2189,19 +2181,19 @@ export default function AdminPage() {
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             />
                           )}
-                          
+
                           {carouselImages.carrusel1[index] ? (
                             <>
-                              <img 
-                                src={carouselImages.carrusel1[index]} 
+                              <img
+                                src={carouselImages.carrusel1[index]}
                                 alt={`Carrusel 1 - Imagen ${index + 1}`}
                                 className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                                
+
                               />
-                              
+
                               {/* Botón de configuración en la esquina superior izquierda */}
-                              
-                              
+
+
                               {/* Precio en la esquina inferior derecha (si existe) */}
                               {carouselProductData.carrusel1[index]?.precioActual && (
                                 <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
@@ -2222,7 +2214,7 @@ export default function AdminPage() {
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Mobile Layout - Responsive mode */}
                 <div className="md:hidden block">
                   {/* Primera fila - 2 tarjetas + borde de la tercera */}
@@ -2233,7 +2225,7 @@ export default function AdminPage() {
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
                           {index + 1}
                         </div>
-                        
+
                         {/* Marco para imagen */}
                         <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
                           {!carouselImages.carrusel1[index] && (
@@ -2244,16 +2236,16 @@ export default function AdminPage() {
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             />
                           )}
-                          
+
                           {carouselImages.carrusel1[index] ? (
                             <>
-                              <img 
-                                src={carouselImages.carrusel1[index]} 
+                              <img
+                                src={carouselImages.carrusel1[index]}
                                 alt={`Carrusel 1 - Imagen ${index + 1}`}
                                 className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                                
+
                               />
-                              
+
                               {/* Precio en la esquina inferior derecha (si existe) */}
                               {carouselProductData.carrusel1[index]?.precioActual && (
                                 <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
@@ -2273,7 +2265,7 @@ export default function AdminPage() {
                       </div>
                     ))}
                   </div>
-                  
+
                   {/* Segunda fila - 2 tarjetas */}
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     {[2, 3].map((index) => (
@@ -2282,7 +2274,7 @@ export default function AdminPage() {
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
                           {index + 1}
                         </div>
-                        
+
                         {/* Marco para imagen */}
                         <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
                           {!carouselImages.carrusel1[index] && (
@@ -2293,19 +2285,19 @@ export default function AdminPage() {
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             />
                           )}
-                          
+
                           {carouselImages.carrusel1[index] ? (
                             <>
-                              <img 
-                                src={carouselImages.carrusel1[index]} 
+                              <img
+                                src={carouselImages.carrusel1[index]}
                                 alt={`Carrusel 1 - Imagen ${index + 1}`}
                                 className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                                
+
                               />
-                              
+
                               {/* Botón de configuración en la esquina superior izquierda */}
-                              
-                              
+
+
                               {/* Precio en la esquina inferior derecha (si existe) */}
                               {carouselProductData.carrusel1[index]?.precioActual && (
                                 <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
@@ -2325,7 +2317,7 @@ export default function AdminPage() {
                       </div>
                     ))}
                   </div>
-                  
+
                   {/* Tercera fila - 2 tarjetas */}
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     {[4, 5].map((index) => (
@@ -2334,7 +2326,7 @@ export default function AdminPage() {
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
                           {index + 1}
                         </div>
-                        
+
                         {/* Marco para imagen */}
                         <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
                           {!carouselImages.carrusel1[index] && (
@@ -2345,19 +2337,19 @@ export default function AdminPage() {
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             />
                           )}
-                          
+
                           {carouselImages.carrusel1[index] ? (
                             <>
-                              <img 
-                                src={carouselImages.carrusel1[index]} 
+                              <img
+                                src={carouselImages.carrusel1[index]}
                                 alt={`Carrusel 1 - Imagen ${index + 1}`}
                                 className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                                
+
                               />
-                              
+
                               {/* Botón de configuración en la esquina superior izquierda */}
-                              
-                              
+
+
                               {/* Precio en la esquina inferior derecha (si existe) */}
                               {carouselProductData.carrusel1[index]?.precioActual && (
                                 <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
@@ -2377,7 +2369,7 @@ export default function AdminPage() {
                       </div>
                     ))}
                   </div>
-                  
+
                   {/* Cuarta fila - 2 tarjetas */}
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     {[6, 7].map((index) => (
@@ -2386,7 +2378,7 @@ export default function AdminPage() {
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
                           {index + 1}
                         </div>
-                        
+
                         {/* Marco para imagen */}
                         <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
                           {!carouselImages.carrusel1[index] && (
@@ -2397,19 +2389,19 @@ export default function AdminPage() {
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             />
                           )}
-                          
+
                           {carouselImages.carrusel1[index] ? (
                             <>
-                              <img 
-                                src={carouselImages.carrusel1[index]} 
+                              <img
+                                src={carouselImages.carrusel1[index]}
                                 alt={`Carrusel 1 - Imagen ${index + 1}`}
                                 className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                                
+
                               />
-                              
+
                               {/* Botón de configuración en la esquina superior izquierda */}
-                              
-                              
+
+
                               {/* Precio en la esquina inferior derecha (si existe) */}
                               {carouselProductData.carrusel1[index]?.precioActual && (
                                 <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
@@ -2430,10 +2422,10 @@ export default function AdminPage() {
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Botón Guardar Cambios */}
                 <div className="flex justify-end md:mt-6 mt-4">
-                  <Button 
+                  <Button
                     onClick={() => handleSaveCarousel('carrusel1')}
                     className="bg-purple-600 hover:bg-purple-700 text-white md:px-6 px-4 md:py-2 py-1.5 md:text-sm text-xs"
                   >
@@ -2443,536 +2435,536 @@ export default function AdminPage() {
               </div>
             </TabsContent>
 
-          {/* Tab Carrusel 2 */}
-          <TabsContent value="carrusel2" className="space-y-4">
-            <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative banner-distortion">
-              <h2 className="text-base md:text-xl font-semibold text-white md:mb-6 mb-4">Carrusel 2 - Imágenes (9-16)</h2>
-              
-              {/* Desktop Layout - 4 columns */}
-              <div className="hidden md:block">
-                {/* Primera fila - 4 marcos */}
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  {[0, 1, 2, 3].map((index) => (
-                    <div key={index} className="relative">
-                      {/* Círculo numerado en la esquina superior derecha */}
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
-                        {index + 9}
-                      </div>
-                      
-                      {/* Marco para imagen */}
-                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                        {!carouselImages.carrusel2[index] && (
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          />
-                        )}
-                        
-                        {carouselImages.carrusel2[index] ? (
-                          <>
-                            <img 
-                              src={carouselImages.carrusel2[index]} 
-                              alt={`Carrusel 2 - Imagen ${index + 9}`}
-                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                              
-                            />
-                            
-                            {/* Botón de configuración en la esquina superior izquierda */}
-                            
-                            
-                            {/* Precio en la esquina inferior derecha (si existe) */}
-                            {carouselProductData.carrusel2[index]?.precioActual && (
-                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
-                                <span className="text-white text-xs font-semibold">
-                                  ${carouselProductData.carrusel2[index].precioActual}
-                                </span>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <Plus className="w-8 h-8 mb-2" />
-                            <span className="text-sm">Subir imagen</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Segunda fila - 4 marcos */}
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  {[4, 5, 6, 7].map((index) => (
-                    <div key={index} className="relative">
-                      {/* Círculo numerado en la esquina superior derecha */}
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
-                        {index + 13}
-                      </div>
-                      
-                      {/* Marco para imagen */}
-                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                        {!carouselImages.carrusel2[index] && (
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          />
-                        )}
-                        
-                        {carouselImages.carrusel2[index] ? (
-                          <>
-                            <img 
-                              src={carouselImages.carrusel2[index]} 
-                              alt={`Carrusel 2 - Imagen ${index + 13}`}
-                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                              
-                            />
-                            
-                            {/* Botón de configuración en la esquina superior izquierda */}
-                            
-                            
-                            {/* Precio en la esquina inferior derecha (si existe) */}
-                            {carouselProductData.carrusel2[index]?.precioActual && (
-                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
-                                <span className="text-white text-xs font-semibold">
-                                  ${carouselProductData.carrusel2[index].precioActual}
-                                </span>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <Plus className="w-8 h-8 mb-2" />
-                            <span className="text-sm">Subir imagen</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            {/* Tab Carrusel 2 */}
+            <TabsContent value="carrusel2" className="space-y-4">
+              <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative banner-distortion">
+                <h2 className="text-base md:text-xl font-semibold text-white md:mb-6 mb-4">Carrusel 2 - Imágenes (9-16)</h2>
 
-              {/* Mobile Layout - Responsive mode */}
-              <div className="md:hidden block">
-                {/* Primera fila - 2 tarjetas */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  {[0, 1].map((index) => (
-                    <div key={index} className="relative">
-                      {/* Círculo numerado en la esquina superior derecha */}
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
-                        {index + 9}
-                      </div>
-                      
-                      {/* Marco para imagen */}
-                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                        {!carouselImages.carrusel2[index] && (
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          />
-                        )}
-                        
-                        {carouselImages.carrusel2[index] ? (
-                          <>
-                            <img 
-                              src={carouselImages.carrusel2[index]} 
-                              alt={`Carrusel 2 - Imagen ${index + 9}`}
-                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                              
+                {/* Desktop Layout - 4 columns */}
+                <div className="hidden md:block">
+                  {/* Primera fila - 4 marcos */}
+                  <div className="grid grid-cols-4 gap-4 mb-6">
+                    {[0, 1, 2, 3].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 9}
+                        </div>
+
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel2[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             />
-                            
-                            {/* Botón de configuración en la esquina superior izquierda */}
-                            
-                            
-                            {/* Precio en la esquina inferior derecha (si existe) */}
-                            {carouselProductData.carrusel2[index]?.precioActual && (
-                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
-                                <span className="text-white text-xs font-semibold">
-                                  ${carouselProductData.carrusel2[index].precioActual}
-                                </span>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <Plus className="w-8 h-8 mb-2" />
-                            <span className="text-sm">Subir imagen</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Segunda fila - 2 tarjetas */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  {[2, 3].map((index) => (
-                    <div key={index} className="relative">
-                      {/* Círculo numerado en la esquina superior derecha */}
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
-                        {index + 11}
-                      </div>
-                      
-                      {/* Marco para imagen */}
-                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                        {!carouselImages.carrusel2[index] && (
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          />
-                        )}
-                        
-                        {carouselImages.carrusel2[index] ? (
-                          <>
-                            <img 
-                              src={carouselImages.carrusel2[index]} 
-                              alt={`Carrusel 2 - Imagen ${index + 11}`}
-                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                              
-                            />
-                            
-                            {/* Botón de configuración en la esquina superior izquierda */}
-                            
-                            
-                            {/* Precio en la esquina inferior derecha (si existe) */}
-                            {carouselProductData.carrusel2[index]?.precioActual && (
-                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
-                                <span className="text-white text-xs font-semibold">
-                                  ${carouselProductData.carrusel2[index].precioActual}
-                                </span>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <Plus className="w-8 h-8 mb-2" />
-                            <span className="text-sm">Subir imagen</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Tercera fila - 2 tarjetas */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  {[4, 5].map((index) => (
-                    <div key={index} className="relative">
-                      {/* Círculo numerado en la esquina superior derecha */}
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
-                        {index + 13}
-                      </div>
-                      
-                      {/* Marco para imagen */}
-                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                        {!carouselImages.carrusel2[index] && (
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          />
-                        )}
-                        
-                        {carouselImages.carrusel2[index] ? (
-                          <>
-                            <img 
-                              src={carouselImages.carrusel2[index]} 
-                              alt={`Carrusel 2 - Imagen ${index + 13}`}
-                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                              
-                            />
-                            
-                            {/* Botón de configuración en la esquina superior izquierda */}
-                            
-                            
-                            {/* Precio en la esquina inferior derecha (si existe) */}
-                            {carouselProductData.carrusel2[index]?.precioActual && (
-                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
-                                <span className="text-white text-xs font-semibold">
-                                  ${carouselProductData.carrusel2[index].precioActual}
-                                </span>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <Plus className="w-8 h-8 mb-2" />
-                            <span className="text-sm">Subir imagen</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Cuarta fila - 2 tarjetas */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  {[6, 7].map((index) => (
-                    <div key={index} className="relative">
-                      {/* Círculo numerado en la esquina superior derecha */}
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
-                        {index + 15}
-                      </div>
-                      
-                      {/* Marco para imagen */}
-                      <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                        {!carouselImages.carrusel2[index] && (
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          />
-                        )}
-                        
-                        {carouselImages.carrusel2[index] ? (
-                          <>
-                            <img 
-                              src={carouselImages.carrusel2[index]} 
-                              alt={`Carrusel 2 - Imagen ${index + 15}`}
-                              className="w-full h-full object-contain cursor-pointer bg-gray-100"
-                              
-                            />
-                            
-                            
-                            
-                            {/* Precio en la esquina inferior derecha (si existe) */}
-                            {carouselProductData.carrusel2[index]?.precioActual && (
-                              <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
-                                <span className="text-white text-xs font-semibold">
-                                  ${carouselProductData.carrusel2[index].precioActual}
-                                </span>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <Plus className="w-8 h-8 mb-2" />
-                            <span className="text-sm">Subir imagen</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                          )}
+
+                          {carouselImages.carrusel2[index] ? (
+                            <>
+                              <img
+                                src={carouselImages.carrusel2[index]}
+                                alt={`Carrusel 2 - Imagen ${index + 9}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+
+                              />
+
+                              {/* Botón de configuración en la esquina superior izquierda */}
 
 
-              
-              {/* Botón Guardar Cambios */}
-              <div className="flex justify-end md:mt-6 mt-4">
-                <Button 
-                  onClick={() => handleSaveCarousel('carrusel2')}
-                  className="bg-purple-600 hover:bg-purple-700 text-white md:px-6 px-4 md:py-2 py-1.5 md:text-sm text-xs"
-                >
-                  Guardar Cambios
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
-        </div>
-      </Tabs>
-      
-    </div>
-
-    {/* Sección: Gestión de Banner */}
-    <div className={`px-6 py-8 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'}`}>
-      <div className="flex items-center gap-3">
-        <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Banner</h1>
-        <button
-          onClick={() => openHelpPopup('gestion-banner')}
-          className="mb-2 w-6 h-6 md:w-8 md:h-8 rounded-full border border-yellow-400 bg-transparent hover:bg-yellow-400/10 transition-colors flex items-center justify-center"
-        >
-          <span className="text-yellow-400 font-bold text-sm md:text-base">?</span>
-        </button>
-      </div>
-      <p className="text-gray-400 text-xs md:text-base">Configuración de banners promocionales</p>
-    </div>
-
-    {/* Container Gestión de Banner */}
-    <div className={`px-6 pb-4 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'} relative`}>
-      {/* Overlay Message - Colocado fuera del contenedor con distorsión */}
-      <div className="absolute inset-0 flex items-center justify-center z-20">
-        <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
-          <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
-          <p className="md:text-sm text-xs text-gray-600">Sistema de gestión de banners para promocionar ofertas especiales en lugares destacados de tu página.</p>
-        </div>
-      </div>
-      
-      <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative banner-distortion">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
-          {/* Columna 1 - Banner 1 */}
-          <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
-            {/* Número identificador */}
-            <div className="absolute -top-2 -right-2 bg-purple-600 text-white rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold z-10">
-              1
-            </div>
-            
-            {/* Marco rectangular para imagen */}
-            <div className="relative bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer overflow-hidden">
-              {bannerImages[0] ? (
-                <img 
-                  src={bannerImages[0]} 
-                  alt="Banner 1" 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={(e) => handleBannerImageUpload(0, e)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  />
-                  <div className="text-center">
-                    <Plus className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2" />
-                    <p className="text-gray-400 text-xs md:text-sm">Agregar imagen</p>
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel2[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel2[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </>
-              )}
-            </div>
-            
-            {/* Precios y botones responsive */}
-            <div className="space-y-2 md:space-y-0 md:flex md:items-end md:justify-between">
-              {/* Fila de precios */}
-              <div className="flex gap-2 md:gap-4 justify-center md:justify-start">
-                <div className="text-center">
-                  <label className="block text-xs text-gray-400 mb-1">Precio actual</label>
-                  <input 
-                    type="text" 
-                    placeholder="$0.00" 
-                    value={bannerPrices.banner1.current}
-                    onChange={(e) => setBannerPrices(prev => ({
-                      ...prev,
-                      banner1: { ...prev.banner1, current: e.target.value }
-                    }))}
-                    className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
-                  />
+
+                  {/* Segunda fila - 4 marcos */}
+                  <div className="grid grid-cols-4 gap-4 mb-6">
+                    {[4, 5, 6, 7].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 13}
+                        </div>
+
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel2[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
+
+                          {carouselImages.carrusel2[index] ? (
+                            <>
+                              <img
+                                src={carouselImages.carrusel2[index]}
+                                alt={`Carrusel 2 - Imagen ${index + 13}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+
+                              />
+
+                              {/* Botón de configuración en la esquina superior izquierda */}
+
+
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel2[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel2[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="text-center">
-                  <label className="block text-xs text-gray-400 mb-1">Precio anterior</label>
-                  <input 
-                    type="text" 
-                    placeholder="$0.00" 
-                    value={bannerPrices.banner1.previous}
-                    onChange={(e) => setBannerPrices(prev => ({
-                      ...prev,
-                      banner1: { ...prev.banner1, previous: e.target.value }
-                    }))}
-                    className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
-                  />
+
+                {/* Mobile Layout - Responsive mode */}
+                <div className="md:hidden block">
+                  {/* Primera fila - 2 tarjetas */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {[0, 1].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 9}
+                        </div>
+
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel2[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
+
+                          {carouselImages.carrusel2[index] ? (
+                            <>
+                              <img
+                                src={carouselImages.carrusel2[index]}
+                                alt={`Carrusel 2 - Imagen ${index + 9}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+
+                              />
+
+                              {/* Botón de configuración en la esquina superior izquierda */}
+
+
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel2[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel2[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Segunda fila - 2 tarjetas */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {[2, 3].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 11}
+                        </div>
+
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel2[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
+
+                          {carouselImages.carrusel2[index] ? (
+                            <>
+                              <img
+                                src={carouselImages.carrusel2[index]}
+                                alt={`Carrusel 2 - Imagen ${index + 11}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+
+                              />
+
+                              {/* Botón de configuración en la esquina superior izquierda */}
+
+
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel2[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel2[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Tercera fila - 2 tarjetas */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {[4, 5].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 13}
+                        </div>
+
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel2[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
+
+                          {carouselImages.carrusel2[index] ? (
+                            <>
+                              <img
+                                src={carouselImages.carrusel2[index]}
+                                alt={`Carrusel 2 - Imagen ${index + 13}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+
+                              />
+
+                              {/* Botón de configuración en la esquina superior izquierda */}
+
+
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel2[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel2[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Cuarta fila - 2 tarjetas */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {[6, 7].map((index) => (
+                      <div key={index} className="relative">
+                        {/* Círculo numerado en la esquina superior derecha */}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold z-10">
+                          {index + 15}
+                        </div>
+
+                        {/* Marco para imagen */}
+                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
+                          {!carouselImages.carrusel2[index] && (
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                          )}
+
+                          {carouselImages.carrusel2[index] ? (
+                            <>
+                              <img
+                                src={carouselImages.carrusel2[index]}
+                                alt={`Carrusel 2 - Imagen ${index + 15}`}
+                                className="w-full h-full object-contain cursor-pointer bg-gray-100"
+
+                              />
+
+
+
+                              {/* Precio en la esquina inferior derecha (si existe) */}
+                              {carouselProductData.carrusel2[index]?.precioActual && (
+                                <div className="absolute bottom-1 right-1 bg-black/70 rounded px-2 py-1">
+                                  <span className="text-white text-xs font-semibold">
+                                    ${carouselProductData.carrusel2[index].precioActual}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <Plus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">Subir imagen</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+
+
+                {/* Botón Guardar Cambios */}
+                <div className="flex justify-end md:mt-6 mt-4">
+                  <Button
+                    onClick={() => handleSaveCarousel('carrusel2')}
+                    className="bg-purple-600 hover:bg-purple-700 text-white md:px-6 px-4 md:py-2 py-1.5 md:text-sm text-xs"
+                  >
+                    Guardar Cambios
+                  </Button>
                 </div>
               </div>
-              
-              {/* Botones debajo en mobile, a la derecha en desktop */}
-              <div className="flex gap-2 justify-center md:justify-end">
-                <button 
-                  onClick={() => handleDeleteBanner(0)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
-                >
-                  Eliminar
-                </button>
-                <button 
-                  onClick={() => handleSaveBanner(0)}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
-                >
-                  Guardar
-                </button>
+            </TabsContent>
+          </div>
+        </Tabs>
+
+      </div>
+
+      {/* Sección: Gestión de Banner */}
+      <div className={`px-6 py-8 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'}`}>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Banner</h1>
+          <button
+            onClick={() => openHelpPopup('gestion-banner')}
+            className="mb-2 w-6 h-6 md:w-8 md:h-8 rounded-full border border-yellow-400 bg-transparent hover:bg-yellow-400/10 transition-colors flex items-center justify-center"
+          >
+            <span className="text-yellow-400 font-bold text-sm md:text-base">?</span>
+          </button>
+        </div>
+        <p className="text-gray-400 text-xs md:text-base">Configuración de banners promocionales</p>
+      </div>
+
+      {/* Container Gestión de Banner */}
+      <div className={`px-6 pb-4 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'} relative`}>
+        {/* Overlay Message - Colocado fuera del contenedor con distorsión */}
+        <div className="absolute inset-0 flex items-center justify-center z-20">
+          <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
+            <p className="md:text-sm text-xs text-gray-600">Sistema de gestión de banners para promocionar ofertas especiales en lugares destacados de tu página.</p>
+          </div>
+        </div>
+
+        <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative banner-distortion">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+            {/* Columna 1 - Banner 1 */}
+            <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
+              {/* Número identificador */}
+              <div className="absolute -top-2 -right-2 bg-purple-600 text-white rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold z-10">
+                1
+              </div>
+
+              {/* Marco rectangular para imagen */}
+              <div className="relative bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer overflow-hidden">
+                {bannerImages[0] ? (
+                  <img
+                    src={bannerImages[0]}
+                    alt="Banner 1"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleBannerImageUpload(0, e)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <div className="text-center">
+                      <Plus className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2" />
+                      <p className="text-gray-400 text-xs md:text-sm">Agregar imagen</p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Precios y botones responsive */}
+              <div className="space-y-2 md:space-y-0 md:flex md:items-end md:justify-between">
+                {/* Fila de precios */}
+                <div className="flex gap-2 md:gap-4 justify-center md:justify-start">
+                  <div className="text-center">
+                    <label className="block text-xs text-gray-400 mb-1">Precio actual</label>
+                    <input
+                      type="text"
+                      placeholder="$0.00"
+                      value={bannerPrices.banner1.current}
+                      onChange={(e) => setBannerPrices(prev => ({
+                        ...prev,
+                        banner1: { ...prev.banner1, current: e.target.value }
+                      }))}
+                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <label className="block text-xs text-gray-400 mb-1">Precio anterior</label>
+                    <input
+                      type="text"
+                      placeholder="$0.00"
+                      value={bannerPrices.banner1.previous}
+                      onChange={(e) => setBannerPrices(prev => ({
+                        ...prev,
+                        banner1: { ...prev.banner1, previous: e.target.value }
+                      }))}
+                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                    />
+                  </div>
+                </div>
+
+                {/* Botones debajo en mobile, a la derecha en desktop */}
+                <div className="flex gap-2 justify-center md:justify-end">
+                  <button
+                    onClick={() => handleDeleteBanner(0)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
+                  >
+                    Eliminar
+                  </button>
+                  <button
+                    onClick={() => handleSaveBanner(0)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
+                  >
+                    Guardar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Columna 2 - Banner 2 */}
+            <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
+              {/* Número identificador */}
+              <div className="absolute -top-2 -right-2 bg-purple-600 text-white rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold z-10">
+                2
+              </div>
+
+              {/* Marco rectangular para imagen */}
+              <div className="relative bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer overflow-hidden">
+                {bannerImages[1] ? (
+                  <img
+                    src={bannerImages[1]}
+                    alt="Banner 2"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleBannerImageUpload(1, e)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <div className="text-center">
+                      <Plus className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2" />
+                      <p className="text-gray-400 text-xs md:text-sm">Agregar imagen</p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Precios y botones responsive */}
+              <div className="space-y-2 md:space-y-0 md:flex md:items-end md:justify-between">
+                {/* Fila de precios */}
+                <div className="flex gap-2 md:gap-4 justify-center md:justify-start">
+                  <div className="text-center">
+                    <label className="block text-xs text-gray-400 mb-1">Precio actual</label>
+                    <input
+                      type="text"
+                      placeholder="$0.00"
+                      value={bannerPrices.banner2.current}
+                      onChange={(e) => setBannerPrices(prev => ({
+                        ...prev,
+                        banner2: { ...prev.banner2, current: e.target.value }
+                      }))}
+                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <label className="block text-xs text-gray-400 mb-1">Precio anterior</label>
+                    <input
+                      type="text"
+                      placeholder="$0.00"
+                      value={bannerPrices.banner2.previous}
+                      onChange={(e) => setBannerPrices(prev => ({
+                        ...prev,
+                        banner2: { ...prev.banner2, previous: e.target.value }
+                      }))}
+                      className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
+                    />
+                  </div>
+                </div>
+
+                {/* Botones debajo en mobile, a la derecha en desktop */}
+                <div className="flex gap-2 justify-center md:justify-end">
+                  <button
+                    onClick={() => handleDeleteBanner(1)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
+                  >
+                    Eliminar
+                  </button>
+                  <button
+                    onClick={() => handleSaveBanner(1)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
+                  >
+                    Guardar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-
-          {/* Columna 2 - Banner 2 */}
-          <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
-            {/* Número identificador */}
-            <div className="absolute -top-2 -right-2 bg-purple-600 text-white rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold z-10">
-              2
-            </div>
-            
-            {/* Marco rectangular para imagen */}
-            <div className="relative bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg h-24 md:h-48 flex items-center justify-center mb-3 md:mb-4 hover:border-purple-400 transition-colors cursor-pointer overflow-hidden">
-              {bannerImages[1] ? (
-                <img 
-                  src={bannerImages[1]} 
-                  alt="Banner 2" 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={(e) => handleBannerImageUpload(1, e)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  />
-                  <div className="text-center">
-                    <Plus className="text-xl md:text-4xl text-gray-400 mb-1 md:mb-2" />
-                    <p className="text-gray-400 text-xs md:text-sm">Agregar imagen</p>
-                  </div>
-                </>
-              )}
-            </div>
-            
-            {/* Precios y botones responsive */}
-            <div className="space-y-2 md:space-y-0 md:flex md:items-end md:justify-between">
-              {/* Fila de precios */}
-              <div className="flex gap-2 md:gap-4 justify-center md:justify-start">
-                <div className="text-center">
-                  <label className="block text-xs text-gray-400 mb-1">Precio actual</label>
-                  <input 
-                    type="text" 
-                    placeholder="$0.00" 
-                    value={bannerPrices.banner2.current}
-                    onChange={(e) => setBannerPrices(prev => ({
-                      ...prev,
-                      banner2: { ...prev.banner2, current: e.target.value }
-                    }))}
-                    className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
-                  />
-                </div>
-                <div className="text-center">
-                  <label className="block text-xs text-gray-400 mb-1">Precio anterior</label>
-                  <input 
-                    type="text" 
-                    placeholder="$0.00" 
-                    value={bannerPrices.banner2.previous}
-                    onChange={(e) => setBannerPrices(prev => ({
-                      ...prev,
-                      banner2: { ...prev.banner2, previous: e.target.value }
-                    }))}
-                    className="bg-gray-600 border border-gray-500 rounded px-1.5 md:px-3 py-0.5 md:py-2 text-white text-xs md:text-sm w-16 md:w-24 text-center"
-                  />
-                </div>
-              </div>
-              
-              {/* Botones debajo en mobile, a la derecha en desktop */}
-              <div className="flex gap-2 justify-center md:justify-end">
-                <button 
-                  onClick={() => handleDeleteBanner(1)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
-                >
-                  Eliminar
-                </button>
-                <button 
-                  onClick={() => handleSaveBanner(1)}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-4 py-1 text-xs md:text-sm rounded transition-colors"
-                >
-                  Guardar
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
-    </div>
 
       {/* Popup de Información del Producto */}
       <Dialog open={selectedProducto !== null} onOpenChange={(open) => !open && setSelectedProducto(null)}>
@@ -3006,7 +2998,7 @@ export default function AdminPage() {
                     <div className="flex gap-3 justify-center">
                       {/* Icono de Teléfono Clickeable */}
                       {businessInfo.telefono && (
-                        <a 
+                        <a
                           href={`tel:${businessInfo.telefono}`}
                           className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors cursor-pointer"
                           title={`Llamar a ${businessInfo.telefono}`}
@@ -3014,10 +3006,10 @@ export default function AdminPage() {
                           <Phone className="w-3 h-3 md:w-4 md:h-4 text-white" />
                         </a>
                       )}
-                      
+
                       {/* Icono de WhatsApp Clickeable */}
                       {businessInfo.whatsapp && (
-                        <a 
+                        <a
                           href={`https://wa.me/${businessInfo.whatsapp.replace(/\D/g, '')}`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -3027,10 +3019,10 @@ export default function AdminPage() {
                           <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-white" />
                         </a>
                       )}
-                      
+
                       {/* Icono de Email Clickeable */}
                       {businessInfo.email && (
-                        <a 
+                        <a
                           href={`mailto:${businessInfo.email}`}
                           className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-purple-600 hover:bg-purple-500 rounded-full transition-colors cursor-pointer"
                           title={`Enviar email a ${businessInfo.email}`}
@@ -3038,10 +3030,10 @@ export default function AdminPage() {
                           <Mail className="w-3 h-3 md:w-4 md:h-4 text-white" />
                         </a>
                       )}
-                      
+
                       {/* Icono de Ubicación Clickeable */}
                       {businessInfo.direccion && (
-                        <a 
+                        <a
                           href={`https://www.mapcity.com/search?q=${encodeURIComponent(businessInfo.direccion)}`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -3136,7 +3128,7 @@ export default function AdminPage() {
                           <span className="text-gray-300">{selectedProducto.tallasCalzado.join(', ')}</span>
                         </div>
                       )}
-                      
+
                       {/* Tallas de Ropa */}
                       {selectedProducto.tallasRopa && selectedProducto.tallasRopa.length > 0 && (
                         <div className="flex items-start gap-1">
@@ -3144,7 +3136,7 @@ export default function AdminPage() {
                           <span className="text-gray-300">{selectedProducto.tallasRopa.join(', ')}</span>
                         </div>
                       )}
-                      
+
                       {/* Género */}
                       {selectedProducto.genero && selectedProducto.genero !== 'generico' && (
                         <div className="flex items-start gap-1">
@@ -3152,7 +3144,7 @@ export default function AdminPage() {
                           <span className="text-gray-300 capitalize">{selectedProducto.genero}</span>
                         </div>
                       )}
-                      
+
                       {/* Medidas */}
                       {selectedProducto.medidas && (
                         <div className="flex items-start gap-1">
@@ -3217,7 +3209,7 @@ export default function AdminPage() {
                         <span className="text-gray-300 text-[10px]">{selectedProducto.tallasCalzado.join(', ')}</span>
                       </div>
                     )}
-                    
+
                     {/* Tallas de Ropa */}
                     {selectedProducto.tallasRopa && selectedProducto.tallasRopa.length > 0 && (
                       <div className="flex items-start gap-2">
@@ -3225,7 +3217,7 @@ export default function AdminPage() {
                         <span className="text-gray-300 text-[10px]">{selectedProducto.tallasRopa.join(', ')}</span>
                       </div>
                     )}
-                    
+
                     {/* Género */}
                     {selectedProducto.genero && selectedProducto.genero !== 'generico' && (
                       <div className="flex items-start gap-2">
@@ -3233,7 +3225,7 @@ export default function AdminPage() {
                         <span className="text-gray-300 capitalize">{selectedProducto.genero}</span>
                       </div>
                     )}
-                    
+
                     {/* Medidas */}
                     {selectedProducto.medidas && (
                       <div className="flex items-start gap-2">
@@ -3287,9 +3279,9 @@ export default function AdminPage() {
         </DialogContent>
       </Dialog>
 
-      
 
-      
+
+
 
       {/* Modal de Confirmación de Eliminación */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
@@ -3299,7 +3291,7 @@ export default function AdminPage() {
               Confirmar Eliminación
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="text-center space-y-4">
             {/* Ícono de advertencia */}
             <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
@@ -3307,7 +3299,7 @@ export default function AdminPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            
+
             {/* Mensaje principal */}
             <div>
               <h3 className="text-lg font-medium text-white mb-2">
@@ -3325,17 +3317,17 @@ export default function AdminPage() {
                 Esta acción no se puede deshacer.
               </p>
             </div>
-            
+
             {/* Botones */}
             <div className="flex gap-3 justify-center pt-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={cancelarEliminacion}
                 className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600 px-6 py-2"
               >
                 Cancelar
               </Button>
-              <Button 
+              <Button
                 onClick={confirmarEliminacion}
                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-2"
               >
@@ -3475,15 +3467,15 @@ export default function AdminPage() {
               {helpContent?.title}
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="md:mt-4 mt-3">
             <p className="text-gray-300 md:text-base text-sm leading-relaxed text-justify">
               {helpContent?.content}
             </p>
           </div>
-          
+
           <div className="flex justify-end mt-6">
-            <Button 
+            <Button
               onClick={closeHelpPopup}
               className="bg-yellow-600 hover:bg-yellow-700 text-white md:px-6 px-4 md:py-2 py-1.5 md:text-sm text-xs"
             >

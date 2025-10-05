@@ -19,12 +19,11 @@ const formSchema = z.object({
   descripcion: z.string().optional(),
   icono: z.string().optional(),
   color_hex: z.string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, 'El color debe ser un valor hexadecimal válido (ej: #FF5500)')
-    .default('#3B82F6'),
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'El color debe ser un valor hexadecimal válido (ej: #FF5500)'),
   parent_id: z.string().optional(),
-  nivel: z.coerce.number().int().min(1, 'El nivel debe ser al menos 1').max(5, 'El nivel no puede ser mayor a 5'),
-  activo: z.boolean().default(true),
-  orden: z.coerce.number().int().min(1, 'El orden debe ser al menos 1'),
+  nivel: z.number().int().min(1, 'El nivel debe ser al menos 1').max(5, 'El nivel no puede ser mayor a 5'),
+  activo: z.boolean(),
+  orden: z.number().int().min(1, 'El orden debe ser al menos 1'),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -36,9 +35,9 @@ interface CategoriaNegocioModalProps {
   categoriasList?: any[] // Lista de categorías para seleccionar como padre
 }
 
-export default function CategoriaNegocioModal({ 
-  open, 
-  onOpenChange, 
+export default function CategoriaNegocioModal({
+  open,
+  onOpenChange,
   categoriaToEdit,
   categoriasList = [] // Idealmente cargar desde la API
 }: CategoriaNegocioModalProps) {
@@ -79,7 +78,7 @@ export default function CategoriaNegocioModal({
   const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nombre = e.target.value;
     form.setValue('nombre', nombre);
-    
+
     // Solo actualizar el slug si el usuario no lo ha modificado manualmente
     if (!form.getValues('slug') || form.getValues('slug') === generateSlug(form.getValues('nombre'))) {
       form.setValue('slug', generateSlug(nombre));
@@ -90,13 +89,13 @@ export default function CategoriaNegocioModal({
     try {
       setIsSaving(true)
       console.log('Datos del formulario:', data)
-      
+
       // Aquí iría la lógica para guardar en la base de datos
       // await createCategoriaNegocio(data) o await updateCategoriaNegocio(data)
-      
+
       // Simular una operación asíncrona
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      
+
       setIsSaving(false)
       onOpenChange(false)
     } catch (error) {
@@ -140,7 +139,7 @@ export default function CategoriaNegocioModal({
                 <FormItem>
                   <FormLabel>Nombre</FormLabel>
                   <FormControl>
-                    <Input 
+                    <Input
                       placeholder="Nombre de la categoría"
                       {...field}
                       onChange={handleNombreChange}
@@ -197,8 +196,8 @@ export default function CategoriaNegocioModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Icono</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -233,7 +232,7 @@ export default function CategoriaNegocioModal({
                     <FormControl>
                       <Input type="text" placeholder="#3B82F6" {...field} />
                     </FormControl>
-                    <Input 
+                    <Input
                       type="color"
                       className="w-12 p-1 h-10"
                       value={field.value}
@@ -257,8 +256,8 @@ export default function CategoriaNegocioModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoría Padre</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -290,8 +289,8 @@ export default function CategoriaNegocioModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nivel Jerárquico</FormLabel>
-                  <Select 
-                    onValueChange={(value) => field.onChange(parseInt(value))} 
+                  <Select
+                    onValueChange={(value) => field.onChange(parseInt(value))}
                     defaultValue={field.value.toString()}
                   >
                     <FormControl>

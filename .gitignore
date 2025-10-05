@@ -38,6 +38,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# VS Code MCP configuration (contains environment variable references)
+# Keep .vscode/mcp.json.example and .vscode/settings.json in version control
+.vscode/mcp.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

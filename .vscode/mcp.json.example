@@ -1,0 +1,142 @@
+{
+  // This is a template file for VS Code MCP (Model Context Protocol) configuration
+  // Copy this file to ".vscode/mcp.json" to use it with GitHub Copilot
+  //
+  // Required environment variables should be set in your .env file:
+  // - MCP_MYSQL_TATA_HOST, MCP_MYSQL_TATA_PORT, MCP_MYSQL_TATA_USER, MCP_MYSQL_TATA_PASSWORD, MCP_MYSQL_TATA_DATABASE (mysql-tata-repuestos)
+  // - MCP_MYSQL_OPERACIONES_HOST, MCP_MYSQL_OPERACIONES_PORT, MCP_MYSQL_OPERACIONES_USER, MCP_MYSQL_OPERACIONES_PASSWORD, MCP_MYSQL_OPERACIONES_DATABASE (mysql-database)
+  // - MCP_MYSQL_AUNCLICK_HOST, MCP_MYSQL_AUNCLICK_PORT, MCP_MYSQL_AUNCLICK_USER, MCP_MYSQL_AUNCLICK_PASSWORD, MCP_MYSQL_AUNCLICK_DATABASE (mysql-aunclick)
+  // - MCP_MYSQL_GESTAR_HOST, MCP_MYSQL_GESTAR_PORT, MCP_MYSQL_GESTAR_USER, MCP_MYSQL_GESTAR_PASSWORD, MCP_MYSQL_GESTAR_DATABASE (mysql-gestar)
+  // - MCP_MYSQL_RENOVATIO_HOST, MCP_MYSQL_RENOVATIO_PORT, MCP_MYSQL_RENOVATIO_USER, MCP_MYSQL_RENOVATIO_PASSWORD, MCP_MYSQL_RENOVATIO_DATABASE (mysql-renovatio)
+  // - MCP_SQLSERVER_TELQWAY_HOST, MCP_SQLSERVER_TELQWAY_DATABASE, MCP_SQLSERVER_TELQWAY_USER, MCP_SQLSERVER_TELQWAY_PASSWORD, MCP_SQLSERVER_TELQWAY_PORT (for SQL Server)
+  //
+  // SECURITY WARNING: Do not commit .vscode/mcp.json with real credentials.
+  // This template uses ${env:VARIABLE_NAME} syntax for secure credential management.
+  // 
+  // For more information: https://code.visualstudio.com/docs/model-context-protocol/overview
+  "servers": {
+    // MySQL MCP Servers
+    "mysql-tata-repuestos": {
+      "command": "npx",
+      "args": ["@f4ww4z/mcp-mysql-server"],
+      "env": {
+        "DB_HOST": "${env:MCP_MYSQL_TATA_HOST}",
+        "DB_PORT": "${env:MCP_MYSQL_TATA_PORT}",
+        "DB_USER": "${env:MCP_MYSQL_TATA_USER}",
+        "DB_PASSWORD": "${env:MCP_MYSQL_TATA_PASSWORD}",
+        "DB_NAME": "${env:MCP_MYSQL_TATA_DATABASE}"
+      },
+      "alwaysAllow": [
+        "connect_db",
+        "list_tables",
+        "query",
+        "describe_table"
+      ]
+    },
+    "mysql-database": {
+      "command": "npx",
+      "args": ["@f4ww4z/mcp-mysql-server"],
+      "env": {
+        "DB_HOST": "${env:MCP_MYSQL_OPERACIONES_HOST}",
+        "DB_PORT": "${env:MCP_MYSQL_OPERACIONES_PORT}",
+        "DB_USER": "${env:MCP_MYSQL_OPERACIONES_USER}",
+        "DB_PASSWORD": "${env:MCP_MYSQL_OPERACIONES_PASSWORD}",
+        "DB_NAME": "${env:MCP_MYSQL_OPERACIONES_DATABASE}"
+      },
+      "alwaysAllow": [
+        "connect_db",
+        "list_tables", 
+        "query",
+        "execute",
+        "describe_table"
+      ]
+    },
+    "mysql-aunclick": {
+      "command": "npx",
+      "args": ["@f4ww4z/mcp-mysql-server"],
+      "env": {
+        "DB_HOST": "${env:MCP_MYSQL_AUNCLICK_HOST}",
+        "DB_PORT": "${env:MCP_MYSQL_AUNCLICK_PORT}",
+        "DB_USER": "${env:MCP_MYSQL_AUNCLICK_USER}",
+        "DB_PASSWORD": "${env:MCP_MYSQL_AUNCLICK_PASSWORD}",
+        "DB_NAME": "${env:MCP_MYSQL_AUNCLICK_DATABASE}"
+      },
+      "alwaysAllow": [
+        "connect_db",
+        "list_tables",
+        "query",
+        "describe_table"
+      ]
+    },
+    "mysql-gestar": {
+      "command": "npx",
+      "args": ["@f4ww4z/mcp-mysql-server"],
+      "env": {
+        "DB_HOST": "${env:MCP_MYSQL_GESTAR_HOST}",
+        "DB_PORT": "${env:MCP_MYSQL_GESTAR_PORT}",
+        "DB_USER": "${env:MCP_MYSQL_GESTAR_USER}",
+        "DB_PASSWORD": "${env:MCP_MYSQL_GESTAR_PASSWORD}",
+        "DB_NAME": "${env:MCP_MYSQL_GESTAR_DATABASE}"
+      },
+      "alwaysAllow": [
+        "connect_db",
+        "list_tables",
+        "query",
+        "describe_table"
+      ]
+    },
+    "mysql-renovatio": {
+      "command": "npx",
+      "args": ["@f4ww4z/mcp-mysql-server"],
+      "env": {
+        "DB_HOST": "${env:MCP_MYSQL_RENOVATIO_HOST}",
+        "DB_PORT": "${env:MCP_MYSQL_RENOVATIO_PORT}",
+        "DB_USER": "${env:MCP_MYSQL_RENOVATIO_USER}",
+        "DB_PASSWORD": "${env:MCP_MYSQL_RENOVATIO_PASSWORD}",
+        "DB_NAME": "${env:MCP_MYSQL_RENOVATIO_DATABASE}"
+      },
+      "alwaysAllow": [
+        "list_tables",
+        "describe_table", 
+        "connect_db",
+        "execute",
+        "query"
+      ]
+    },
+
+    // SQL Server MCP Server
+    "sqlserver-database": {
+      "command": "npx",
+      "args": [
+        "@executeautomation/database-server",
+        "--sqlserver",
+        "--server", "${env:MCP_SQLSERVER_TELQWAY_HOST}",
+        "--database", "${env:MCP_SQLSERVER_TELQWAY_DATABASE}",
+        "--user", "${env:MCP_SQLSERVER_TELQWAY_USER}",
+        "--password", "${env:MCP_SQLSERVER_TELQWAY_PASSWORD}",
+        "--port", "${env:MCP_SQLSERVER_TELQWAY_PORT}"
+      ],
+      "alwaysAllow": [
+        "list_tables",
+        "read_query",
+        "write_query",
+        "describe_table",
+        "alter_table"
+      ]
+    },
+
+    // Playwright MCP Server (Browser automation)
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "alwaysAllow": [
+        "browser_evaluate",
+        "browser_click",
+        "browser_wait_for",
+        "browser_snapshot",
+        "browser_close",
+        "browser_navigate"
+      ]
+    }
+  }
+}

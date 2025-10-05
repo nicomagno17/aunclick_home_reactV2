@@ -37,11 +37,13 @@ declare module 'next-auth' {
     }
   }
 
-  interface User extends Usuario {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface User extends Usuario { }
 }
 
 declare module 'next-auth/jwt' {
-  interface JWT extends Partial<Usuario> {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface JWT extends Partial<Usuario> { }
 }
 
 export const authOptions = {
@@ -107,12 +109,12 @@ export const authOptions = {
 
         } catch (error) {
           console.error('Error en authorize:', error)
-          
+
           // Si es un error controlado (estado de cuenta), lanzarlo
           if (error instanceof Error) {
             throw error
           }
-          
+
           return null
         }
       }
@@ -135,7 +137,7 @@ export const authOptions = {
         token.apellidos = user.apellidos
         token.avatar_url = user.avatar_url
       }
-      
+
       return token
     },
 
@@ -150,7 +152,7 @@ export const authOptions = {
         session.user.apellidos = token.apellidos
         session.user.avatar_url = token.avatar_url
       }
-      
+
       return session
     }
   },
@@ -165,4 +167,3 @@ export const authOptions = {
 const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
-export { authOptions }

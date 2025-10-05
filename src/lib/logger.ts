@@ -89,7 +89,7 @@ export function setCorrelationContextFromRequest(request: Request | { headers?: 
 // Ensure log directory exists
 async function ensureLogDirectory(): Promise<void> {
   if (!config.logToFile) return
-  
+
   const logDir = path.dirname(config.logFilePath)
   try {
     await fs.access(logDir)
@@ -101,7 +101,7 @@ async function ensureLogDirectory(): Promise<void> {
 // Check if log file should be rotated
 async function shouldRotateLog(): Promise<boolean> {
   if (!config.logToFile) return false
-  
+
   try {
     const stats = await fs.stat(config.logFilePath)
     return stats.size >= config.maxFileSize
@@ -113,7 +113,7 @@ async function shouldRotateLog(): Promise<boolean> {
 // Rotate log files
 async function rotateLogFile(): Promise<void> {
   if (!config.logToFile) return
-  
+
   try {
     // Remove the oldest log file if it exists
     const oldestFile = `${config.logFilePath}.${config.maxFiles}`
@@ -122,19 +122,19 @@ async function rotateLogFile(): Promise<void> {
     } catch {
       // File doesn't exist, continue
     }
-    
+
     // Shift existing log files
     for (let i = config.maxFiles - 1; i >= 1; i--) {
       const currentFile = `${config.logFilePath}.${i}`
       const nextFile = `${config.logFilePath}.${i + 1}`
-      
+
       try {
         await fs.rename(currentFile, nextFile)
       } catch {
         // File doesn't exist, continue
       }
     }
-    
+
     // Rename current log file
     try {
       const stats = await fs.stat(config.logFilePath)
@@ -144,7 +144,7 @@ async function rotateLogFile(): Promise<void> {
     } catch {
       // File doesn't exist or is empty, continue
     }
-    
+
   } catch (error) {
     // If rotation fails, log to console only in development
     if (config.isDevelopment) {
@@ -157,18 +157,18 @@ async function rotateLogFile(): Promise<void> {
 // Format error for logging
 function formatError(error?: Error | { [key: string]: any }): LogEntry['error'] {
   if (!error) return undefined
-  
+
   const formatted: LogEntry['error'] = {
     name: error instanceof Error ? error.name : 'UnknownError',
     message: error instanceof Error ? error.message : String(error),
     code: (error as any).code
   }
-  
+
   // Only include stack trace in development
   if (config.isDevelopment && error instanceof Error && error.stack) {
     formatted.stack = error.stack
   }
-  
+
   return formatted
 }
 
@@ -181,7 +181,7 @@ function createLogEntry(
 ): LogEntry {
   const correlationId = getCorrelationId()
   const existingContext = correlationStorage.getStore() || {}
-  
+
   return {
     timestamp: new Date().toISOString(),
     level,
@@ -200,7 +200,7 @@ function shouldLog(level: LogLevel): boolean {
 // Format console output for development
 function formatConsoleOutput(entry: LogEntry): string {
   const { timestamp, level, message, correlationId, context, error } = entry
-  
+
   // Select color based on level
   let colorMethod: string
   let bgMethod: string = ''
@@ -222,33 +222,33 @@ function formatConsoleOutput(entry: LogEntry): string {
     default:
       colorMethod = colors.reset
   }
-  
+
   // Format: [TIMESTAMP] [LEVEL] [CORRELATION-ID] MESSAGE
   let output = `${colors.gray}[${timestamp}]${colors.reset} `
-  
+
   if (level === 'error' || level === 'warn') {
     output += `${bgMethod}${colors.white} ${level.toUpperCase()} ${colors.reset} `
   } else {
     output += `${colorMethod}${level.toUpperCase()}${colors.reset} `
   }
-  
+
   if (correlationId) {
     output += `${colors.gray}[${correlationId}]${colors.reset} `
   }
-  
+
   output += `${colorMethod}${message}${colors.reset}`
-  
+
   // Add context if provided
   if (context && Object.keys(context).length > 0) {
     // Remove correlationId from context display since it's already shown
     const displayContext = { ...context }
     delete displayContext.correlationId
-    
+
     if (Object.keys(displayContext).length > 0) {
       output += `\n${colors.gray}Context:${colors.reset} ${JSON.stringify(displayContext, null, 2)}`
     }
   }
-  
+
   // Add error details if provided
   if (error) {
     output += `\n${colorMethod}Error: ${error.name}: ${error.message}${colors.reset}`
@@ -256,7 +256,7 @@ function formatConsoleOutput(entry: LogEntry): string {
       output += `\n${colors.gray}${error.stack}${colors.reset}`
     }
   }
-  
+
   return output
 }
 
@@ -265,7 +265,7 @@ async function writeLog(entry: LogEntry): Promise<void> {
   // Development: output to console with colors
   if (config.isDevelopment) {
     const formatted = formatConsoleOutput(entry)
-    
+
     switch (entry.level) {
       case 'error':
         console.error(formatted)
@@ -281,22 +281,22 @@ async function writeLog(entry: LogEntry): Promise<void> {
         break
     }
   }
-  
+
   // Write to file if configured and in production
   if (!config.logToFile) return
-  
+
   try {
     await ensureLogDirectory()
-    
+
     // Check if we need to rotate the log file
     if (await shouldRotateLog()) {
       await rotateLogFile()
     }
-    
+
     // Write structured JSON log to file (one entry per line)
     const logLine = JSON.stringify(entry) + '\n'
     await fs.appendFile(config.logFilePath, logLine)
-    
+
   } catch (error) {
     // Fallback to console only in development if file writing fails
     if (config.isDevelopment) {
@@ -314,28 +314,28 @@ export async function error(
   context?: LogContext
 ): Promise<void> {
   if (!shouldLog('error')) return
-  
+
   const entry = createLogEntry('error', message, errorObj, context)
   await writeLog(entry)
 }
 
 export async function warn(message: string, context?: LogContext): Promise<void> {
   if (!shouldLog('warn')) return
-  
+
   const entry = createLogEntry('warn', message, undefined, context)
   await writeLog(entry)
 }
 
 export async function info(message: string, context?: LogContext): Promise<void> {
   if (!shouldLog('info')) return
-  
+
   const entry = createLogEntry('info', message, undefined, context)
   await writeLog(entry)
 }
 
 export async function debug(message: string, context?: LogContext): Promise<void> {
   if (!shouldLog('debug')) return
-  
+
   const entry = createLogEntry('debug', message, undefined, context)
   await writeLog(entry)
 }
@@ -358,12 +358,14 @@ export async function logResponse(
 ): Promise<void> {
   const level = status >= 500 ? 'error' : status >= 400 ? 'warn' : 'info'
   const message = `${method} ${url} ${status} (${duration}ms)`
-  
-  await level === 'error' 
-    ? error(message, undefined, { ...context, type: 'response', status, duration })
-    : level === 'warn'
-    ? warn(message, { ...context, type: 'response', status, duration })
-    : info(message, { ...context, type: 'response', status, duration })
+
+  if (level === 'error') {
+    await error(message, undefined, { ...context, type: 'response', status, duration })
+  } else if (level === 'warn') {
+    await warn(message, { ...context, type: 'response', status, duration })
+  } else {
+    await info(message, { ...context, type: 'response', status, duration })
+  }
 }
 
 export async function logDatabaseQuery(
@@ -373,9 +375,9 @@ export async function logDatabaseQuery(
 ): Promise<void> {
   // Truncate long queries for readability
   const displayQuery = query.length > 200 ? query.substring(0, 200) + '...' : query
-  
-  await debug(`DB Query (${duration}ms): ${displayQuery}`, { 
-    ...context, 
+
+  await debug(`DB Query (${duration}ms): ${displayQuery}`, {
+    ...context,
     type: 'database',
     query: displayQuery,
     duration
