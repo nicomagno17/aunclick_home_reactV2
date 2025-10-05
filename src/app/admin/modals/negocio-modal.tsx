@@ -16,7 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, PlusCircle, MinusCircle, Upload } from 'lucide-react'
 import { format } from 'date-fns'
 import ModalWrapper from './modal-wrapper'
-import { NegocioAPI, CategoriaAPI, UbicacionAPI, PlanSuscripcionAPI } from '@/types/product'
+import { NegocioAPI, CategoriaAPI, UbicacionAPI, PlanSuscripcionAPI, Usuario } from '@/types/product'
 
 // Esquema de validación para el formulario
 const formSchema = z.object({
@@ -74,7 +74,7 @@ interface NegocioModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   negocioToEdit?: NegocioAPI
-  propietariosList?: any[]
+  propietariosList?: Usuario[]
   categoriasList?: CategoriaAPI[]
   ubicacionesList?: UbicacionAPI[]
   planesList?: PlanSuscripcionAPI[]

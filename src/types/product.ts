@@ -26,6 +26,10 @@ export interface ProductoCarrusel {
   genero?: string;
   medidas?: string;
   unidadMedida?: string;
+  descripcion?: string;
+  tipoNegocio?: string;
+  tallasCalzado?: string[];
+  tallasRopa?: string[];
 }
 
 // Tipo para datos de API de productos (basado en schema de base de datos)

@@ -22,21 +22,16 @@ export function ImageCarouselSections({ sections, autoPlayInterval = 5000 }: Ima
     images: section.images.slice(0, 3) // 3 imágenes por sección para desktop
   }))
 
-  interface ImageData {
-    src: string;
-    alt: string;
-    title: string;
-  }
-
   interface CarouselSection {
-    title: string;
-    images: ImageData[];
+    id: number;
+    title?: string;
+    images: string[];
   }
 
   const mobileSections: CarouselSection[] = []
   let imageIndex = 0
   for (let i = 0; i < 6; i++) {
-    const sectionImages: ImageData[] = []
+    const sectionImages: string[] = []
     for (let j = 0; j < 2; j++) {
       if (imageIndex < 12) { // Total de 12 imágenes
         const sectionIndex = Math.floor(imageIndex / 3)

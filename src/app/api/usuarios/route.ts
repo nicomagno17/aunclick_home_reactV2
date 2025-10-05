@@ -72,7 +72,7 @@ export async function POST(request: Request) {
     // Forzar rol = 'usuario' para registro público (previene que usuarios se asignen roles especiales)
     const result = await executeQuery(`
       INSERT INTO usuarios (email, nombre, apellidos, telefono, password_hash, rol, estado, preferencias, metadata)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       validatedData.email,
       validatedData.nombre,

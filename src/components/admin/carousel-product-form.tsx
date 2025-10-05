@@ -101,7 +101,23 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
       return
     }
 
-    onSave(formData)
+    const data: ProductoCarrusel = {
+      id: existingData?.id || Date.now().toString(),
+      nombre: formData.nombre,
+      categoria: formData.categoria,
+      subcategoria: formData.subcategoria,
+      descripcion: formData.descripcion,
+      precioActual: parseFloat(formData.precioActual),
+      precioAnterior: formData.precioAnterior ? parseFloat(formData.precioAnterior) : undefined,
+      genero: formData.genero || undefined,
+      medidas: formData.medidas || undefined,
+      unidadMedida: formData.unidadMedida,
+      imagen: existingData?.imagen ?? '',
+      tallasCalzado: formData.tallasCalzado,
+      tallasRopa: formData.tallasRopa
+    }
+
+    onSave(data)
   }
 
   // Función de autollenado

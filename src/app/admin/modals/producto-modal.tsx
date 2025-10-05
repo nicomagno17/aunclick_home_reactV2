@@ -20,6 +20,11 @@ import { useToast } from '@/hooks/use-toast'
 import { productosService } from '@/services'
 import { ProductoAPI, NegocioAPI, CategoriaAPI } from '@/types/product'
 
+// Tipo para imágenes de productos
+interface ImagenProducto {
+  url: string;
+  esPrincipal: boolean;
+}
 
 // Esquema de validación para el formulario
 const formSchema = z.object({
@@ -87,7 +92,7 @@ export default function ProductoModal({
   const [negociosList, setNegociosList] = useState<NegocioAPI[]>([])
   const [categoriasList, setCategoriasList] = useState<CategoriaAPI[]>([])
   const [activeTab, setActiveTab] = useState('informacion')
-  const [imagenes, setImagenes] = useState<any[]>([])
+  const [imagenes, setImagenes] = useState<ImagenProducto[]>([])
   const [imagenActual, setImagenActual] = useState<string | null>(null)
   const { toast } = useToast()
 

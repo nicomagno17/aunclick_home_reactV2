@@ -35,6 +35,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminProductCarousel } from '@/components/admin/admin-product-carousel'
 import { CarouselProductForm } from '@/components/admin/carousel-product-form'
+import { ProductoCarrusel } from '@/types/product'
 
 
 
@@ -79,8 +80,6 @@ export default function AdminPage() {
     precioActual: '',
     precioAnterior: ''
   })
-
-  import { ProductoCarrusel } from '@/types/product'
 
   // Estados para almacenar los productos agregados en cada sección
   const [productos, setProductos] = useState<Record<string, ProductoCarrusel[]>>({
@@ -303,7 +302,7 @@ export default function AdminPage() {
     if (productToDelete) {
       setProductos(prev => ({
         ...prev,
-        [productToDelete.section]: prev[productToDelete.section as keyof typeof prev].filter((p: any) => p.id !== productToDelete.producto.id)
+        [productToDelete.section]: prev[productToDelete.section as keyof typeof prev].filter((p: ProductoCarrusel) => p.id !== productToDelete.producto.id)
       }))
     }
     setShowDeleteConfirm(false)

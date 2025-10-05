@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
       [validatedData.negocio_id]
     )
 
-    if ((negocioCheck as any[]).length === 0) {
+    if ((negocioCheck as unknown[]).length === 0) {
       return notFoundError('Negocio', { endpoint: '/api/productos', method: 'POST', negocioId: validatedData.negocio_id.toString() })
     }
 
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
       [validatedData.categoria_id]
     )
 
-    if ((categoriaCheck as any[]).length === 0) {
+    if ((categoriaCheck as unknown[]).length === 0) {
       return notFoundError('Categoría', { endpoint: '/api/productos', method: 'POST', categoriaId: validatedData.categoria_id.toString() })
     }
 
@@ -205,7 +205,7 @@ export async function POST(request: NextRequest) {
       [validatedData.slug, validatedData.negocio_id]
     )
 
-    if ((slugCheck as any[]).length > 0) {
+    if ((slugCheck as unknown[]).length > 0) {
       return NextResponse.json(
         { error: 'Ya existe un producto con este slug en el negocio' },
         { status: 400 }
@@ -382,7 +382,7 @@ export async function PUT(request: NextRequest) {
       [id]
     )
 
-    if ((productCheck as any[]).length === 0) {
+    if ((productCheck as unknown[]).length === 0) {
       return NextResponse.json(
         { error: 'Producto no encontrado' },
         { status: 404 }
@@ -472,7 +472,7 @@ export async function PUT(request: NextRequest) {
       fieldsUpdated: Object.keys(validatedData)
     })
 
-    return successResponse((updatedProduct as any[])[0])
+    return successResponse((updatedProduct as unknown[])[0])
 
   } catch (error) {
     return handleError(error as Error, {
@@ -534,7 +534,7 @@ export async function DELETE(request: NextRequest) {
       [id]
     )
 
-    if ((productCheck as any[]).length === 0) {
+    if ((productCheck as unknown[]).length === 0) {
       return notFoundError('Producto', { endpoint: '/api/productos', method: 'DELETE', productId: id })
     }
 
