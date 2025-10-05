@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import ModalWrapper from './modal-wrapper'
+import { CategoriaAPI } from '@/types/product'
 
 // Esquema de validación para el formulario
 const formSchema = z.object({
@@ -29,8 +30,8 @@ type FormValues = z.infer<typeof formSchema>
 interface CategoriaProductoModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  categoriaToEdit?: any // Tipo más específico cuando tengamos la estructura
-  categoriasList?: any[] // Lista de categorías para seleccionar como padre
+  categoriaToEdit?: CategoriaAPI // Tipo más específico cuando tengamos la estructura
+  categoriasList?: CategoriaAPI[] // Lista de categorías para seleccionar como padre
 }
 
 export default function CategoriaProductoModal({

@@ -52,7 +52,7 @@ export function ImageCarousel() {
   const mobileSections: CarouselSection[] = []
   let imageIndex = 0
   for (let i = 0; i < 6; i++) {
-    const sectionImages = []
+    const sectionImages: string[] = []
     for (let j = 0; j < 2; j++) {
       if (imageIndex < 12) { // Total de 12 imágenes (4 secciones × 3 imágenes)
         const sectionIndex = Math.floor(imageIndex / 3)
@@ -76,10 +76,10 @@ export function ImageCarousel() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640) // sm breakpoint
     }
-    
+
     checkMobile()
     window.addEventListener('resize', checkMobile)
-    
+
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
@@ -114,19 +114,19 @@ export function ImageCarousel() {
   return (
     <div className="w-full bg-gray-50">
       <div className="w-full overflow-hidden">
-        <div 
+        <div
           className="flex transition-transform duration-2500 ease-in-out"
           style={{ transform: `translateX(-${currentSection * 100}%)` }}
         >
           {/* Versión Desktop: 4 secciones, cada una con una fila de 3 imágenes una al lado de la otra */}
           <div className="hidden sm:block w-full">
             {desktopSections.map((section, sectionIndex) => (
-              <div 
-                key={section.id} 
+              <div
+                key={section.id}
                 className="w-full flex-shrink-0 flex"
               >
                 {section.images.map((image, imageIndex) => (
-                  <div 
+                  <div
                     key={`${section.id}-${imageIndex}`}
                     className="relative group overflow-hidden flex-1"
                   >
@@ -150,13 +150,13 @@ export function ImageCarousel() {
           {/* Versión Móvil: 6 secciones con 2 imágenes cada una, mostradas una sección a la vez */}
           <div className="sm:hidden w-full">
             {mobileSections.map((section, sectionIndex) => (
-              <div 
-                key={section.id} 
+              <div
+                key={section.id}
                 className="w-full flex-shrink-0"
               >
                 <div className="grid grid-cols-2 gap-0">
                   {section.images.map((image, imageIndex) => (
-                    <div 
+                    <div
                       key={`${section.id}-${imageIndex}`}
                       className="relative group overflow-hidden"
                     >
@@ -179,7 +179,7 @@ export function ImageCarousel() {
           </div>
         </div>
       </div>
-      
+
       {/* Indicadores de sección - Desktop */}
       <div className="hidden sm:flex justify-center py-3 space-x-2">
         {desktopSections.map((_, index) => (
@@ -189,11 +189,10 @@ export function ImageCarousel() {
               setCurrentSection(index)
               setDirection(index > currentSection ? 'forward' : 'backward')
             }}
-            className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-              index === currentSection 
-                ? 'bg-purple-600' 
+            className={`w-3 h-3 rounded-full transition-colors duration-300 ${index === currentSection
+                ? 'bg-purple-600'
                 : 'bg-gray-300 hover:bg-gray-400'
-            }`}
+              }`}
             aria-label={`Ir a la sección ${index + 1}`}
           />
         ))}
@@ -208,11 +207,10 @@ export function ImageCarousel() {
               setCurrentSection(index)
               setDirection(index > currentSection ? 'forward' : 'backward')
             }}
-            className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-              index === currentSection 
-                ? 'bg-purple-600' 
+            className={`w-2 h-2 rounded-full transition-colors duration-300 ${index === currentSection
+                ? 'bg-purple-600'
                 : 'bg-gray-300 hover:bg-gray-400'
-            }`}
+              }`}
             aria-label={`Ir a la sección ${index + 1}`}
           />
         ))}

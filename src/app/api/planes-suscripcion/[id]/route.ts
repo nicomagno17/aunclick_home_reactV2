@@ -12,7 +12,6 @@ export async function GET(
 ) {
   const { id } = await context.params;
   try {
-    const id = params.id;
 
     // Validar que el ID es un número
     if (isNaN(Number(id))) {

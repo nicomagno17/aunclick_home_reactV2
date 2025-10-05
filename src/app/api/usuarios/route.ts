@@ -6,11 +6,12 @@ import { ZodError } from 'zod'
 import { requireRole, handleAuthError } from '@/lib/auth-helpers'
 import logger, { setCorrelationContextFromRequest } from '@/lib/logger'
 import { handleError, validationError, successResponse } from '@/lib/error-handler'
+import { InsertResult } from '@/types/product'
 
 export async function GET(request: Request) {
   // Set correlation context from request headers
   setCorrelationContextFromRequest(request)
-  
+
   // Verificar autorización - solo admin y moderadores pueden ver lista de usuarios
   const authResult = await requireRole(['admin', 'moderador'])
   const authError = handleAuthError(authResult)
@@ -18,7 +19,7 @@ export async function GET(request: Request) {
 
   try {
     await logger.info('Fetching users list', { endpoint: '/api/usuarios', method: 'GET' })
-    
+
     // Consultar usuarios de la base de datos
     const usuarios = await executeQuery(`
       SELECT 
@@ -41,9 +42,9 @@ export async function GET(request: Request) {
     `)
 
     await logger.info(`Retrieved ${usuarios.length} users`, { endpoint: '/api/usuarios', count: usuarios.length })
-    
+
     return successResponse({ usuarios, total: usuarios.length })
-    
+
   } catch (error) {
     return handleError(error as Error, { endpoint: '/api/usuarios', method: 'GET' })
   }
@@ -53,18 +54,18 @@ export async function POST(request: Request) {
   try {
     // Set correlation context from request headers
     setCorrelationContextFromRequest(request)
-    
+
     const body = await request.json()
-    
+
     await logger.debug('Creating new user', { endpoint: '/api/usuarios', method: 'POST', email: body.email })
-    
+
     // Validar datos con Zod
     const validation = createUsuarioSchema.safeParse(body)
-    
+
     if (!validation.success) {
       return validationError('Datos de entrada inválidos', validation.error.format(), { endpoint: '/api/usuarios', method: 'POST' })
     }
-    
+
     const validatedData = validation.data
 
     // Insertar nuevo usuario con datos validados y sanitizados
@@ -84,11 +85,11 @@ export async function POST(request: Request) {
       JSON.stringify(validatedData.metadata || {})
     ])
 
-    const userId = (result as any).insertId
+    const userId = (result as unknown as InsertResult).insertId
     await logger.info('User created successfully', { endpoint: '/api/usuarios', method: 'POST', userId, email: validatedData.email })
 
     return successResponse({ message: 'Usuario creado exitosamente', userId }, 201)
-    
+
   } catch (error) {
     return handleError(error as Error, { endpoint: '/api/usuarios', method: 'POST' })
   }

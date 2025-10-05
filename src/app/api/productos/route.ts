@@ -6,18 +6,19 @@ import { ZodError } from 'zod'
 import { getSession, requireRole, canAccessNegocio, canAccessProducto, handleAuthError } from '@/lib/auth-helpers'
 import logger, { setCorrelationContextFromRequest } from '@/lib/logger'
 import { handleError, validationError, authenticationError, authorizationError, notFoundError, successResponse } from '@/lib/error-handler'
+import { ProductoAPI, CountResult, InsertResult } from '@/types/product'
 
 // GET /api/productos - Obtener todos los productos
 export async function GET(request: NextRequest) {
   // Set correlation context from request headers
   setCorrelationContextFromRequest(request)
-  
+
   let connection
-  
+
   try {
     const pool = getMySQLPool()
     connection = await pool.getConnection()
-    
+
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
@@ -25,50 +26,50 @@ export async function GET(request: NextRequest) {
     const categoria_id = searchParams.get('categoria_id')
     const estado = searchParams.get('estado')
     const search = searchParams.get('search')
-    
+
     let whereConditions = ['p.deleted_at IS NULL']
-    let queryParams: any[] = []
-    
+    let queryParams: (string | number)[] = []
+
     if (negocio_id) {
       whereConditions.push('p.negocio_id = ?')
       queryParams.push(negocio_id)
     }
-    
+
     if (categoria_id) {
       whereConditions.push('p.categoria_id = ?')
       queryParams.push(categoria_id)
     }
-    
+
     if (estado) {
       whereConditions.push('p.estado = ?')
       queryParams.push(estado)
     }
-    
+
     if (search) {
       whereConditions.push('(p.nombre LIKE ? OR p.descripcion LIKE ? OR p.sku LIKE ?)')
       const searchTerm = `%${search}%`
       queryParams.push(searchTerm, searchTerm, searchTerm)
     }
-    
-    await logger.debug('Fetching products', { 
-      endpoint: '/api/productos', 
-      method: 'GET', 
-      filters: { negocio_id, categoria_id, estado, search }, 
-      pagination: { page, limit } 
+
+    await logger.debug('Fetching products', {
+      endpoint: '/api/productos',
+      method: 'GET',
+      filters: { negocio_id, categoria_id, estado, search },
+      pagination: { page, limit }
     })
-    
+
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : ''
-    
+
     // Consulta para contar total de registros
     const countQuery = `
       SELECT COUNT(*) as total 
       FROM productos p 
       ${whereClause}
     `
-    
+
     const [countResult] = await connection.execute(countQuery, queryParams)
-    const total = (countResult as any)[0].total
-    
+    const total = (countResult as CountResult[])[0].total
+
     // Consulta principal con paginación
     const offset = (page - 1) * limit
     const query = `
@@ -83,30 +84,30 @@ export async function GET(request: NextRequest) {
       ORDER BY p.created_at DESC
       LIMIT ? OFFSET ?
     `
-    
+
     const finalParams = [...queryParams, limit, offset]
     const [rows] = await connection.execute(query, finalParams)
-    
-    await logger.info(`Retrieved ${rows.length} products`, { 
-      endpoint: '/api/productos', 
-      total, 
-      page, 
-      limit 
+
+    await logger.info(`Retrieved ${rows.length} products`, {
+      endpoint: '/api/productos',
+      total,
+      page,
+      limit
     })
-    
-    return successResponse({ 
-      productos: rows, 
-      total, 
-      page, 
-      limit, 
-      totalPages: Math.ceil(total / limit) 
+
+    return successResponse({
+      productos: rows,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
     })
-    
+
   } catch (error) {
-    return handleError(error as Error, { 
-      endpoint: '/api/productos', 
-      method: 'GET', 
-      filters: { negocio_id: (new URL(request.url)).searchParams.get('negocio_id') } 
+    return handleError(error as Error, {
+      endpoint: '/api/productos',
+      method: 'GET',
+      filters: { negocio_id: (new URL(request.url)).searchParams.get('negocio_id') }
     })
   } finally {
     if (connection) {
@@ -119,48 +120,48 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   // Set correlation context from request headers
   setCorrelationContextFromRequest(request)
-  
+
   let connection
-  
+
   try {
     // Verificar autenticación y autorización
     const session = await getSession()
-    
+
     if (!session) {
       return authenticationError('Autenticación requerida', { endpoint: '/api/productos', method: 'POST' })
     }
-    
+
     // Verificar que el usuario tiene rol adecuado
     if (!['propietario_negocio', 'admin'].includes(session.user?.rol)) {
-      return authorizationError('No tienes permisos para crear productos', { 
-        endpoint: '/api/productos', 
-        method: 'POST', 
-        userId: session.user.id, 
-        userRole: session.user?.rol 
+      return authorizationError('No tienes permisos para crear productos', {
+        endpoint: '/api/productos',
+        method: 'POST',
+        userId: session.user.id,
+        userRole: session.user?.rol
       })
     }
 
     const data = await request.json()
-    
-    await logger.debug('Creating new product', { 
-      endpoint: '/api/productos', 
-      method: 'POST', 
-      userId: session.user.id, 
-      negocioId: data.negocio_id, 
-      nombre: data.nombre 
+
+    await logger.debug('Creating new product', {
+      endpoint: '/api/productos',
+      method: 'POST',
+      userId: session.user.id,
+      negocioId: data.negocio_id,
+      nombre: data.nombre
     })
-    
+
     // Validar datos con Zod
     const validation = createProductoSchema.safeParse(data)
-    
+
     if (!validation.success) {
-      return validationError('Datos de entrada inválidos', validation.error.format(), { 
-        endpoint: '/api/productos', 
-        method: 'POST', 
-        userId: session.user.id 
+      return validationError('Datos de entrada inválidos', validation.error.format(), {
+        endpoint: '/api/productos',
+        method: 'POST',
+        userId: session.user.id
       })
     }
-    
+
     const validatedData = validation.data
 
     const pool = getMySQLPool()
@@ -171,7 +172,7 @@ export async function POST(request: NextRequest) {
       'SELECT id FROM negocios WHERE id = ? AND deleted_at IS NULL',
       [validatedData.negocio_id]
     )
-    
+
     if ((negocioCheck as any[]).length === 0) {
       return notFoundError('Negocio', { endpoint: '/api/productos', method: 'POST', negocioId: validatedData.negocio_id.toString() })
     }
@@ -180,11 +181,11 @@ export async function POST(request: NextRequest) {
     if (session.user.rol !== 'admin') {
       const canAccess = await canAccessNegocio(session, validatedData.negocio_id)
       if (!canAccess) {
-        return authorizationError('No tienes permisos para crear productos en este negocio', { 
-          endpoint: '/api/productos', 
-          method: 'POST', 
-          userId: session.user.id?.toString(), 
-          negocioId: validatedData.negocio_id.toString() 
+        return authorizationError('No tienes permisos para crear productos en este negocio', {
+          endpoint: '/api/productos',
+          method: 'POST',
+          userId: session.user.id?.toString(),
+          negocioId: validatedData.negocio_id.toString()
         })
       }
     }
@@ -193,7 +194,7 @@ export async function POST(request: NextRequest) {
       'SELECT id FROM categorias_productos WHERE id = ?',
       [validatedData.categoria_id]
     )
-    
+
     if ((categoriaCheck as any[]).length === 0) {
       return notFoundError('Categoría', { endpoint: '/api/productos', method: 'POST', categoriaId: validatedData.categoria_id.toString() })
     }
@@ -203,7 +204,7 @@ export async function POST(request: NextRequest) {
       'SELECT id FROM productos WHERE slug = ? AND negocio_id = ? AND deleted_at IS NULL',
       [validatedData.slug, validatedData.negocio_id]
     )
-    
+
     if ((slugCheck as any[]).length > 0) {
       return NextResponse.json(
         { error: 'Ya existe un producto con este slug en el negocio' },
@@ -280,7 +281,7 @@ export async function POST(request: NextRequest) {
     ]
 
     const [result] = await connection.execute(insertQuery, insertValues)
-    const insertId = (result as any).insertId
+    const insertId = (result as InsertResult).insertId
 
     // Obtener el producto creado con información adicional
     const [newProduct] = await connection.execute(`
@@ -294,20 +295,20 @@ export async function POST(request: NextRequest) {
       WHERE p.id = ?
     `, [insertId])
 
-    await logger.info('Product created successfully', { 
-      endpoint: '/api/productos', 
-      method: 'POST', 
-      productId: insertId, 
-      userId: session.user.id?.toString(), 
-      negocioId: validatedData.negocio_id.toString(), 
-      nombre: validatedData.nombre 
+    await logger.info('Product created successfully', {
+      endpoint: '/api/productos',
+      method: 'POST',
+      productId: insertId,
+      userId: session.user.id?.toString(),
+      negocioId: validatedData.negocio_id.toString(),
+      nombre: validatedData.nombre
     })
 
-    return successResponse((newProduct as any[])[0], 201)
+    return successResponse((newProduct as ProductoAPI[])[0], 201)
 
   } catch (error) {
-    return handleError(error as Error, { 
-      endpoint: '/api/productos', 
+    return handleError(error as Error, {
+      endpoint: '/api/productos',
       method: 'POST'
     })
   } finally {
@@ -321,57 +322,57 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   // Set correlation context from request headers
   setCorrelationContextFromRequest(request)
-  
+
   let connection
-  
+
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
-    
+
     if (!id) {
       return validationError('ID del producto es requerido', undefined, { endpoint: '/api/productos', method: 'PUT' })
     }
 
     // Verificar autenticación
     const session = await getSession()
-    
+
     if (!session) {
       return authenticationError('Autenticación requerida', { endpoint: '/api/productos', method: 'PUT' })
     }
-    
+
     // Verificar que el usuario tiene rol adecuado
     if (!['propietario_negocio', 'admin'].includes(session.user?.rol)) {
-      return authorizationError('No tienes permisos para modificar productos', { 
-        endpoint: '/api/productos', 
-        method: 'PUT', 
-        userId: session.user.id?.toString(), 
-        userRole: session.user?.rol 
+      return authorizationError('No tienes permisos para modificar productos', {
+        endpoint: '/api/productos',
+        method: 'PUT',
+        userId: session.user.id?.toString(),
+        userRole: session.user?.rol
       })
     }
 
     const data = await request.json()
-    
-    await logger.debug('Updating product', { 
-      endpoint: '/api/productos', 
-      method: 'PUT', 
-      productId: id, 
-      userId: session.user.id?.toString(), 
-      fieldsToUpdate: Object.keys(data) 
+
+    await logger.debug('Updating product', {
+      endpoint: '/api/productos',
+      method: 'PUT',
+      productId: id,
+      userId: session.user.id?.toString(),
+      fieldsToUpdate: Object.keys(data)
     })
-    
+
     // Validar datos con Zod (permite actualizaciones parciales)
     const validation = updateProductoSchema.safeParse(data)
-    
+
     if (!validation.success) {
-      return validationError('Datos de entrada inválidos', validation.error.format(), { 
-        endpoint: '/api/productos', 
-        method: 'PUT', 
-        userId: session.user.id?.toString() 
+      return validationError('Datos de entrada inválidos', validation.error.format(), {
+        endpoint: '/api/productos',
+        method: 'PUT',
+        userId: session.user.id?.toString()
       })
     }
-    
+
     const validatedData = validation.data
-    
+
     const pool = getMySQLPool()
     connection = await pool.getConnection()
 
@@ -380,7 +381,7 @@ export async function PUT(request: NextRequest) {
       'SELECT id FROM productos WHERE id = ? AND deleted_at IS NULL',
       [id]
     )
-    
+
     if ((productCheck as any[]).length === 0) {
       return NextResponse.json(
         { error: 'Producto no encontrado' },
@@ -401,12 +402,12 @@ export async function PUT(request: NextRequest) {
 
     // Construir query de actualización dinámicamente
     const updateFields: string[] = []
-    const updateValues: any[] = []
+    const updateValues: (string | number | boolean | null)[] = []
 
     // Lista de campos actualizables
     const allowedFields = [
       'categoria_id', 'nombre', 'slug', 'descripcion', 'descripcion_corta',
-      'precio', 'precio_antes', 'moneda', 'sku', 'stock_disponible', 
+      'precio', 'precio_antes', 'moneda', 'sku', 'stock_disponible',
       'maneja_stock', 'stock_minimo', 'peso', 'dimensiones', 'estado',
       'destacado', 'permite_personalizacion', 'seo_title', 'seo_description',
       'seo_keywords', 'atributos', 'opciones_personalizacion', 'metadata',
@@ -416,7 +417,7 @@ export async function PUT(request: NextRequest) {
     for (const field of allowedFields) {
       if (validatedData[field] !== undefined) {
         updateFields.push(`${field} = ?`)
-        
+
         // Manejar campos especiales
         if (['maneja_stock', 'destacado', 'permite_personalizacion'].includes(field)) {
           updateValues.push(validatedData[field] ? 1 : 0)
@@ -463,20 +464,20 @@ export async function PUT(request: NextRequest) {
       WHERE p.id = ?
     `, [id])
 
-    await logger.info('Product updated successfully', { 
-      endpoint: '/api/productos', 
-      method: 'PUT', 
-      productId: id, 
-      userId: session?.user?.id?.toString(), 
-      fieldsUpdated: Object.keys(validatedData) 
+    await logger.info('Product updated successfully', {
+      endpoint: '/api/productos',
+      method: 'PUT',
+      productId: id,
+      userId: session?.user?.id?.toString(),
+      fieldsUpdated: Object.keys(validatedData)
     })
 
     return successResponse((updatedProduct as any[])[0])
 
   } catch (error) {
-    return handleError(error as Error, { 
-      endpoint: '/api/productos', 
-      method: 'PUT' 
+    return handleError(error as Error, {
+      endpoint: '/api/productos',
+      method: 'PUT'
     })
   } finally {
     if (connection) {
@@ -489,41 +490,41 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   // Set correlation context from request headers
   setCorrelationContextFromRequest(request)
-  
+
   let connection
-  
+
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
-    
+
     if (!id) {
       return validationError('ID del producto es requerido', undefined, { endpoint: '/api/productos', method: 'DELETE' })
     }
 
     // Verificar autenticación
     const session = await getSession()
-    
+
     if (!session) {
       return authenticationError('Autenticación requerida', { endpoint: '/api/productos', method: 'DELETE' })
     }
-    
+
     // Verificar que el usuario tiene rol adecuado
     if (!['propietario_negocio', 'admin'].includes(session.user?.rol)) {
-      return authorizationError('No tienes permisos para eliminar productos', { 
-        endpoint: '/api/productos', 
-        method: 'DELETE', 
-        userId: session.user.id?.toString(), 
-        userRole: session.user?.rol 
+      return authorizationError('No tienes permisos para eliminar productos', {
+        endpoint: '/api/productos',
+        method: 'DELETE',
+        userId: session.user.id?.toString(),
+        userRole: session.user?.rol
       })
     }
 
-    await logger.debug('Deleting product', { 
-      endpoint: '/api/productos', 
-      method: 'DELETE', 
-      productId: id, 
-      userId: session.user.id?.toString() 
+    await logger.debug('Deleting product', {
+      endpoint: '/api/productos',
+      method: 'DELETE',
+      productId: id,
+      userId: session.user.id?.toString()
     })
-    
+
     const pool = getMySQLPool()
     connection = await pool.getConnection()
 
@@ -532,7 +533,7 @@ export async function DELETE(request: NextRequest) {
       'SELECT id FROM productos WHERE id = ? AND deleted_at IS NULL',
       [id]
     )
-    
+
     if ((productCheck as any[]).length === 0) {
       return notFoundError('Producto', { endpoint: '/api/productos', method: 'DELETE', productId: id })
     }
@@ -554,19 +555,19 @@ export async function DELETE(request: NextRequest) {
       [id]
     )
 
-    await logger.info('Product deleted successfully', { 
-      endpoint: '/api/productos', 
-      method: 'DELETE', 
-      productId: id, 
-      userId: session?.user?.id?.toString() 
+    await logger.info('Product deleted successfully', {
+      endpoint: '/api/productos',
+      method: 'DELETE',
+      productId: id,
+      userId: session?.user?.id?.toString()
     })
 
     return successResponse({ message: 'Producto eliminado correctamente' })
 
   } catch (error) {
-    return handleError(error as Error, { 
-      endpoint: '/api/productos', 
-      method: 'DELETE' 
+    return handleError(error as Error, {
+      endpoint: '/api/productos',
+      method: 'DELETE'
     })
   } finally {
     if (connection) {

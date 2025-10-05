@@ -16,6 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, PlusCircle, MinusCircle, Upload } from 'lucide-react'
 import { format } from 'date-fns'
 import ModalWrapper from './modal-wrapper'
+import { NegocioAPI, CategoriaAPI, UbicacionAPI, PlanSuscripcionAPI } from '@/types/product'
 
 // Esquema de validación para el formulario
 const formSchema = z.object({
@@ -24,44 +25,44 @@ const formSchema = z.object({
   categoria_id: z.string().min(1, 'Debe seleccionar una categoría'),
   ubicacion_id: z.string().min(1, 'Debe seleccionar una ubicación'),
   plan_id: z.string().min(1, 'Debe seleccionar un plan'),
-  
+
   // Información básica
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   slug: z.string().min(2, 'El slug debe tener al menos 2 caracteres')
     .regex(/^[a-z0-9-]+$/, 'El slug solo puede contener letras minúsculas, números y guiones'),
   descripcion: z.string().optional(),
   descripcion_corta: z.string().max(300, 'La descripción corta no puede exceder los 300 caracteres').optional(),
-  
+
   // Información de contacto
   telefono_principal: z.string().optional(),
   telefono_secundario: z.string().optional(),
   email: z.string().email('Debe ser un email válido').optional(),
   sitio_web: z.string().url('Debe ser una URL válida').optional().or(z.literal('')),
   whatsapp: z.string().optional(),
-  
+
   // Redes sociales (JSON)
   redes_sociales: z.string().optional(),
-  
+
   // Información visual
   logo_url: z.string().optional(),
   banner_url: z.string().optional(),
   galeria_imagenes: z.string().optional(),
-  
+
   // Estado y configuración
   estado: z.enum(['borrador', 'activo', 'inactivo', 'suspendido', 'eliminado']).default('borrador'),
   verificado: z.boolean().default(false),
   destacado: z.boolean().default(false),
   permite_pedidos: z.boolean().default(true),
-  
+
   // SEO y marketing
   seo_title: z.string().max(70, 'El título SEO no debe exceder los 70 caracteres').optional(),
   seo_description: z.string().max(160, 'La descripción SEO no debe exceder los 160 caracteres').optional(),
   seo_keywords: z.string().max(300, 'Las keywords SEO no deben exceder los 300 caracteres').optional(),
-  
+
   // Configuración
   configuracion: z.string().optional(),
   metadata: z.string().optional(),
-  
+
   // Fechas de suscripción
   suscripcion_inicio: z.date().optional(),
   suscripcion_fin: z.date().optional(),
@@ -72,16 +73,16 @@ type FormValues = z.infer<typeof formSchema>
 interface NegocioModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  negocioToEdit?: any
+  negocioToEdit?: NegocioAPI
   propietariosList?: any[]
-  categoriasList?: any[]
-  ubicacionesList?: any[]
-  planesList?: any[]
+  categoriasList?: CategoriaAPI[]
+  ubicacionesList?: UbicacionAPI[]
+  planesList?: PlanSuscripcionAPI[]
 }
 
-export default function NegocioModal({ 
-  open, 
-  onOpenChange, 
+export default function NegocioModal({
+  open,
+  onOpenChange,
   negocioToEdit,
   propietariosList = [],
   categoriasList = [],
@@ -99,18 +100,18 @@ export default function NegocioModal({
       categoria_id: '',
       ubicacion_id: '',
       plan_id: '1', // Plan gratuito por defecto
-      
+
       nombre: '',
       slug: '',
       descripcion: '',
       descripcion_corta: '',
-      
+
       telefono_principal: '',
       telefono_secundario: '',
       email: '',
       sitio_web: '',
       whatsapp: '',
-      
+
       redes_sociales: JSON.stringify({
         facebook: '',
         instagram: '',
@@ -118,23 +119,23 @@ export default function NegocioModal({
         linkedin: '',
         youtube: '',
       }, null, 2),
-      
+
       logo_url: '',
       banner_url: '',
       galeria_imagenes: JSON.stringify([], null, 2),
-      
+
       estado: 'borrador',
       verificado: false,
       destacado: false,
       permite_pedidos: true,
-      
+
       seo_title: '',
       seo_description: '',
       seo_keywords: '',
-      
+
       configuracion: JSON.stringify({}, null, 2),
       metadata: JSON.stringify({}, null, 2),
-      
+
       suscripcion_inicio: undefined,
       suscripcion_fin: undefined,
     }
@@ -159,7 +160,7 @@ export default function NegocioModal({
   const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nombre = e.target.value;
     form.setValue('nombre', nombre);
-    
+
     // Solo actualizar el slug si el usuario no lo ha modificado manualmente
     if (!form.getValues('slug') || form.getValues('slug') === generateSlug(form.getValues('nombre'))) {
       form.setValue('slug', generateSlug(nombre));
@@ -170,7 +171,7 @@ export default function NegocioModal({
     try {
       setIsSaving(true)
       console.log('Datos del formulario:', data)
-      
+
       // Formatear datos con JSON
       const formattedData = {
         ...data,
@@ -179,13 +180,13 @@ export default function NegocioModal({
         configuracion: JSON.parse(data.configuracion || '{}'),
         metadata: JSON.parse(data.metadata || '{}'),
       }
-      
+
       // Aquí iría la lógica para guardar en la base de datos
       // await createNegocio(formattedData) o await updateNegocio(formattedData)
-      
+
       // Simular una operación asíncrona
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      
+
       setIsSaving(false)
       onOpenChange(false)
     } catch (error) {
@@ -243,8 +244,8 @@ export default function NegocioModal({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Propietario</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
+                        <Select
+                          onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -274,8 +275,8 @@ export default function NegocioModal({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Plan de Suscripción</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
+                        <Select
+                          onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -310,7 +311,7 @@ export default function NegocioModal({
                       <FormItem>
                         <FormLabel>Nombre</FormLabel>
                         <FormControl>
-                          <Input 
+                          <Input
                             placeholder="Nombre del negocio"
                             {...field}
                             onChange={handleNombreChange}
@@ -348,8 +349,8 @@ export default function NegocioModal({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Categoría</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
+                        <Select
+                          onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -381,8 +382,8 @@ export default function NegocioModal({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Ubicación</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
+                        <Select
+                          onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -589,12 +590,12 @@ export default function NegocioModal({
                           <FormControl>
                             <Input {...field} value={field.value || ''} className="hidden" />
                           </FormControl>
-                          
+
                           {logoPreview ? (
                             <div className="border rounded-md p-2 max-w-xs">
-                              <img 
-                                src={logoPreview} 
-                                alt="Logo preview" 
+                              <img
+                                src={logoPreview}
+                                alt="Logo preview"
                                 className="w-full h-auto"
                               />
                             </div>
@@ -603,10 +604,10 @@ export default function NegocioModal({
                               <p className="text-slate-500 text-sm">No hay logo seleccionado</p>
                             </div>
                           )}
-                          
-                          <Button 
-                            type="button" 
-                            variant="outline" 
+
+                          <Button
+                            type="button"
+                            variant="outline"
                             onClick={handleLogoUpload}
                             className="max-w-xs"
                           >
@@ -633,12 +634,12 @@ export default function NegocioModal({
                           <FormControl>
                             <Input {...field} value={field.value || ''} className="hidden" />
                           </FormControl>
-                          
+
                           {bannerPreview ? (
                             <div className="border rounded-md p-2">
-                              <img 
-                                src={bannerPreview} 
-                                alt="Banner preview" 
+                              <img
+                                src={bannerPreview}
+                                alt="Banner preview"
                                 className="w-full h-auto"
                               />
                             </div>
@@ -647,10 +648,10 @@ export default function NegocioModal({
                               <p className="text-slate-500 text-sm">No hay banner seleccionado</p>
                             </div>
                           )}
-                          
-                          <Button 
-                            type="button" 
-                            variant="outline" 
+
+                          <Button
+                            type="button"
+                            variant="outline"
                             onClick={handleBannerUpload}
                           >
                             <Upload className="h-4 w-4 mr-2" />
@@ -707,8 +708,8 @@ export default function NegocioModal({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Estado</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
+                        <Select
+                          onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -878,7 +879,7 @@ export default function NegocioModal({
                 {/* SEO */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Información SEO</h3>
-                  
+
                   {/* SEO Title */}
                   <FormField
                     control={form.control}
@@ -905,10 +906,10 @@ export default function NegocioModal({
                       <FormItem>
                         <FormLabel>Descripción SEO</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Descripción para motores de búsqueda" 
-                            {...field} 
-                            value={field.value || ''} 
+                          <Textarea
+                            placeholder="Descripción para motores de búsqueda"
+                            {...field}
+                            value={field.value || ''}
                             maxLength={160}
                             rows={2}
                           />
@@ -929,10 +930,10 @@ export default function NegocioModal({
                       <FormItem>
                         <FormLabel>Palabras Clave SEO</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="palabra1, palabra2, palabra3, ..." 
-                            {...field} 
-                            value={field.value || ''} 
+                          <Input
+                            placeholder="palabra1, palabra2, palabra3, ..."
+                            {...field}
+                            value={field.value || ''}
                             maxLength={300}
                           />
                         </FormControl>

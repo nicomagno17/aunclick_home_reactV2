@@ -18,6 +18,7 @@ import { format } from 'date-fns'
 import ModalWrapper from './modal-wrapper'
 import { useToast } from '@/hooks/use-toast'
 import { productosService } from '@/services'
+import { ProductoAPI, NegocioAPI, CategoriaAPI } from '@/types/product'
 
 
 // Esquema de validación para el formulario
@@ -72,19 +73,19 @@ type FormValues = z.infer<typeof formSchema>
 interface ProductoModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  productoToEdit?: any
-  negociosList?: any[]
-  categoriasList?: any[]
+  productoToEdit?: ProductoAPI
+  negociosList?: NegocioAPI[]
+  categoriasList?: CategoriaAPI[]
 }
 
-export default function ProductoModal({ 
-  open, 
-  onOpenChange, 
+export default function ProductoModal({
+  open,
+  onOpenChange,
   productoToEdit
 }: ProductoModalProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const [negociosList, setNegociosList] = useState<any[]>([])
-  const [categoriasList, setCategoriasList] = useState<any[]>([])
+  const [negociosList, setNegociosList] = useState<NegocioAPI[]>([])
+  const [categoriasList, setCategoriasList] = useState<CategoriaAPI[]>([])
   const [activeTab, setActiveTab] = useState('informacion')
   const [imagenes, setImagenes] = useState<any[]>([])
   const [imagenActual, setImagenActual] = useState<string | null>(null)
@@ -194,7 +195,7 @@ export default function ProductoModal({
 
       if (!values.categoria_id || values.categoria_id === '') {
         toast({
-          title: "Error", 
+          title: "Error",
           description: "Debe seleccionar una categoría",
           variant: "destructive",
         })
@@ -331,7 +332,7 @@ export default function ProductoModal({
           >
             Anterior
           </Button>
-          
+
           <div className="flex gap-2">
             {!isLastStep ? (
               <Button
@@ -375,8 +376,8 @@ export default function ProductoModal({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Negocio</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
+                        <Select
+                          onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -404,8 +405,8 @@ export default function ProductoModal({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Categoría</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
+                        <Select
+                          onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -436,7 +437,7 @@ export default function ProductoModal({
                       <FormItem>
                         <FormLabel>Nombre</FormLabel>
                         <FormControl>
-                          <Input 
+                          <Input
                             placeholder="Nombre del producto"
                             {...field}
                             onChange={handleNombreChange}
@@ -518,8 +519,8 @@ export default function ProductoModal({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Estado</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
+                        <Select
+                          onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -632,11 +633,11 @@ export default function ProductoModal({
                       <FormItem>
                         <FormLabel>Precio Anterior</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            min="0" 
-                            step="0.01" 
-                            {...field} 
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            {...field}
                             value={field.value === undefined ? '' : field.value}
                           />
                         </FormControl>
@@ -656,8 +657,8 @@ export default function ProductoModal({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Moneda</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
+                      <Select
+                        onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -735,11 +736,11 @@ export default function ProductoModal({
                       <FormItem>
                         <FormLabel>Stock Disponible</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            min="0" 
-                            step="1" 
-                            {...field} 
+                          <Input
+                            type="number"
+                            min="0"
+                            step="1"
+                            {...field}
                             disabled={!form.watch('maneja_stock')}
                           />
                         </FormControl>
@@ -756,11 +757,11 @@ export default function ProductoModal({
                       <FormItem>
                         <FormLabel>Stock Mínimo</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            min="0" 
-                            step="1" 
-                            {...field} 
+                          <Input
+                            type="number"
+                            min="0"
+                            step="1"
+                            {...field}
                             disabled={!form.watch('maneja_stock')}
                           />
                         </FormControl>
@@ -782,12 +783,12 @@ export default function ProductoModal({
                       <FormItem>
                         <FormLabel>Peso (kg)</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            min="0" 
-                            step="0.001" 
-                            placeholder="Ej: 1.5" 
-                            {...field} 
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.001"
+                            placeholder="Ej: 1.5"
+                            {...field}
                             value={field.value === undefined ? '' : field.value}
                           />
                         </FormControl>
@@ -892,9 +893,9 @@ export default function ProductoModal({
                 <div className="flex flex-col gap-4">
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-medium">Imágenes del Producto</h3>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       onClick={handleImageUpload}
                     >
                       <Upload className="h-4 w-4 mr-2" />
@@ -905,9 +906,9 @@ export default function ProductoModal({
                   {/* Vista previa de la imagen actual */}
                   {imagenActual ? (
                     <div className="border rounded-md p-2">
-                      <img 
-                        src={imagenActual} 
-                        alt="Imagen preview" 
+                      <img
+                        src={imagenActual}
+                        alt="Imagen preview"
                         className="w-full h-auto max-h-96 object-contain"
                       />
                     </div>
@@ -921,15 +922,15 @@ export default function ProductoModal({
                   {imagenes.length > 0 && (
                     <div className="grid grid-cols-4 gap-4 mt-4">
                       {imagenes.map((imagen, index) => (
-                        <div 
-                          key={index} 
+                        <div
+                          key={index}
                           className={`border rounded-md overflow-hidden relative cursor-pointer
                                     ${imagen.url === imagenActual ? 'ring-2 ring-purple-500' : ''}
                                     ${imagen.esPrincipal ? 'border-purple-500 border-2' : ''}`}
                           onClick={() => setImagenActual(imagen.url)}
                         >
-                          <img 
-                            src={imagen.url} 
+                          <img
+                            src={imagen.url}
                             alt={`Imagen ${index + 1}`}
                             className="w-full h-24 object-cover"
                           />
@@ -1007,10 +1008,10 @@ export default function ProductoModal({
                       <FormItem>
                         <FormLabel>Descripción SEO</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Descripción para motores de búsqueda" 
-                            {...field} 
-                            value={field.value || ''} 
+                          <Textarea
+                            placeholder="Descripción para motores de búsqueda"
+                            {...field}
+                            value={field.value || ''}
                             maxLength={160}
                             rows={2}
                           />
@@ -1031,10 +1032,10 @@ export default function ProductoModal({
                       <FormItem>
                         <FormLabel>Palabras Clave SEO</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="palabra1, palabra2, palabra3, ..." 
-                            {...field} 
-                            value={field.value || ''} 
+                          <Input
+                            placeholder="palabra1, palabra2, palabra3, ..."
+                            {...field}
+                            value={field.value || ''}
                             maxLength={300}
                           />
                         </FormControl>

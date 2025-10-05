@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +16,7 @@ type Message = {
 export default function SocketDemo() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [socket, setSocket] = useState<any>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -110,8 +110,8 @@ export default function SocketDemo() {
               disabled={!isConnected}
               className="flex-1"
             />
-            <Button 
-              onClick={sendMessage} 
+            <Button
+              onClick={sendMessage}
               disabled={!isConnected || !inputMessage.trim()}
             >
               Send

@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import ModalWrapper from './modal-wrapper'
 import { PlusCircle, MinusCircle } from 'lucide-react'
+import { PlanSuscripcionAPI } from '@/types/product'
 
 // Esquema de validación para el formulario
 const formSchema = z.object({
@@ -32,7 +33,7 @@ type FormValues = z.infer<typeof formSchema>
 interface PlanSuscripcionModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  planToEdit?: any // Tipo más específico cuando tengamos la estructura
+  planToEdit?: PlanSuscripcionAPI
 }
 
 export default function PlanSuscripcionModal({ open, onOpenChange, planToEdit }: PlanSuscripcionModalProps) {
@@ -60,13 +61,13 @@ export default function PlanSuscripcionModal({ open, onOpenChange, planToEdit }:
     try {
       setIsSaving(true)
       console.log('Datos del formulario:', data)
-      
+
       // Aquí iría la lógica para guardar en la base de datos
       // await createPlanSuscripcion(data) o await updatePlanSuscripcion(data)
-      
+
       // Simular una operación asíncrona
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      
+
       setIsSaving(false)
       onOpenChange(false)
     } catch (error) {
@@ -286,7 +287,7 @@ export default function PlanSuscripcionModal({ open, onOpenChange, planToEdit }:
                 <PlusCircle className="h-4 w-4 mr-2" /> Agregar característica
               </Button>
             </div>
-            
+
             {form.watch('caracteristicas').map((_, index) => (
               <div key={index} className="flex items-center space-x-2">
                 <FormField

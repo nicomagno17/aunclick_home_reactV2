@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import ModalWrapper from './modal-wrapper'
+import { UbicacionAPI } from '@/types/product'
 
 // Esquema de validación para el formulario
 const formSchema = z.object({
@@ -29,12 +30,12 @@ type FormValues = z.infer<typeof formSchema>
 interface UbicacionModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  ubicacionToEdit?: any // Tipo más específico cuando tengamos la estructura
+  ubicacionToEdit?: UbicacionAPI
 }
 
-export default function UbicacionModal({ 
-  open, 
-  onOpenChange, 
+export default function UbicacionModal({
+  open,
+  onOpenChange,
   ubicacionToEdit
 }: UbicacionModalProps) {
   const [isSaving, setIsSaving] = useState(false)
@@ -60,13 +61,13 @@ export default function UbicacionModal({
     try {
       setIsSaving(true)
       console.log('Datos del formulario:', data)
-      
+
       // Aquí iría la lógica para guardar en la base de datos
       // await createUbicacion(data) o await updateUbicacion(data)
-      
+
       // Simular una operación asíncrona
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      
+
       setIsSaving(false)
       onOpenChange(false)
     } catch (error) {
@@ -107,14 +108,14 @@ export default function UbicacionModal({
   const buscarCoordenadas = () => {
     // En una implementación real, se usaría una API de geocodificación como Google Maps o Mapbox
     const direccion = `${form.getValues('direccion_completa')}, ${form.getValues('ciudad')}, ${form.getValues('departamento_estado')}, ${form.getValues('pais')}`
-    
+
     // Simulamos una respuesta de coordenadas aleatorias
     const latitud = (Math.random() * 180) - 90
     const longitud = (Math.random() * 360) - 180
-    
+
     form.setValue('latitud', Math.round(latitud * 1000000) / 1000000)
     form.setValue('longitud', Math.round(longitud * 1000000) / 1000000)
-    
+
     console.log(`Simulando geocodificación para: ${direccion}`)
   }
 
@@ -138,8 +139,8 @@ export default function UbicacionModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>País</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -170,8 +171,8 @@ export default function UbicacionModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Zona Horaria</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -265,10 +266,10 @@ export default function UbicacionModal({
               <FormItem>
                 <FormLabel>Dirección Completa</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="Ej: Calle 100 # 15-20, Edificio Torre Empresarial, Piso 5" 
-                    {...field} 
-                    value={field.value || ''} 
+                  <Input
+                    placeholder="Ej: Calle 100 # 15-20, Edificio Torre Empresarial, Piso 5"
+                    {...field}
+                    value={field.value || ''}
                   />
                 </FormControl>
                 <FormDescription>
@@ -298,12 +299,12 @@ export default function UbicacionModal({
                 <FormItem>
                   <FormLabel>Latitud</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      placeholder="Ej: 4.7109" 
+                    <Input
+                      type="number"
+                      placeholder="Ej: 4.7109"
                       step="0.000001"
-                      {...field} 
-                      value={field.value === undefined ? '' : field.value} 
+                      {...field}
+                      value={field.value === undefined ? '' : field.value}
                     />
                   </FormControl>
                   <FormDescription>
@@ -322,12 +323,12 @@ export default function UbicacionModal({
                 <FormItem>
                   <FormLabel>Longitud</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      placeholder="Ej: -74.0721" 
+                    <Input
+                      type="number"
+                      placeholder="Ej: -74.0721"
                       step="0.000001"
-                      {...field} 
-                      value={field.value === undefined ? '' : field.value} 
+                      {...field}
+                      value={field.value === undefined ? '' : field.value}
                     />
                   </FormControl>
                   <FormDescription>

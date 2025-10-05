@@ -2,23 +2,24 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { ProductoCarrusel } from '@/types/product'
 
 interface ProductoCarouselProps {
   titulo: string
   descripcion: string
-  productos: any[]
+  productos: ProductoCarrusel[]
   onAgregarProducto: () => void
   textoBotonAgregar: string
-  ProductoCard: React.ComponentType<{ producto: any }>
+  ProductoCard: React.ComponentType<{ producto: ProductoCarrusel }>
 }
 
-export function AdminProductCarousel({ 
-  titulo, 
-  descripcion, 
-  productos, 
-  onAgregarProducto, 
+export function AdminProductCarousel({
+  titulo,
+  descripcion,
+  productos,
+  onAgregarProducto,
   textoBotonAgregar,
-  ProductoCard 
+  ProductoCard
 }: ProductoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -31,13 +32,13 @@ export function AdminProductCarousel({
   const CARD_HEIGHT_DESKTOP = 256 // h-64 = 16rem = 256px
   const CARD_HEIGHT_MOBILE = 176 // h-44 = 11rem = 176px
   const GAP = 12 // gap-3 = 0.75rem = 12px
-  
+
   // Total de elementos: productos + 1 (botón agregar)
   const totalItems = productos.length + 1
-  
+
   // Responsive breakpoint detection (simplified for server-side rendering)
   const [isMobile, setIsMobile] = useState(false)
-  
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
@@ -46,7 +47,7 @@ export function AdminProductCarousel({
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
-  
+
   const cardsPerView = isMobile ? CARDS_PER_VIEW_MOBILE : CARDS_PER_VIEW_DESKTOP
   const cardWidth = isMobile ? CARD_WIDTH_MOBILE : CARD_WIDTH_DESKTOP
   const maxIndex = Math.max(0, totalItems - cardsPerView)
@@ -56,7 +57,7 @@ export function AdminProductCarousel({
   const handlePrevious = () => {
     const newIndex = Math.max(0, currentIndex - 1)
     setCurrentIndex(newIndex)
-    
+
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({
         left: newIndex * (cardWidth + GAP),
@@ -68,7 +69,7 @@ export function AdminProductCarousel({
   const handleNext = () => {
     const newIndex = Math.min(maxIndex, currentIndex + 1)
     setCurrentIndex(newIndex)
-    
+
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({
         left: newIndex * (cardWidth + GAP),
@@ -91,25 +92,25 @@ export function AdminProductCarousel({
     <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
       <h2 className="text-base md:text-xl font-semibold text-white mb-4">{titulo}</h2>
       <p className="text-gray-400 text-xs md:text-base mb-6">{descripcion}</p>
-      
+
       <div className="relative">
         {/* Container con scroll horizontal */}
-        <div 
+        <div
           ref={scrollContainerRef}
           className="overflow-x-auto scrollbar-hide scroll-smooth"
-          style={{ 
-            scrollbarWidth: 'none', 
+          style={{
+            scrollbarWidth: 'none',
             msOverflowStyle: 'none'
           }}
         >
-          <div 
+          <div
             className="flex gap-3"
             style={{
               width: `${totalItems * (cardWidth + GAP) - GAP}px`
             }}
           >
             {/* Tarjeta con botón agregar - siempre primera */}
-            <div 
+            <div
               className="flex-shrink-0 bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg p-2 hover:border-gray-500 transition-colors cursor-pointer md:w-44 w-28 md:h-64 h-44 flex flex-col justify-center"
               onClick={onAgregarProducto}
             >
@@ -122,7 +123,7 @@ export function AdminProductCarousel({
                 </p>
               </div>
             </div>
-            
+
             {/* Tarjetas de productos existentes */}
             {productos.map((producto) => (
               <div key={producto.id} className="flex-shrink-0 md:w-44 w-28">
@@ -131,7 +132,7 @@ export function AdminProductCarousel({
             ))}
           </div>
         </div>
-        
+
         {/* Flechas de navegación */}
         {showArrows && currentIndex > 0 && (
           <button
@@ -161,11 +162,10 @@ export function AdminProductCarousel({
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                currentIndex === index 
-                  ? 'bg-yellow-400' 
+              className={`w-2 h-2 rounded-full transition-colors ${currentIndex === index
+                  ? 'bg-yellow-400'
                   : 'bg-gray-600 hover:bg-gray-500'
-              }`}
+                }`}
               aria-label={`Ir a página ${index + 1}`}
             />
           ))}

@@ -22,10 +22,21 @@ export function ImageCarouselSections({ sections, autoPlayInterval = 5000 }: Ima
     images: section.images.slice(0, 3) // 3 imágenes por sección para desktop
   }))
 
-  const mobileSections = []
+  interface ImageData {
+    src: string;
+    alt: string;
+    title: string;
+  }
+
+  interface CarouselSection {
+    title: string;
+    images: ImageData[];
+  }
+
+  const mobileSections: CarouselSection[] = []
   let imageIndex = 0
   for (let i = 0; i < 6; i++) {
-    const sectionImages = []
+    const sectionImages: ImageData[] = []
     for (let j = 0; j < 2; j++) {
       if (imageIndex < 12) { // Total de 12 imágenes
         const sectionIndex = Math.floor(imageIndex / 3)
@@ -50,10 +61,10 @@ export function ImageCarouselSections({ sections, autoPlayInterval = 5000 }: Ima
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640) // sm breakpoint
     }
-    
+
     checkMobile()
     window.addEventListener('resize', checkMobile)
-    
+
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
@@ -99,7 +110,7 @@ export function ImageCarouselSections({ sections, autoPlayInterval = 5000 }: Ima
     <div className="relative w-full my-12">
       {/* Contenedor principal del carrusel */}
       <div className="overflow-hidden rounded-xl">
-        <div 
+        <div
           className="flex transition-transform duration-2000 ease-in-out"
           style={{ transform: `translateX(-${currentSection * 100}%)` }}
         >
@@ -160,11 +171,10 @@ export function ImageCarouselSections({ sections, autoPlayInterval = 5000 }: Ima
           <button
             key={index}
             onClick={() => goToSection(index)}
-            className={`w-4 h-4 rounded-full transition-all duration-300 ${
-              index === currentSection 
-                ? 'bg-purple-600 scale-125' 
+            className={`w-4 h-4 rounded-full transition-all duration-300 ${index === currentSection
+                ? 'bg-purple-600 scale-125'
                 : 'bg-gray-300 hover:bg-gray-400'
-            }`}
+              }`}
             aria-label={`Ir a la sección ${index + 1}`}
           />
         ))}
@@ -176,11 +186,10 @@ export function ImageCarouselSections({ sections, autoPlayInterval = 5000 }: Ima
           <button
             key={index}
             onClick={() => goToSection(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentSection 
-                ? 'bg-purple-600 scale-125' 
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSection
+                ? 'bg-purple-600 scale-125'
                 : 'bg-gray-300 hover:bg-gray-400'
-            }`}
+              }`}
             aria-label={`Ir a la sección ${index + 1}`}
           />
         ))}
@@ -195,9 +204,8 @@ export function ImageCarouselSections({ sections, autoPlayInterval = 5000 }: Ima
           }
         }}
         disabled={currentSection === 0}
-        className={`absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 transition-all duration-200 hover:scale-110 z-10 shadow-lg ${
-          currentSection === 0 ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
+        className={`absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 transition-all duration-200 hover:scale-110 z-10 shadow-lg ${currentSection === 0 ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
         aria-label="Sección anterior"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -213,9 +221,8 @@ export function ImageCarouselSections({ sections, autoPlayInterval = 5000 }: Ima
           }
         }}
         disabled={currentSection === currentSections.length - 1}
-        className={`absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 transition-all duration-200 hover:scale-110 z-10 shadow-lg ${
-          currentSection === currentSections.length - 1 ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
+        className={`absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 transition-all duration-200 hover:scale-110 z-10 shadow-lg ${currentSection === currentSections.length - 1 ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
         aria-label="Siguiente sección"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,7 +233,7 @@ export function ImageCarouselSections({ sections, autoPlayInterval = 5000 }: Ima
       {/* Indicador de dirección actual - Desktop */}
       <div className="hidden sm:block text-center mt-4">
         <span className="text-sm text-gray-600">
-          Sección {currentSection + 1} de {desktopSections.length} • 
+          Sección {currentSection + 1} de {desktopSections.length} •
           Dirección: {direction === 'forward' ? 'Adelante →' : '← Atrás'}
         </span>
       </div>

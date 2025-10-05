@@ -80,8 +80,10 @@ export default function AdminPage() {
     precioAnterior: ''
   })
 
+  import { ProductoCarrusel } from '@/types/product'
+
   // Estados para almacenar los productos agregados en cada sección
-  const [productos, setProductos] = useState({
+  const [productos, setProductos] = useState<Record<string, ProductoCarrusel[]>>({
     destacados: [],
     ofertas: [],
     novedades: [],
@@ -94,14 +96,14 @@ export default function AdminPage() {
   const [imagenProducto, setImagenProducto] = useState<string | null>(null)
 
   // Estado para el popup de información del producto
-  const [selectedProducto, setSelectedProducto] = useState<any | null>(null)
+  const [selectedProducto, setSelectedProducto] = useState<ProductoCarrusel | null>(null)
 
   // Estado para el producto en edición
-  const [editingProducto, setEditingProducto] = useState<any | null>(null)
+  const [editingProducto, setEditingProducto] = useState<ProductoCarrusel | null>(null)
 
   // Estado para el modal de confirmación de eliminación
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [productToDelete, setProductToDelete] = useState<{ producto: any, section: string } | null>(null)
+  const [productToDelete, setProductToDelete] = useState<{ producto: ProductoCarrusel, section: string } | null>(null)
 
   // Estado para el popup de ayuda
   const [showHelpPopup, setShowHelpPopup] = useState(false)
@@ -245,7 +247,7 @@ export default function AdminPage() {
   }
 
   // Función para abrir modal en modo edición
-  const openEditModal = (producto: any, section: string) => {
+  const openEditModal = (producto: ProductoCarrusel, section: string) => {
     setSelectedSection(section)
     setEditingProducto(producto)
 
@@ -291,7 +293,7 @@ export default function AdminPage() {
   }
 
   // Función para abrir confirmación de eliminación
-  const abrirConfirmacionEliminar = (producto: any, section: string) => {
+  const abrirConfirmacionEliminar = (producto: ProductoCarrusel, section: string) => {
     setProductToDelete({ producto, section })
     setShowDeleteConfirm(true)
   }
@@ -1351,8 +1353,8 @@ export default function AdminPage() {
                       <label
                         htmlFor="opcion-genero"
                         className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.genero
-                            ? 'bg-blue-500 border-blue-500'
-                            : 'border-gray-400 hover:border-gray-300'
+                          ? 'bg-blue-500 border-blue-500'
+                          : 'border-gray-400 hover:border-gray-300'
                           }`}
                         onClick={(e) => {
                           e.preventDefault();
@@ -1382,8 +1384,8 @@ export default function AdminPage() {
                       <label
                         htmlFor="opcion-medidas"
                         className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.medidas
-                            ? 'bg-blue-500 border-blue-500'
-                            : 'border-gray-400 hover:border-gray-300'
+                          ? 'bg-blue-500 border-blue-500'
+                          : 'border-gray-400 hover:border-gray-300'
                           }`}
                         onClick={(e) => {
                           e.preventDefault();
@@ -1413,8 +1415,8 @@ export default function AdminPage() {
                       <label
                         htmlFor="opcion-tallas-calzado"
                         className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.tallasCalzado
-                            ? 'bg-blue-500 border-blue-500'
-                            : 'border-gray-400 hover:border-gray-300'
+                          ? 'bg-blue-500 border-blue-500'
+                          : 'border-gray-400 hover:border-gray-300'
                           }`}
                         onClick={(e) => {
                           e.preventDefault();
@@ -1444,8 +1446,8 @@ export default function AdminPage() {
                       <label
                         htmlFor="opcion-tallas-ropa"
                         className={`flex items-center justify-center w-3.5 h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.tallasRopa
-                            ? 'bg-blue-500 border-blue-500'
-                            : 'border-gray-400 hover:border-gray-300'
+                          ? 'bg-blue-500 border-blue-500'
+                          : 'border-gray-400 hover:border-gray-300'
                           }`}
                         onClick={(e) => {
                           e.preventDefault();
@@ -1534,8 +1536,8 @@ export default function AdminPage() {
                               type="button"
                               onClick={() => handleTallaToggle('tallasCalzado', talla)}
                               className={`px-1 py-0.5 text-xs rounded transition-colors text-center ${productoData.tallasCalzado.includes(talla)
-                                  ? 'bg-blue-500 text-white'
-                                  : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
                                 }`}
                             >
                               {talla}
@@ -1563,8 +1565,8 @@ export default function AdminPage() {
                               type="button"
                               onClick={() => handleTallaToggle('tallasRopa', talla === 'T.Única' ? 'Talla Única' : talla)}
                               className={`px-1 py-0.5 text-xs rounded transition-colors text-center ${productoData.tallasRopa.includes(talla === 'T.Única' ? 'Talla Única' : talla)
-                                  ? 'bg-blue-500 text-white'
-                                  : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
                                 }`}
                             >
                               {talla}
@@ -1630,10 +1632,10 @@ export default function AdminPage() {
                     Descripción
                   </Label>
                   <span className={`text-sm ${contarPalabras(descripcion) > 45
-                      ? 'text-yellow-400'
-                      : contarPalabras(descripcion) > 48
-                        ? 'text-red-400'
-                        : 'text-gray-400'
+                    ? 'text-yellow-400'
+                    : contarPalabras(descripcion) > 48
+                      ? 'text-red-400'
+                      : 'text-gray-400'
                     }`}>
                     {contarPalabras(descripcion)}/50 palabras
                   </span>
@@ -1650,10 +1652,10 @@ export default function AdminPage() {
                   <div className="w-full bg-gray-600 rounded-full h-2">
                     <div
                       className={`h-2 rounded-full transition-all duration-300 ${contarPalabras(descripcion) > 48
-                          ? 'bg-red-500'
-                          : contarPalabras(descripcion) > 45
-                            ? 'bg-yellow-500'
-                            : 'bg-blue-500'
+                        ? 'bg-red-500'
+                        : contarPalabras(descripcion) > 45
+                          ? 'bg-yellow-500'
+                          : 'bg-blue-500'
                         }`}
                       style={{ width: `${(contarPalabras(descripcion) / 50) * 100}%` }}
                     ></div>
