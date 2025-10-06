@@ -50,9 +50,11 @@ export async function POST(request: NextRequest) {
     if (session.user.rol !== 'admin') {
       const limitResult = await checkNegociosLimit(session)
       if (!limitResult.success) {
+        // Type assertion explícita para TypeScript
+        const errorResult = limitResult as { success: false; error: string; status: number }
         return NextResponse.json(
-          { error: limitResult.error },
-          { status: limitResult.status }
+          { error: errorResult.error },
+          { status: errorResult.status }
         )
       }
 

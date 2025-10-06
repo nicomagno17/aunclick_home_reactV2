@@ -172,7 +172,9 @@ export const checkNegociosLimit = async (session: any): Promise<AuthResult<boole
 // Helper para manejar errores de autenticación en endpoints
 export const handleAuthError = (authResult: AuthResult<any>): NextResponse | null => {
   if (!authResult.success) {
-    return createAuthResponse(authResult.status, authResult.error)
+    // Type assertion explícita para TypeScript
+    const errorResult = authResult as { success: false; error: string; status: number }
+    return createAuthResponse(errorResult.status, errorResult.error)
   }
   return null
 }

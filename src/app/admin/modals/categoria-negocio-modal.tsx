@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import ModalWrapper from './modal-wrapper'
-import { CategoriaAPI } from '@/types/product'
+import { CategoriaNegocio } from '@/services/categorias-negocios.service'
 
 // Esquema de validación para el formulario
 const formSchema = z.object({
@@ -29,11 +29,16 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
+// Tipo para el formulario que convierte parent_id a string para el select
+type FormCategoriaNegocio = Omit<CategoriaNegocio, 'parent_id' | 'id' | 'created_at' | 'updated_at'> & {
+  parent_id?: string;
+}
+
 interface CategoriaNegocioModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  categoriaToEdit?: CategoriaAPI // Tipo más específico cuando tengamos la estructura
-  categoriasList?: CategoriaAPI[] // Lista de categorías para seleccionar como padre
+  categoriaToEdit?: CategoriaNegocio // Tipo más específico cuando tengamos la estructura
+  categoriasList?: CategoriaNegocio[] // Lista de categorías para seleccionar como padre
 }
 
 export default function CategoriaNegocioModal({
@@ -44,20 +49,33 @@ export default function CategoriaNegocioModal({
 }: CategoriaNegocioModalProps) {
   const [isSaving, setIsSaving] = useState(false)
 
+  // Convertir categoriaToEdit a formato del formulario
+  const defaultFormValues: FormValues = categoriaToEdit ? {
+    nombre: categoriaToEdit.nombre,
+    slug: categoriaToEdit.slug,
+    descripcion: categoriaToEdit.descripcion || '',
+    icono: categoriaToEdit.icono || '',
+    color_hex: categoriaToEdit.color_hex,
+    parent_id: categoriaToEdit.parent_id?.toString() || '',
+    nivel: categoriaToEdit.nivel,
+    activo: categoriaToEdit.activo,
+    orden: categoriaToEdit.orden
+  } : {
+    nombre: '',
+    slug: '',
+    descripcion: '',
+    icono: '',
+    color_hex: '#3B82F6',
+    parent_id: '',
+    nivel: 1,
+    activo: true,
+    orden: 1
+  }
+
   // Inicializar formulario con valores por defecto o valores para editar
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: categoriaToEdit || {
-      nombre: '',
-      slug: '',
-      descripcion: '',
-      icono: '',
-      color_hex: '#3B82F6',
-      parent_id: '',
-      nivel: 1,
-      activo: true,
-      orden: 1
-    }
+    defaultValues: defaultFormValues
   })
 
   // Generar slug automáticamente a partir del nombre
