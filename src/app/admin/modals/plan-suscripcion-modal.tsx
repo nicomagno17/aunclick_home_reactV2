@@ -17,15 +17,15 @@ import { PlanSuscripcionAPI } from '@/types/product'
 const formSchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   descripcion: z.string().optional(),
-  precio_mensual: z.coerce.number().min(0, 'El precio debe ser mayor o igual a 0'),
-  precio_anual: z.coerce.number().min(0, 'El precio debe ser mayor o igual a 0'),
-  descuento_anual: z.coerce.number().min(0, 'El descuento debe ser mayor o igual a 0').max(100, 'El descuento no puede superar el 100%'),
-  max_negocios: z.coerce.number().int().min(1, 'Debe permitir al menos 1 negocio'),
-  max_productos_por_negocio: z.coerce.number().int().min(1, 'Debe permitir al menos 1 producto'),
-  max_imagenes_por_producto: z.coerce.number().int().min(1, 'Debe permitir al menos 1 imagen'),
+  precio_mensual: z.number().min(0, 'El precio debe ser mayor o igual a 0'),
+  precio_anual: z.number().min(0, 'El precio debe ser mayor o igual a 0'),
+  descuento_anual: z.number().min(0, 'El descuento debe ser mayor o igual a 0').max(100, 'El descuento no puede superar el 100%'),
+  max_negocios: z.number().int().min(1, 'Debe permitir al menos 1 negocio'),
+  max_productos_por_negocio: z.number().int().min(1, 'Debe permitir al menos 1 producto'),
+  max_imagenes_por_producto: z.number().int().min(1, 'Debe permitir al menos 1 imagen'),
   caracteristicas: z.array(z.string().min(1, 'La característica no puede estar vacía')),
-  activo: z.boolean().default(true),
-  orden_visualizacion: z.coerce.number().int().min(1, 'El orden debe ser al menos 1')
+  activo: z.boolean(),
+  orden_visualizacion: z.number().int().min(1, 'El orden debe ser al menos 1')
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -42,7 +42,19 @@ export default function PlanSuscripcionModal({ open, onOpenChange, planToEdit }:
   // Inicializar formulario con valores por defecto o valores para editar
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: planToEdit || {
+    defaultValues: planToEdit ? {
+      nombre: planToEdit.nombre,
+      descripcion: planToEdit.descripcion || '',
+      precio_mensual: planToEdit.precio_mensual,
+      precio_anual: planToEdit.precio_anual,
+      descuento_anual: planToEdit.descuento_anual,
+      max_negocios: planToEdit.max_negocios,
+      max_productos_por_negocio: planToEdit.max_productos_por_negocio,
+      max_imagenes_por_producto: planToEdit.max_imagenes_por_producto,
+      caracteristicas: Array.isArray(planToEdit.caracteristicas) ? planToEdit.caracteristicas : [],
+      activo: planToEdit.activo,
+      orden_visualizacion: planToEdit.orden_visualizacion
+    } : {
       nombre: '',
       descripcion: '',
       precio_mensual: 0,
@@ -51,7 +63,7 @@ export default function PlanSuscripcionModal({ open, onOpenChange, planToEdit }:
       max_negocios: 1,
       max_productos_por_negocio: 50,
       max_imagenes_por_producto: 5,
-      caracteristicas: [''],
+      caracteristicas: [],
       activo: true,
       orden_visualizacion: 1
     }

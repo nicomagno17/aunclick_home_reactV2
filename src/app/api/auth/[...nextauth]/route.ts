@@ -26,24 +26,32 @@ interface Usuario {
 // Extender los tipos de NextAuth
 declare module 'next-auth' {
   interface Session {
-    user: Usuario & {
+    user: {
       id: number
       uuid: string
-      rol: string
-      estado: string
+      rol: Usuario['rol']
+      estado: Usuario['estado']
       nombre: string
       apellidos?: string
       avatar_url?: string
+      email: string
     }
   }
-
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface User extends Usuario { }
 }
 
 declare module 'next-auth/jwt' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  interface JWT extends Partial<Usuario> { }
+  interface JWT {
+    id: number
+    uuid: string
+    rol: Usuario['rol']
+    estado: Usuario['estado']
+    nombre: string
+    apellidos?: string
+    avatar_url?: string
+    email: string
+  }
 }
 
 export const authOptions = {
@@ -103,9 +111,8 @@ export const authOptions = {
             [usuario.id]
           )
 
-          // Retornar usuario sin password_hash
-          const { password_hash, ...userWithoutPassword } = usuario
-          return userWithoutPassword
+          // Retornar usuario completo (User type includes password_hash)
+          return usuario
 
         } catch (error) {
           console.error('Error en authorize:', error)
@@ -126,7 +133,7 @@ export const authOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user, trigger }: { token: JWT; user: any; trigger?: string }) {
       // Cuando el usuario inicia sesión, agregar datos personalizados al token
       if (trigger === 'signIn' && user) {
         token.id = user.id
@@ -142,17 +149,14 @@ export const authOptions = {
     },
 
     async session({ session, token }) {
-      // Pasar datos del token a la sesión del cliente
-      if (token) {
-        session.user.id = token.id
-        session.user.uuid = token.uuid
-        session.user.rol = token.rol
-        session.user.estado = token.estado
-        session.user.nombre = token.nombre
-        session.user.apellidos = token.apellidos
-        session.user.avatar_url = token.avatar_url
-      }
-
+      if (!session.user) session.user = {} as any
+      session.user.id = token.id as number
+      session.user.uuid = token.uuid as string
+      session.user.rol = token.rol as string
+      session.user.estado = token.estado as string
+      session.user.nombre = token.nombre as string
+      session.user.apellidos = token.apellidos as string | undefined
+      session.user.avatar_url = token.avatar_url as string | undefined
       return session
     }
   },

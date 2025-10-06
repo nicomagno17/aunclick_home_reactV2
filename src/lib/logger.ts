@@ -387,7 +387,7 @@ export async function logDatabaseQuery(
 // correlationStorage is already exported as a named export above
 
 // Default export
-export default {
+const loggerExports = {
   error,
   warn,
   info,
@@ -398,3 +398,5 @@ export default {
   getCorrelationId,
   setCorrelationContext
 }
+
+export default loggerExports

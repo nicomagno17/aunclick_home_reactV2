@@ -15,7 +15,7 @@ export interface Product {
 
 // Tipo para productos de carrusel del admin
 export interface ProductoCarrusel {
-  id: string;
+  id: number;
   categoria: string;
   subcategoria: string;
   nombre: string;
@@ -70,13 +70,27 @@ export interface NegocioAPI {
   nombre: string;
   slug: string;
   descripcion?: string;
-  logo_url?: string;
-  banner_url?: string;
-  telefono?: string;
+  descripcion_corta?: string;
+  telefono_principal?: string;
+  telefono_secundario?: string;
+  whatsapp?: string;
   email?: string;
   sitio_web?: string;
-  estado: 'borrador' | 'activo' | 'inactivo' | 'suspendido';
+  redes_sociales?: Record<string, string>;
+  galeria_imagenes?: string[];
+  logo_url?: string;
+  banner_url?: string;
+  estado: 'borrador' | 'activo' | 'inactivo' | 'suspendido' | 'eliminado';
   verificado: boolean;
+  destacado: boolean;
+  permite_pedidos: boolean;
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string;
+  configuracion?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+  suscripcion_inicio?: string;
+  suscripcion_fin?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -95,10 +109,18 @@ export interface CategoriaAPI {
 // Tipo para ubicaciones
 export interface UbicacionAPI {
   id: number;
-  nombre: string;
-  tipo: 'pais' | 'departamento' | 'ciudad' | 'zona';
-  padre_id?: number;
+  pais: string;
+  departamento_estado: string;
+  ciudad: string;
+  zona_barrio?: string;
+  direccion_completa?: string;
+  codigo_postal?: string;
+  latitud?: number;
+  longitud?: number;
+  timezone: string;
   activo: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 // Tipo para planes de suscripción
@@ -108,11 +130,15 @@ export interface PlanSuscripcionAPI {
   descripcion?: string;
   precio_mensual: number;
   precio_anual?: number;
+  descuento_anual: number;
   moneda: string;
   max_negocios: number;
   max_productos_por_negocio: number;
-  caracteristicas?: string;
+  max_imagenes_por_producto: number;
+  caracteristicas?: string[];
+  orden_visualizacion: number;
   activo: boolean;
+  metadata?: Record<string, unknown>;
 }
 
 // Tipo para resultados de queries

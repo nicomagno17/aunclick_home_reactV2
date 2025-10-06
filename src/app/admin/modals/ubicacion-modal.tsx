@@ -19,10 +19,10 @@ const formSchema = z.object({
   zona_barrio: z.string().optional(),
   direccion_completa: z.string().optional(),
   codigo_postal: z.string().optional(),
-  latitud: z.coerce.number().min(-90, 'La latitud debe estar entre -90 y 90').max(90, 'La latitud debe estar entre -90 y 90').optional(),
-  longitud: z.coerce.number().min(-180, 'La longitud debe estar entre -180 y 180').max(180, 'La longitud debe estar entre -180 y 180').optional(),
-  timezone: z.string().default('America/Bogota'),
-  activo: z.boolean().default(true),
+  latitud: z.number().min(-90, 'La latitud debe estar entre -90 y 90').max(90, 'La latitud debe estar entre -90 y 90').optional(),
+  longitud: z.number().min(-180, 'La longitud debe estar entre -180 y 180').max(180, 'La longitud debe estar entre -180 y 180').optional(),
+  timezone: z.string().min(1, 'La zona horaria es requerida'),
+  activo: z.boolean(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -43,7 +43,18 @@ export default function UbicacionModal({
   // Inicializar formulario con valores por defecto o valores para editar
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: ubicacionToEdit || {
+    defaultValues: ubicacionToEdit ? {
+      pais: ubicacionToEdit.pais,
+      departamento_estado: ubicacionToEdit.departamento_estado,
+      ciudad: ubicacionToEdit.ciudad,
+      zona_barrio: ubicacionToEdit.zona_barrio || '',
+      direccion_completa: ubicacionToEdit.direccion_completa || '',
+      codigo_postal: ubicacionToEdit.codigo_postal || '',
+      latitud: ubicacionToEdit.latitud,
+      longitud: ubicacionToEdit.longitud,
+      timezone: ubicacionToEdit.timezone || 'America/Bogota',
+      activo: ubicacionToEdit.activo
+    } : {
       pais: 'CO',
       departamento_estado: '',
       ciudad: '',

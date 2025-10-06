@@ -30,14 +30,14 @@ export async function POST(request: NextRequest) {
   try {
     // Verificar autenticación
     const session = await getSession()
-    
+
     if (!session) {
       return NextResponse.json(
         { error: 'Autenticación requerida' },
         { status: 401 }
       )
     }
-    
+
     // Verificar que el usuario tiene rol adecuado
     if (!['propietario_negocio', 'admin'].includes(session.user?.rol)) {
       return NextResponse.json(
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       )
     }
-    
+
     // Si no es admin, verificar límite de negocios
     if (session.user.rol !== 'admin') {
       const limitResult = await checkNegociosLimit(session)
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
           { status: limitResult.status }
         )
       }
-      
+
       if (limitResult.data) {
         return NextResponse.json(
           { error: 'Has alcanzado el límite de negocios de tu plan' },

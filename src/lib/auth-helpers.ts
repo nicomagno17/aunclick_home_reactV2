@@ -4,7 +4,7 @@ import { executeQuerySingle } from '@/lib/database'
 import { NextResponse } from 'next/server'
 
 // Tipo para respuestas de autenticación
-export type AuthResult<T = any> = 
+export type AuthResult<T = any> =
   | { success: true; data: T }
   | { success: false; error: string; status: number }
 
@@ -14,7 +14,7 @@ export const getSession = () => getServerSession(authOptions)
 // Requerir autenticación
 export const requireAuth = async (): Promise<AuthResult<any>> => {
   const session = await getSession()
-  
+
   if (!session) {
     return {
       success: false,
@@ -22,7 +22,7 @@ export const requireAuth = async (): Promise<AuthResult<any>> => {
       status: 401
     }
   }
-  
+
   return {
     success: true,
     data: session
@@ -32,13 +32,13 @@ export const requireAuth = async (): Promise<AuthResult<any>> => {
 // Requerir roles específicos
 export const requireRole = async (allowedRoles: string[]): Promise<AuthResult<any>> => {
   const authResult = await requireAuth()
-  
+
   if (!authResult.success) {
     return authResult
   }
-  
+
   const session = authResult.data
-  
+
   if (!session.user?.rol || !allowedRoles.includes(session.user.rol)) {
     return {
       success: false,
@@ -46,7 +46,7 @@ export const requireRole = async (allowedRoles: string[]): Promise<AuthResult<an
       status: 403
     }
   }
-  
+
   return {
     success: true,
     data: session
@@ -68,19 +68,19 @@ export const canAccessNegocio = async (session: any, negocioId: number): Promise
   if (!session || !session.user) {
     return false
   }
-  
+
   // Admin tiene acceso a todos los negocios
   if (isAdmin(session)) {
     return true
   }
-  
+
   // Verificar si el negocio pertenece al propietario
   try {
     const negocio = await executeQuerySingle(
       'SELECT id FROM negocios WHERE id = ? AND propietario_id = ? AND deleted_at IS NULL',
       [negocioId, session.user.id]
     )
-    
+
     return !!negocio
   } catch (error) {
     console.error('Error verificando acceso a negocio:', error)
@@ -93,12 +93,12 @@ export const canAccessProducto = async (session: any, productoId: number): Promi
   if (!session || !session.user) {
     return false
   }
-  
+
   // Admin tiene acceso a todos los productos
   if (isAdmin(session)) {
     return true
   }
-  
+
   // Verificar si el producto pertenece a un negocio del propietario
   try {
     const producto = await executeQuerySingle(
@@ -108,7 +108,7 @@ export const canAccessProducto = async (session: any, productoId: number): Promi
        WHERE p.id = ? AND n.propietario_id = ? AND p.deleted_at IS NULL`,
       [productoId, session.user.id]
     )
-    
+
     return !!producto
   } catch (error) {
     console.error('Error verificando acceso a producto:', error)
@@ -127,7 +127,7 @@ export const checkNegociosLimit = async (session: any): Promise<AuthResult<boole
     // Admins no tienen límite
     return { success: true, data: false }
   }
-  
+
   try {
     // Obtener el plan del usuario
     const usuario = await executeQuerySingle(
@@ -137,7 +137,7 @@ export const checkNegociosLimit = async (session: any): Promise<AuthResult<boole
        WHERE u.id = ?`,
       [session.user.id]
     )
-    
+
     if (!usuario || !usuario.max_negocios) {
       return {
         success: false,
@@ -145,16 +145,16 @@ export const checkNegociosLimit = async (session: any): Promise<AuthResult<boole
         status: 500
       }
     }
-    
+
     // Contar negocios actuales
     const countResult = await executeQuerySingle(
       'SELECT COUNT(*) as count FROM negocios WHERE propietario_id = ? AND deleted_at IS NULL',
       [session.user.id]
     )
-    
+
     const currentCount = countResult?.count || 0
     const maxNegocios = usuario.max_negocios
-    
+
     return {
       success: true,
       data: currentCount >= maxNegocios
@@ -170,7 +170,7 @@ export const checkNegociosLimit = async (session: any): Promise<AuthResult<boole
 }
 
 // Helper para manejar errores de autenticación en endpoints
-export const handleAuthError = (authResult: AuthResult<any>) => {
+export const handleAuthError = (authResult: AuthResult<any>): NextResponse | null => {
   if (!authResult.success) {
     return createAuthResponse(authResult.status, authResult.error)
   }

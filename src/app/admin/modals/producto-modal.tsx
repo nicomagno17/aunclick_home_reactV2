@@ -29,8 +29,8 @@ interface ImagenProducto {
 // Esquema de validación para el formulario
 const formSchema = z.object({
   // Relaciones
-  negocio_id: z.string().min(1, 'Debe seleccionar un negocio'),
-  categoria_id: z.string().min(1, 'Debe seleccionar una categoría'),
+  negocio_id: z.number().min(1, 'Debe seleccionar un negocio'),
+  categoria_id: z.number().min(1, 'Debe seleccionar una categoría'),
 
   // Información básica
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -40,24 +40,24 @@ const formSchema = z.object({
   descripcion_corta: z.string().max(300, 'La descripción corta no puede exceder los 300 caracteres').optional(),
 
   // Información de precios
-  precio: z.coerce.number().min(0, 'El precio debe ser mayor o igual a 0'),
-  precio_antes: z.coerce.number().min(0, 'El precio debe ser mayor o igual a 0').optional(),
-  moneda: z.string().default('COP'),
+  precio: z.number().min(0, 'El precio debe ser mayor o igual a 0'),
+  precio_antes: z.number().min(0, 'El precio debe ser mayor o igual a 0').optional(),
+  moneda: z.string(),
 
   // Información de inventario
   sku: z.string().optional(),
-  stock_disponible: z.coerce.number().int().min(0, 'El stock debe ser mayor o igual a 0').default(0),
-  maneja_stock: z.boolean().default(false),
-  stock_minimo: z.coerce.number().int().min(0, 'El stock mínimo debe ser mayor o igual a 0').default(0),
+  stock_disponible: z.number().int().min(0, 'El stock debe ser mayor o igual a 0'),
+  maneja_stock: z.boolean(),
+  stock_minimo: z.number().int().min(0, 'El stock mínimo debe ser mayor o igual a 0'),
 
   // Características del producto
-  peso: z.coerce.number().min(0, 'El peso debe ser mayor o igual a 0').optional(),
+  peso: z.number().min(0, 'El peso debe ser mayor o igual a 0').optional(),
   dimensiones: z.string().optional(),
 
   // Estado y configuración
-  estado: z.enum(['borrador', 'activo', 'inactivo', 'agotado', 'eliminado']).default('borrador'),
-  destacado: z.boolean().default(false),
-  permite_personalizacion: z.boolean().default(false),
+  estado: z.enum(['borrador', 'activo', 'inactivo', 'agotado', 'eliminado']),
+  destacado: z.boolean(),
+  permite_personalizacion: z.boolean(),
 
   // SEO y marketing
   seo_title: z.string().max(70, 'El título SEO no debe exceder los 70 caracteres').optional(),
@@ -71,9 +71,41 @@ const formSchema = z.object({
 
   // Fechas
   fecha_disponibilidad: z.date().optional(),
+}).refine((data) => typeof data.negocio_id === 'number', {
+  message: 'El ID del negocio debe ser un número',
+  path: ['negocio_id'],
+}).refine((data) => typeof data.categoria_id === 'number', {
+  message: 'El ID de la categoría debe ser un número',
+  path: ['categoria_id'],
 })
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = {
+  negocio_id: number
+  categoria_id: number
+  nombre: string
+  slug: string
+  descripcion?: string
+  descripcion_corta?: string
+  precio: number
+  precio_antes?: number
+  moneda: string
+  sku?: string
+  stock_disponible: number
+  maneja_stock: boolean
+  stock_minimo: number
+  peso?: number
+  dimensiones?: string
+  estado: 'borrador' | 'activo' | 'inactivo' | 'agotado' | 'eliminado'
+  destacado: boolean
+  permite_personalizacion: boolean
+  seo_title?: string
+  seo_description?: string
+  seo_keywords?: string
+  atributos?: string
+  opciones_personalizacion?: string
+  metadata?: string
+  fecha_disponibilidad?: Date
+}
 
 interface ProductoModalProps {
   open: boolean
@@ -117,8 +149,8 @@ export default function ProductoModal({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: productoToEdit || {
-      negocio_id: '',
-      categoria_id: '',
+      negocio_id: 0,
+      categoria_id: 0,
 
       nombre: '',
       slug: '',
@@ -153,6 +185,33 @@ export default function ProductoModal({
       opciones_personalizacion: JSON.stringify({}, null, 2),
       metadata: JSON.stringify({}, null, 2),
 
+      fecha_disponibilidad: undefined,
+    },
+    values: productoToEdit || {
+      negocio_id: 0,
+      categoria_id: 0,
+      nombre: '',
+      slug: '',
+      descripcion: '',
+      descripcion_corta: '',
+      precio: 0,
+      precio_antes: undefined,
+      moneda: 'COP',
+      sku: '',
+      stock_disponible: 0,
+      maneja_stock: false,
+      stock_minimo: 0,
+      peso: undefined,
+      dimensiones: JSON.stringify({ largo: 0, ancho: 0, alto: 0 }, null, 2),
+      estado: 'borrador' as const,
+      destacado: false,
+      permite_personalizacion: false,
+      seo_title: '',
+      seo_description: '',
+      seo_keywords: '',
+      atributos: JSON.stringify({}, null, 2),
+      opciones_personalizacion: JSON.stringify({}, null, 2),
+      metadata: JSON.stringify({}, null, 2),
       fecha_disponibilidad: undefined,
     }
   })
@@ -189,7 +248,7 @@ export default function ProductoModal({
       console.log('Datos del formulario:', values)
 
       // Validar que los campos requeridos tengan valor
-      if (!values.negocio_id || values.negocio_id === '') {
+      if (!values.negocio_id) {
         toast({
           title: "Error",
           description: "Debe seleccionar un negocio",
@@ -198,7 +257,7 @@ export default function ProductoModal({
         return
       }
 
-      if (!values.categoria_id || values.categoria_id === '') {
+      if (!values.categoria_id) {
         toast({
           title: "Error",
           description: "Debe seleccionar una categoría",
@@ -382,8 +441,8 @@ export default function ProductoModal({
                       <FormItem>
                         <FormLabel>Negocio</FormLabel>
                         <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          onValueChange={(v) => field.onChange(Number(v))}
+                          value={field.value?.toString()}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -391,7 +450,7 @@ export default function ProductoModal({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {negociosList.map(negocio => (
+                            {negociosList.map((negocio) => (
                               <SelectItem key={negocio.id} value={negocio.id.toString()}>
                                 {negocio.nombre}
                               </SelectItem>
@@ -411,8 +470,8 @@ export default function ProductoModal({
                       <FormItem>
                         <FormLabel>Categoría</FormLabel>
                         <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          onValueChange={(v) => field.onChange(Number(v))}
+                          value={field.value?.toString()}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -420,7 +479,7 @@ export default function ProductoModal({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {categoriasList.map(categoria => (
+                            {categoriasList.map((categoria) => (
                               <SelectItem key={categoria.id} value={categoria.id.toString()}>
                                 {categoria.nombre}
                               </SelectItem>

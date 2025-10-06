@@ -9,7 +9,7 @@ function validateEnvVariables() {
   if (missing.length > 0) {
     throw new Error(
       `Missing required environment variables: ${missing.join(', ')}.\n` +
-        `Create a local ".env.local" file based on ".env.example" and set these variables, or set them in your environment.`
+      `Create a local ".env.local" file based on ".env.example" and set these variables, or set them in your environment.`
     )
   }
 }
@@ -58,20 +58,20 @@ export const executeQuery = async <T = any>(
 ): Promise<T[]> => {
   const startTime = Date.now()
   const pool = getMySQLPool()
-  
+
   try {
     const [rows] = await pool.execute(query, params)
     const duration = Date.now() - startTime
-    
+
     await logger.logDatabaseQuery(query, duration, { rowCount: (rows as T[]).length })
-    
+
     return rows as T[]
   } catch (error) {
     const duration = Date.now() - startTime
-    await logger.error('Database query failed', error as Error, { 
-      query: query.substring(0, 200), 
-      duration, 
-      params: params ? '(params provided)' : '(no params)' 
+    await logger.error('Database query failed', error as Error, {
+      query: query.substring(0, 200),
+      duration,
+      params: params ? '(params provided)' : '(no params)'
     })
     throw error
   }
@@ -93,20 +93,20 @@ export const insertAndGetId = async (
 ): Promise<number> => {
   const startTime = Date.now()
   const pool = getMySQLPool()
-  
+
   try {
     const [result] = await pool.execute(query, params)
     const duration = Date.now() - startTime
     const insertId = (result as any).insertId
-    
+
     await logger.logDatabaseQuery(query, duration, { insertId })
-    
+
     return insertId
   } catch (error) {
     const duration = Date.now() - startTime
-    await logger.error('Database query failed', error as Error, { 
-      query: query.substring(0, 200), 
-      duration, 
+    await logger.error('Database query failed', error as Error, {
+      query: query.substring(0, 200),
+      duration,
       params: params ? '(params provided)' : '(no params)'.substring(0, 200),
       operation: 'insertAndGetId'
     })
@@ -121,21 +121,21 @@ export const countRecords = async (
 ): Promise<number> => {
   const startTime = Date.now()
   const pool = getMySQLPool()
-  
+
   try {
     const [rows] = await pool.execute(query, params)
     const duration = Date.now() - startTime
     const result = rows as any[]
     const count = result[0]?.count || 0
-    
+
     await logger.logDatabaseQuery(query, duration, { count })
-    
+
     return count
   } catch (error) {
     const duration = Date.now() - startTime
-    await logger.error('Database query failed', error as Error, { 
-      query: query.substring(0, 200), 
-      duration, 
+    await logger.error('Database query failed', error as Error, {
+      query: query.substring(0, 200),
+      duration,
       params: params ? '(params provided)' : '(no params)',
       operation: 'countRecords'
     })
@@ -143,11 +143,27 @@ export const countRecords = async (
   }
 }
 
-export default {
+// Función helper para ejecutar queries no SELECT (INSERT, UPDATE, DELETE)
+export const executeNonQuery = async (
+  query: string,
+  params?: any[]
+) => {
+  const startTime = Date.now()
+  const pool = getMySQLPool()
+  const [result] = await pool.execute(query, params)
+  const duration = Date.now() - startTime
+  await logger.logDatabaseQuery(query, duration, { affectedRows: (result as any).affectedRows })
+  return result as any // ResultSetHeader
+}
+
+const databaseExports = {
   mysql: getMySQLPool,
   executeQuery,
   executeQuerySingle,
   insertAndGetId,
   countRecords,
+  executeNonQuery,
   closeMySQLPool
 }
+
+export default databaseExports

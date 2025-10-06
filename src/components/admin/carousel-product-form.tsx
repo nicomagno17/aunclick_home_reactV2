@@ -44,8 +44,8 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
         categoria: existingData.categoria || '',
         subcategoria: existingData.subcategoria || '',
         descripcion: existingData.descripcion || '',
-        precioActual: existingData.precioActual || '',
-        precioAnterior: existingData.precioAnterior || '',
+        precioActual: existingData.precioActual?.toString() || '0',
+        precioAnterior: existingData.precioAnterior?.toString() || '',
         genero: existingData.genero || '',
         medidas: existingData.medidas || '',
         unidadMedida: existingData.unidadMedida || 'cm',
@@ -102,7 +102,7 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
     }
 
     const data: ProductoCarrusel = {
-      id: existingData?.id || Date.now().toString(),
+      id: existingData?.id || Date.now(),
       nombre: formData.nombre,
       categoria: formData.categoria,
       subcategoria: formData.subcategoria,
@@ -295,8 +295,8 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
               <label
                 htmlFor="carousel-genero"
                 className={`flex items-center justify-center w-3 h-3 md:w-3.5 md:h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.genero
-                    ? 'bg-blue-500 border-blue-500'
-                    : 'border-gray-400 hover:border-gray-300'
+                  ? 'bg-blue-500 border-blue-500'
+                  : 'border-gray-400 hover:border-gray-300'
                   }`}
               >
                 {opcionesProducto.genero && (
@@ -321,8 +321,8 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
               <label
                 htmlFor="carousel-medidas"
                 className={`flex items-center justify-center w-3 h-3 md:w-3.5 md:h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.medidas
-                    ? 'bg-blue-500 border-blue-500'
-                    : 'border-gray-400 hover:border-gray-300'
+                  ? 'bg-blue-500 border-blue-500'
+                  : 'border-gray-400 hover:border-gray-300'
                   }`}
               >
                 {opcionesProducto.medidas && (
@@ -347,8 +347,8 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
               <label
                 htmlFor="carousel-tallas-calzado"
                 className={`flex items-center justify-center w-3 h-3 md:w-3.5 md:h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.tallasCalzado
-                    ? 'bg-blue-500 border-blue-500'
-                    : 'border-gray-400 hover:border-gray-300'
+                  ? 'bg-blue-500 border-blue-500'
+                  : 'border-gray-400 hover:border-gray-300'
                   }`}
               >
                 {opcionesProducto.tallasCalzado && (
@@ -373,8 +373,8 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
               <label
                 htmlFor="carousel-tallas-ropa"
                 className={`flex items-center justify-center w-3 h-3 md:w-3.5 md:h-3.5 border-2 rounded-full cursor-pointer transition-colors ${opcionesProducto.tallasRopa
-                    ? 'bg-blue-500 border-blue-500'
-                    : 'border-gray-400 hover:border-gray-300'
+                  ? 'bg-blue-500 border-blue-500'
+                  : 'border-gray-400 hover:border-gray-300'
                   }`}
               >
                 {opcionesProducto.tallasRopa && (
@@ -454,8 +454,8 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
                 type="button"
                 onClick={() => handleTallaToggle('tallasCalzado', talla)}
                 className={`px-0.5 md:px-1 py-0.5 text-[10px] md:text-xs rounded transition-colors text-center ${formData.tallasCalzado.includes(talla)
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
                   }`}
               >
                 {talla}
@@ -478,8 +478,8 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
                 type="button"
                 onClick={() => handleTallaToggle('tallasRopa', talla === 'T.Única' ? 'Talla Única' : talla)}
                 className={`px-0.5 md:px-1 py-0.5 text-[10px] md:text-xs rounded transition-colors text-center ${formData.tallasRopa.includes(talla === 'T.Única' ? 'Talla Única' : talla)
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
                   }`}
               >
                 {talla}
@@ -533,10 +533,10 @@ export function CarouselProductForm({ onSave, onCancel, existingData }: Carousel
             Descripción
           </Label>
           <span className={`text-[10px] md:text-sm ${contarPalabras(formData.descripcion) > 45
-              ? 'text-yellow-400'
-              : contarPalabras(formData.descripcion) > 48
-                ? 'text-red-400'
-                : 'text-gray-400'
+            ? 'text-yellow-400'
+            : contarPalabras(formData.descripcion) > 48
+              ? 'text-red-400'
+              : 'text-gray-400'
             }`}>
             {contarPalabras(formData.descripcion)}/50 palabras
           </span>

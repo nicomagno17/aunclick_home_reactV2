@@ -339,7 +339,7 @@ export function isDatabaseError(error: any): boolean {
 }
 
 // Export all functions
-export default {
+const errorHandlerExports = {
   handleError,
   validationError,
   authenticationError,
@@ -354,3 +354,5 @@ export default {
   getStatusCode,
   ErrorType
 }
+
+export default errorHandlerExports

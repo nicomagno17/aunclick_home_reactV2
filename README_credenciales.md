@@ -14,7 +14,7 @@ ssh -i ~/.ssh/id_ed25519_server -p 22222 root@45.236.129.200
 
 ## 🔑 API GitHub
 
-- **Token:** `[REDACTED - Contact admin for token]`
+- **Token:** [REMOVED_FOR_SECURITY]
 
 ## 🗄️ Datos MySQL
 

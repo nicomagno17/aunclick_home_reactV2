@@ -1,4 +1,4 @@
-import { executeQuery, executeQuerySingle, insertAndGetId, countRecords } from './database'
+import { executeQuery, executeQuerySingle, insertAndGetId, countRecords, executeNonQuery } from './database'
 
 // ============================================================================
 // WHITELISTS DE SEGURIDAD - SQL INJECTION PREVENTION
@@ -80,8 +80,9 @@ const ALLOWED_ORDER_DIRECTIONS = ['ASC', 'DESC'] as const
 // TYPESCRIPT TYPES PARA SEGURIDAD
 // ============================================================================
 
-type AllowedTable = keyof typeof ALLOWED_TABLES
-type AllowedColumn<T extends AllowedTable> = typeof ALLOWED_TABLES[T][number]
+type ColumnsMap = typeof ALLOWED_TABLES
+export type AllowedTable = keyof ColumnsMap
+export type AllowedColumn<T extends AllowedTable> = ColumnsMap[T][number]
 type OrderDirection = typeof ALLOWED_ORDER_DIRECTIONS[number]
 
 // Interfaces para tipos comunes
@@ -149,6 +150,24 @@ export const validateTableName = (table: string): asserts table is AllowedTable 
 }
 
 /**
+ * Valida que el nombre de tabla esté en la whitelist de tablas permitidas.
+ * Versión sin assertion para casos donde no se necesita narrowing de tipo.
+ *
+ * @param table - Nombre de la tabla a validar
+ * @throws {Error} Si la tabla no está en la whitelist
+ */
+export const validateTableNameSafe = (table: string): void => {
+  if (!table || table.trim() === '') {
+    throw new Error('El nombre de tabla no puede estar vacío')
+  }
+
+  if (!ALLOWED_TABLES[table as AllowedTable]) {
+    const allowedTables = Object.keys(ALLOWED_TABLES).join(', ')
+    throw new Error(`Nombre de tabla no permitido: ${table}. Tablas permitidas: ${allowedTables}`)
+  }
+}
+
+/**
  * Valida que el nombre de columna esté en la whitelist de la tabla especificada.
  *
  * @param table - Nombre de la tabla
@@ -160,7 +179,7 @@ export const validateColumnName = <T extends AllowedTable>(table: T, column: str
     throw new Error('El nombre de columna no puede estar vacío')
   }
 
-  const allowedColumns = ALLOWED_TABLES[table]
+  const allowedColumns: readonly AllowedColumn<T>[] = ALLOWED_TABLES[table]
   if (!allowedColumns.includes(column as AllowedColumn<T>)) {
     throw new Error(`Columna '${column}' no permitida en tabla '${table}'. Columnas permitidas: ${allowedColumns.join(', ')}`)
   }
@@ -332,8 +351,8 @@ export const selectWithOptions = async <T = any>(
   const { orderBy, orderDirection = 'ASC', where } = options
 
   // Validar tabla
-  validateTableName(table)
-  const escapedTable = escapeIdentifier(table)
+  validateTableNameSafe(table)
+  const escapedTable: string = escapeIdentifier(table)
 
   // Validar y escapar columnas
   const validatedColumns = validateColumns(table, columns)
@@ -374,8 +393,8 @@ export const countWithConditions = async (
   table: AllowedTable,
   where?: Record<string, any>
 ): Promise<number> => {
-  validateTableName(table)
-  const escapedTable = escapeIdentifier(table)
+  validateTableNameSafe(table)
+  const escapedTable: string = escapeIdentifier(table)
 
   let query = `SELECT COUNT(*) as count FROM ${escapedTable}`
   let values: any[] = []
@@ -404,12 +423,12 @@ export const insertRecord = async (
   table: AllowedTable,
   data: Record<string, any>
 ): Promise<number> => {
-  validateTableName(table)
+  validateTableNameSafe(table)
 
   // Validar todas las columnas en los datos
   Object.keys(data).forEach(column => validateColumnName(table, column))
 
-  const escapedTable = escapeIdentifier(table)
+  const escapedTable: string = escapeIdentifier(table)
   const escapedColumns = Object.keys(data).map(col => escapeIdentifier(col)).join(', ')
   const placeholders = Object.keys(data).map(() => '?').join(', ')
   const values = Object.values(data)
@@ -433,21 +452,21 @@ export const updateRecord = async (
   data: Record<string, any>,
   where: Record<string, any>
 ): Promise<boolean> => {
-  validateTableName(table)
+  validateTableNameSafe(table)
 
   // Validar columnas en datos y condiciones
   Object.keys(data).forEach(column => validateColumnName(table, column))
   Object.keys(where).forEach(column => validateColumnName(table, column))
 
-  const escapedTable = escapeIdentifier(table)
+  const escapedTable: string = escapeIdentifier(table)
   const setClause = Object.keys(data).map(key => `${escapeIdentifier(key)} = ?`).join(', ')
   const whereClause = buildWhereClause(table, where)
 
   const query = `UPDATE ${escapedTable} SET ${setClause}${whereClause.clause}`
   const values = [...Object.values(data), ...whereClause.values]
 
-  const result = await executeQuery(query, values)
-  return (result as any).affectedRows > 0
+  const result = await executeNonQuery(query, values)
+  return (result.affectedRows ?? 0) > 0
 }
 
 /**
@@ -464,7 +483,7 @@ export const deleteRecord = async (
   table: AllowedTable,
   where: Record<string, any>
 ): Promise<boolean> => {
-  validateTableName(table)
+  validateTableNameSafe(table)
 
   // Validar columnas en condiciones
   Object.keys(where).forEach(column => validateColumnName(table, column))
@@ -475,13 +494,13 @@ export const deleteRecord = async (
     throw new Error('DELETE queries must have WHERE conditions for safety')
   }
 
-  const escapedTable = escapeIdentifier(table)
+  const escapedTable: string = escapeIdentifier(table)
   const query = `DELETE FROM ${escapedTable}${whereClause.clause}`
-  const result = await executeQuery(query, whereClause.values)
-  return (result as any).affectedRows > 0
+  const result = await executeNonQuery(query, whereClause.values)
+  return (result.affectedRows ?? 0) > 0
 }
 
-export default {
+const mysqlHelpersExports = {
   buildWhereClause,
   buildPaginationClause,
   selectWithOptions,
@@ -492,8 +511,11 @@ export default {
 
   // Exportar funciones de validación para uso externo
   validateTableName,
+  validateTableNameSafe,
   validateColumnName,
   validateColumns,
   validateOrderBy,
   escapeIdentifier
 }
+
+export default mysqlHelpersExports

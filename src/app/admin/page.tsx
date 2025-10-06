@@ -261,8 +261,8 @@ export default function AdminPage() {
       genero: producto.genero || '',
       medidas: producto.medidas || '',
       unidadMedida: producto.unidadMedida || 'cm',
-      precioActual: producto.precioActual || '',
-      precioAnterior: producto.precioAnterior || ''
+      precioActual: producto.precioActual?.toString() || '0',
+      precioAnterior: producto.precioAnterior?.toString() || ''
     })
 
     setDescripcion(producto.descripcion || '')
@@ -612,18 +612,32 @@ export default function AdminPage() {
 
   // Función para agregar o editar un producto
   const agregarProducto = () => {
-    if (!productoData.nombre || !imagenProducto) {
-      alert('Por favor completa al menos el nombre del producto y carga una imagen')
+    if (!imagenProducto) {
+      alert('Por favor carga una imagen para el producto')
+      return
+    }
+    if (!productoData.nombre) {
+      alert('Por favor completa el nombre del producto')
       return
     }
 
     if (editingProducto) {
       // Modo edición: actualizar producto existente
-      const productoActualizado = {
-        ...editingProducto,
-        ...productoData,
+      const productoActualizado: ProductoCarrusel = {
+        id: editingProducto.id,
+        tipoNegocio: productoData.tipoNegocio,
+        categoria: productoData.categoria,
+        subcategoria: productoData.subcategoria,
+        nombre: productoData.nombre,
+        tallasCalzado: productoData.tallasCalzado,
+        tallasRopa: productoData.tallasRopa,
+        genero: productoData.genero,
+        medidas: productoData.medidas,
+        unidadMedida: productoData.unidadMedida,
+        precioActual: Number.parseFloat(productoData.precioActual) || 0,
+        precioAnterior: productoData.precioAnterior ? Number.parseFloat(productoData.precioAnterior) : undefined,
         descripcion,
-        imagen: imagenProducto
+        imagen: imagenProducto!
       }
 
       setProductos(prev => ({
@@ -634,11 +648,21 @@ export default function AdminPage() {
       }))
     } else {
       // Modo agregar: crear nuevo producto
-      const nuevoProducto = {
+      const nuevoProducto: ProductoCarrusel = {
         id: Date.now(), // ID único basado en timestamp
-        ...productoData,
+        tipoNegocio: productoData.tipoNegocio,
+        categoria: productoData.categoria,
+        subcategoria: productoData.subcategoria,
+        nombre: productoData.nombre,
+        tallasCalzado: productoData.tallasCalzado,
+        tallasRopa: productoData.tallasRopa,
+        genero: productoData.genero,
+        medidas: productoData.medidas,
+        unidadMedida: productoData.unidadMedida,
+        precioActual: Number.parseFloat(productoData.precioActual) || 0,
+        precioAnterior: productoData.precioAnterior ? Number.parseFloat(productoData.precioAnterior) : undefined,
         descripcion,
-        imagen: imagenProducto
+        imagen: imagenProducto!
       }
 
       setProductos(prev => ({
@@ -949,7 +973,7 @@ export default function AdminPage() {
                   onClick={() => setActiveContainer('gestion-banner')}
                   className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
                 >
-                  <Image className="w-8 h-8 text-yellow-400 mb-2" alt="Gestión de Banner" />
+                  <Image className="w-8 h-8 text-yellow-400 mb-2" />
                   <span className="text-white text-sm font-medium">Gestión de Banner</span>
                 </button>
 

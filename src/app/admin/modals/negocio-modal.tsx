@@ -37,7 +37,7 @@ const formSchema = z.object({
   telefono_principal: z.string().optional(),
   telefono_secundario: z.string().optional(),
   email: z.string().email('Debe ser un email válido').optional(),
-  sitio_web: z.string().url('Debe ser una URL válida').optional().or(z.literal('')),
+  sitio_web: z.string().optional(),
   whatsapp: z.string().optional(),
 
   // Redes sociales (JSON)
@@ -49,10 +49,10 @@ const formSchema = z.object({
   galeria_imagenes: z.string().optional(),
 
   // Estado y configuración
-  estado: z.enum(['borrador', 'activo', 'inactivo', 'suspendido', 'eliminado']).default('borrador'),
-  verificado: z.boolean().default(false),
-  destacado: z.boolean().default(false),
-  permite_pedidos: z.boolean().default(true),
+  estado: z.enum(['borrador', 'activo', 'inactivo', 'suspendido', 'eliminado']),
+  verificado: z.boolean(),
+  destacado: z.boolean(),
+  permite_pedidos: z.boolean(),
 
   // SEO y marketing
   seo_title: z.string().max(70, 'El título SEO no debe exceder los 70 caracteres').optional(),
@@ -95,7 +95,50 @@ export default function NegocioModal({
   // Inicializar formulario con valores por defecto o valores para editar
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: negocioToEdit || {
+    defaultValues: negocioToEdit ? {
+      propietario_id: negocioToEdit.propietario_id?.toString() || '',
+      categoria_id: negocioToEdit.categoria_id?.toString() || '',
+      ubicacion_id: negocioToEdit.ubicacion_id?.toString() || '',
+      plan_id: negocioToEdit.plan_id?.toString() || '',
+      sitio_web: negocioToEdit.sitio_web || '',
+      nombre: negocioToEdit.nombre,
+      slug: negocioToEdit.slug,
+      descripcion: negocioToEdit.descripcion || '',
+      descripcion_corta: negocioToEdit.descripcion_corta || '',
+      telefono_principal: negocioToEdit.telefono_principal || '',
+      telefono_secundario: negocioToEdit.telefono_secundario || '',
+      email: negocioToEdit.email || '',
+      whatsapp: negocioToEdit.whatsapp || '',
+      redes_sociales: negocioToEdit.redes_sociales ?
+        (typeof negocioToEdit.redes_sociales === 'string' ? negocioToEdit.redes_sociales : JSON.stringify(negocioToEdit.redes_sociales, null, 2)) :
+        JSON.stringify({
+          facebook: '',
+          instagram: '',
+          twitter: '',
+          linkedin: '',
+          youtube: '',
+        }, null, 2),
+      logo_url: negocioToEdit.logo_url || '',
+      banner_url: negocioToEdit.banner_url || '',
+      galeria_imagenes: negocioToEdit.galeria_imagenes ?
+        (typeof negocioToEdit.galeria_imagenes === 'string' ? negocioToEdit.galeria_imagenes : JSON.stringify(negocioToEdit.galeria_imagenes, null, 2)) :
+        JSON.stringify([], null, 2),
+      estado: negocioToEdit.estado,
+      verificado: negocioToEdit.verificado,
+      destacado: negocioToEdit.destacado,
+      permite_pedidos: negocioToEdit.permite_pedidos,
+      seo_title: negocioToEdit.seo_title || '',
+      seo_description: negocioToEdit.seo_description || '',
+      seo_keywords: negocioToEdit.seo_keywords || '',
+      configuracion: negocioToEdit.configuracion ?
+        (typeof negocioToEdit.configuracion === 'string' ? negocioToEdit.configuracion : JSON.stringify(negocioToEdit.configuracion, null, 2)) :
+        JSON.stringify({}, null, 2),
+      metadata: negocioToEdit.metadata ?
+        (typeof negocioToEdit.metadata === 'string' ? negocioToEdit.metadata : JSON.stringify(negocioToEdit.metadata, null, 2)) :
+        JSON.stringify({}, null, 2),
+      suscripcion_inicio: negocioToEdit.suscripcion_inicio ? new Date(negocioToEdit.suscripcion_inicio) : undefined,
+      suscripcion_fin: negocioToEdit.suscripcion_fin ? new Date(negocioToEdit.suscripcion_fin) : undefined,
+    } : {
       propietario_id: '',
       categoria_id: '',
       ubicacion_id: '',
@@ -172,9 +215,13 @@ export default function NegocioModal({
       setIsSaving(true)
       console.log('Datos del formulario:', data)
 
-      // Formatear datos con JSON
+      // Formatear datos con JSON y convertir IDs a números
       const formattedData = {
         ...data,
+        propietario_id: Number(data.propietario_id),
+        categoria_id: Number(data.categoria_id),
+        ubicacion_id: Number(data.ubicacion_id),
+        plan_id: Number(data.plan_id),
         redes_sociales: JSON.parse(data.redes_sociales || '{}'),
         galeria_imagenes: JSON.parse(data.galeria_imagenes || '[]'),
         configuracion: JSON.parse(data.configuracion || '{}'),
@@ -246,7 +293,7 @@ export default function NegocioModal({
                         <FormLabel>Propietario</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -277,7 +324,7 @@ export default function NegocioModal({
                         <FormLabel>Plan de Suscripción</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -351,7 +398,7 @@ export default function NegocioModal({
                         <FormLabel>Categoría</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -384,7 +431,7 @@ export default function NegocioModal({
                         <FormLabel>Ubicación</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -710,7 +757,7 @@ export default function NegocioModal({
                         <FormLabel>Estado</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>

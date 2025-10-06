@@ -1,12 +1,11 @@
 
 import { NextResponse } from 'next/server'
-import { executeQuery } from '@/lib/database'
+import { executeQuery, insertAndGetId } from '@/lib/database'
 import { createUsuarioSchema } from '@/schemas'
 import { ZodError } from 'zod'
 import { requireRole, handleAuthError } from '@/lib/auth-helpers'
 import logger, { setCorrelationContextFromRequest } from '@/lib/logger'
 import { handleError, validationError, successResponse } from '@/lib/error-handler'
-import { InsertResult } from '@/types/product'
 
 export async function GET(request: Request) {
   // Set correlation context from request headers
@@ -70,7 +69,7 @@ export async function POST(request: Request) {
 
     // Insertar nuevo usuario con datos validados y sanitizados
     // Forzar rol = 'usuario' para registro público (previene que usuarios se asignen roles especiales)
-    const result = await executeQuery(`
+    const userId = await insertAndGetId(`
       INSERT INTO usuarios (email, nombre, apellidos, telefono, password_hash, rol, estado, preferencias, metadata)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
@@ -84,9 +83,7 @@ export async function POST(request: Request) {
       JSON.stringify(validatedData.preferencias || {}),
       JSON.stringify(validatedData.metadata || {})
     ])
-
-    const userId = (result as unknown as InsertResult).insertId
-    await logger.info('User created successfully', { endpoint: '/api/usuarios', method: 'POST', userId, email: validatedData.email })
+    await logger.info('User created successfully', { endpoint: '/api/usuarios', method: 'POST', userId: String(userId), email: validatedData.email })
 
     return successResponse({ message: 'Usuario creado exitosamente', userId }, 201)
 

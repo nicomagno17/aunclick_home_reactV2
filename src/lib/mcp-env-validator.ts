@@ -269,7 +269,7 @@ export function getDatabaseDisplayName(database: MCPDatabaseType): string {
 /**
  * Export all functions for convenience
  */
-export default {
+const mcpEnvValidatorExports = {
     validateMCPEnvVariables,
     validateSingleDatabase,
     getMCPEnvVars,
@@ -277,3 +277,5 @@ export default {
     getConfiguredMCPDatabases,
     getDatabaseDisplayName
 };
+
+export default mcpEnvValidatorExports;
