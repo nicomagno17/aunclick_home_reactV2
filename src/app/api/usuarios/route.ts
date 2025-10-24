@@ -1,11 +1,12 @@
 
 import { NextResponse } from 'next/server'
-import { executeQuery, insertAndGetId } from '@/lib/database'
+import { executeQuery, executeQuerySingle, insertAndGetId } from '@/lib/database'
 import { createUsuarioSchema } from '@/schemas'
 import { ZodError } from 'zod'
 import { requireRole, handleAuthError } from '@/lib/auth-helpers'
 import logger, { setCorrelationContextFromRequest } from '@/lib/logger'
 import { handleError, validationError, successResponse } from '@/lib/error-handler'
+import bcrypt from 'bcrypt'
 
 export async function GET(request: Request) {
   // Set correlation context from request headers
@@ -67,6 +68,59 @@ export async function POST(request: Request) {
 
     const validatedData = validation.data
 
+    // Check for duplicate email
+    const existingUser = await executeQuerySingle(
+      'SELECT id FROM usuarios WHERE email = ? AND deleted_at IS NULL',
+      [validatedData.email]
+    )
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'El email ya está registrado' },
+        { status: 409 }
+      )
+    }
+
+    // Validate password complexity server-side (same rules as Zod schema)
+    const passwordRegex = {
+      minLength: /.{8,}/,
+      hasUpperCase: /[A-Z]/,
+      hasNumber: /[0-9]/,
+      hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/
+    }
+
+    if (!passwordRegex.minLength.test(validatedData.password)) {
+      return NextResponse.json(
+        { error: 'La contraseña debe tener al menos 8 caracteres' },
+        { status: 400 }
+      )
+    }
+
+    if (!passwordRegex.hasUpperCase.test(validatedData.password)) {
+      return NextResponse.json(
+        { error: 'La contraseña debe contener al menos una letra mayúscula' },
+        { status: 400 }
+      )
+    }
+
+    if (!passwordRegex.hasNumber.test(validatedData.password)) {
+      return NextResponse.json(
+        { error: 'La contraseña debe contener al menos un número' },
+        { status: 400 }
+      )
+    }
+
+    if (!passwordRegex.hasSpecialChar.test(validatedData.password)) {
+      return NextResponse.json(
+        { error: 'La contraseña debe contener al menos un carácter especial' },
+        { status: 400 }
+      )
+    }
+
+    // Hash the password with configurable cost
+    const bcryptCost = parseInt(process.env.BCRYPT_COST ?? '12')
+    const passwordHash = await bcrypt.hash(validatedData.password, bcryptCost)
+
     // Insertar nuevo usuario con datos validados y sanitizados
     // Forzar rol = 'usuario' para registro público (previene que usuarios se asignen roles especiales)
     const userId = await insertAndGetId(`
@@ -77,7 +131,7 @@ export async function POST(request: Request) {
       validatedData.nombre,
       validatedData.apellidos || null,
       validatedData.telefono || null,
-      validatedData.password_hash,
+      passwordHash, // Use hashed password
       'usuario', // Forzar rol de usuario normal para registro público
       'pendiente_verificacion', // Forzar estado pendiente de verificación
       JSON.stringify(validatedData.preferencias || {}),

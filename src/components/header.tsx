@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
 import { SearchBar } from '@/components/search-bar'
 import { FloatingSearchBar } from '@/components/floating-search-bar'
-import { ChevronDown, Menu, ArrowLeft, Home, User, LogOut } from 'lucide-react'
+import { ChevronDown, Menu, ArrowLeft, Home, User, LogOut, Loader2, UserCircle } from 'lucide-react'
 import Link from 'next/link'
 
 interface HeaderProps {
@@ -14,11 +15,11 @@ interface HeaderProps {
   showFloatingSearch?: boolean
 }
 
-export function Header({ 
-  searchTerm, 
-  onSearchTermChange, 
+export function Header({
+  searchTerm,
+  onSearchTermChange,
   showBackButton = false,
-  showFloatingSearch = true 
+  showFloatingSearch = true
 }: HeaderProps) {
   const router = useRouter()
 
@@ -36,14 +37,18 @@ export function Header({
   // Estado para el menú de usuario
   const [showUserMenu, setShowUserMenu] = useState(false)
 
-  // Estado de autenticación (using localStorage for persistence)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  // Estado de autenticación usando NextAuth
+  const { data: session, status } = useSession()
 
-  // Check authentication status on component mount
+  // Estado de carga durante la verificación de sesión
+  const [isClientSideLoading, setIsClientSideLoading] = useState(true)
+
+  // Verificar estado de autenticación
   useEffect(() => {
-    const authStatus = localStorage.getItem('isAuthenticated') === 'true'
-    setIsAuthenticated(authStatus)
-  }, [])
+    if (status !== 'loading') {
+      setIsClientSideLoading(false)
+    }
+  }, [status])
 
   // Función para cerrar todos los modales
   const closeAllModals = () => {
@@ -105,20 +110,23 @@ export function Header({
   }
 
   // Función para cerrar sesión
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-    localStorage.setItem('isAuthenticated', 'false')
+  const handleLogout = async () => {
     closeAllModals()
-    // Redirigir a la página principal
-    router.push('/')
+    try {
+      await signOut({ callbackUrl: '/' })
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+      // Fallback en caso de error
+      router.push('/')
+    }
   }
 
   // Efecto para cerrar modales al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // Si algún modal está abierto y el clic fue fuera de los modales
-      if ((showCategorias || showArriendos || showServicios || showMobileMenu || showUserMenu) && 
-          !(event.target as Element).closest('.modal-container')) {
+      if ((showCategorias || showArriendos || showServicios || showMobileMenu || showUserMenu) &&
+        !(event.target as Element).closest('.modal-container')) {
         closeAllModals()
       }
     }
@@ -171,7 +179,7 @@ export function Header({
       )}
 
       {/* Header Principal */}
-      <header className="relative text-white shadow-2xl" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
+      <header className="relative text-white shadow-2xl bg-gradient-to-r from-[#3b0764] via-[#4c1d95] to-[#6d28d9]">
         <div className="container mx-auto relative z-10">
           {/* Versión Desktop */}
           <div className="hidden sm:block py-8 px-6">
@@ -185,8 +193,8 @@ export function Header({
               {/* Buscador centrado y más angosto con mayor margen izquierdo */}
               <div className="flex justify-center flex-1 max-w-md ml-20">
                 <div className="w-full">
-                  <SearchBar 
-                    value={searchTerm} 
+                  <SearchBar
+                    value={searchTerm}
                     onChange={onSearchTermChange}
                     placeholder="Buscar productos, tiendas, categorías..."
                   />
@@ -216,8 +224,8 @@ export function Header({
 
               {/* Buscador */}
               <div className="flex-1 max-w-[180px]">
-                <SearchBar 
-                  value={searchTerm} 
+                <SearchBar
+                  value={searchTerm}
                   onChange={onSearchTermChange}
                   placeholder="Buscar..."
                   className="text-sm"
@@ -252,7 +260,7 @@ export function Header({
               <div className="flex-1 flex items-center justify-center space-x-8 relative">
                 {/* Categorías */}
                 <div className="relative modal-container">
-                  <button 
+                  <button
                     onClick={toggleCategorias}
                     className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors cursor-pointer text-sm font-medium"
                   >
@@ -276,7 +284,7 @@ export function Header({
 
                 {/* Arriendos */}
                 <div className="relative modal-container">
-                  <button 
+                  <button
                     onClick={toggleArriendos}
                     className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors cursor-pointer text-sm font-medium"
                   >
@@ -300,7 +308,7 @@ export function Header({
 
                 {/* Servicios */}
                 <div className="relative modal-container">
-                  <button 
+                  <button
                     onClick={toggleServicios}
                     className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors cursor-pointer text-sm font-medium"
                   >
@@ -325,15 +333,41 @@ export function Header({
 
               {/* Enlaces al lado derecho: Panel de administrador o Registrarse/Ingresar */}
               <div className="flex items-center space-x-4">
-                {isAuthenticated ? (
+                {status === 'loading' ? (
+                  <div className="flex items-center space-x-2 text-white">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-sm">Cargando...</span>
+                  </div>
+                ) : status === 'authenticated' ? (
                   <>
-                    <Link href="/admin" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
-                      <User className="w-4 h-4" />
-                      <span>Panel de administrador</span>
-                    </Link>
-                    <button 
+                    {/* Show admin panel only for specific roles */}
+                    {session?.user?.rol && ['admin', 'moderador', 'propietario_negocio'].includes(session.user.rol) && (
+                      <Link href="/admin" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
+                        <User className="w-4 h-4" />
+                        <span>Panel de administrador</span>
+                      </Link>
+                    )}
+
+                    {/* Show user name/avatar */}
+                    <div className="flex items-center space-x-2 text-white/90 text-sm">
+                      {session?.user?.avatar_url ? (
+                        <img
+                          src={session.user.avatar_url}
+                          alt="Avatar"
+                          className="w-6 h-6 rounded-full"
+                        />
+                      ) : (
+                        <UserCircle className="w-6 h-6" />
+                      )}
+                      <span className="font-medium">
+                        {session?.user?.nombre || session?.user?.email || 'Usuario'}
+                      </span>
+                    </div>
+
+                    <button
                       onClick={handleLogout}
                       className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium"
+                      title="Cerrar sesión"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Cerrar sesión</span>
@@ -367,7 +401,7 @@ export function Header({
             <div className="flex items-center space-x-2">
               {/* Categorías */}
               <div className="relative modal-container">
-                <button 
+                <button
                   onClick={toggleCategorias}
                   className="flex items-center space-x-1 text-white/90 hover:text-white transition-colors cursor-pointer text-[10px] font-medium"
                 >
@@ -391,7 +425,7 @@ export function Header({
 
               {/* Arriendos */}
               <div className="relative modal-container">
-                <button 
+                <button
                   onClick={toggleArriendos}
                   className="flex items-center space-x-1 text-white/90 hover:text-white transition-colors cursor-pointer text-[10px] font-medium"
                 >
@@ -415,7 +449,7 @@ export function Header({
 
               {/* Servicios */}
               <div className="relative modal-container">
-                <button 
+                <button
                   onClick={toggleServicios}
                   className="flex items-center space-x-1 text-white/90 hover:text-white transition-colors cursor-pointer text-[10px] font-medium"
                 >
@@ -440,9 +474,11 @@ export function Header({
 
             {/* Icono de hamburguesa a la derecha */}
             <div className="relative modal-container">
-              <button 
+              <button
                 onClick={toggleMobileMenu}
                 className="flex items-center justify-center w-8 h-8 text-white/90 hover:text-white transition-colors cursor-pointer"
+                title="Abrir menú"
+                aria-label="Abrir menú"
               >
                 <Menu className="w-5 h-5" />
               </button>
@@ -451,17 +487,42 @@ export function Header({
               {showMobileMenu && (
                 <div className="absolute top-full right-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                   <div className="py-1">
-                    {isAuthenticated ? (
+                    {status === 'loading' ? (
+                      <div className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        <span>Cargando...</span>
+                      </div>
+                    ) : status === 'authenticated' ? (
                       <>
-                        <Link 
-                          href="/admin" 
-                          className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
-                          onClick={closeAllModals}
-                        >
-                          <User className="w-3 h-3" />
-                          <span>Panel de administrador</span>
-                        </Link>
-                        <button 
+                        {/* Show admin panel only for specific roles */}
+                        {session?.user?.rol && ['admin', 'moderador', 'propietario_negocio'].includes(session.user.rol) && (
+                          <Link
+                            href="/admin"
+                            className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
+                            onClick={closeAllModals}
+                          >
+                            <User className="w-3 h-3" />
+                            <span>Panel de administrador</span>
+                          </Link>
+                        )}
+
+                        {/* Show user name */}
+                        <div className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700">
+                          {session?.user?.avatar_url ? (
+                            <img
+                              src={session.user.avatar_url}
+                              alt="Avatar"
+                              className="w-4 h-4 rounded-full"
+                            />
+                          ) : (
+                            <UserCircle className="w-4 h-4" />
+                          )}
+                          <span className="truncate max-w-[100px]">
+                            {session?.user?.nombre || session?.user?.email || 'Usuario'}
+                          </span>
+                        </div>
+
+                        <button
                           onClick={handleLogout}
                           className="flex items-center space-x-2 w-full px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer text-left"
                         >
@@ -471,8 +532,8 @@ export function Header({
                       </>
                     ) : (
                       <>
-                        <Link 
-                          href="/register" 
+                        <Link
+                          href="/register"
                           className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
                           onClick={closeAllModals}
                         >
@@ -481,8 +542,8 @@ export function Header({
                           </svg>
                           <span>Registrarse</span>
                         </Link>
-                        <Link 
-                          href="/login" 
+                        <Link
+                          href="/login"
                           className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
                           onClick={closeAllModals}
                         >
