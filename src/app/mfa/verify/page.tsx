@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +22,7 @@ const mfaVerifySchema = z.object({
 
 type MFAVerifyValues = z.infer<typeof mfaVerifySchema>;
 
-export default function MFAVerifyPage() {
+function MFAVerifyContent() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -230,5 +230,17 @@ export default function MFAVerifyPage() {
                 </CardContent>
             </Card>
         </div>
+    );
+}
+
+export default function MFAVerifyPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        }>
+            <MFAVerifyContent />
+        </Suspense>
     );
 }
