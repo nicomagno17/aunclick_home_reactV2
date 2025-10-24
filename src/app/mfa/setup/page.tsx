@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,7 @@ const mfaSetupSchema = z.object({
 
 type MFASetupValues = z.infer<typeof mfaSetupSchema>;
 
-export default function MFASetupPage() {
+function MFASetupContent() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -256,5 +256,17 @@ export default function MFASetupPage() {
                 </CardContent>
             </Card>
         </div>
+    );
+}
+
+export default function MFASetupPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        }>
+            <MFASetupContent />
+        </Suspense>
     );
 }
