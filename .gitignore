@@ -51,6 +51,5 @@ local-*
 dev.log
 test
 prompt
-server.ts
 server.log
 .replit
