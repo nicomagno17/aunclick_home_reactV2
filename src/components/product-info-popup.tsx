@@ -48,36 +48,84 @@ export function ProductInfoPopup({ product, isOpen, onClose }: ProductInfoPopupP
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl w-[92vw] md:w-full max-h-[80vh] md:max-h-[90vh] overflow-y-auto bg-white text-gray-700 md:p-6 p-3 shadow-md">
+      <DialogContent
+        className="max-w-4xl w-[92vw] md:w-full max-h-[80vh] md:max-h-[90vh] overflow-y-auto bg-white text-gray-700 md:p-6 p-3 shadow-md"
+        showCloseButton={false}
+      >
         {/* Título oculto para accesibilidad */}
         <VisuallyHidden>
           <DialogTitle>{product.name}</DialogTitle>
         </VisuallyHidden>
 
-        {/* Botón cerrar */}
+        {/* Botón cerrar - Movido a la parte inferior derecha */}
         <button
           onClick={onClose}
-          className="absolute right-2 top-2 md:right-4 md:top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10 p-1"
+          className="absolute right-2 bottom-2 md:right-4 md:bottom-4 rounded-full bg-red-500 hover:bg-red-600 transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 z-10 p-1.5 shadow-lg"
         >
-          <X className="h-5 w-5 md:h-4 md:w-4 text-gray-500 hover:text-gray-700" />
+          <X className="h-4 w-4 text-white" />
           <span className="sr-only">Cerrar</span>
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 md:p-6 p-1">
           {/* Columna Izquierda - Imagen y Info del Negocio (50%) */}
           <div className="col-span-1 space-y-2 md:space-y-4">
-            {/* Imagen del Producto */}
-            <div className="aspect-square max-h-[35vh] md:max-h-none bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
+            {/* Contenedor de Imagen e Iconos - Layout diferente para móvil */}
+            <div className="flex md:block gap-2">
+              {/* Imagen del Producto */}
+              <div className="flex-1 aspect-square max-h-[35vh] md:max-h-none bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Iconos de Contacto en columna vertical - Solo móvil */}
+              <div className="md:hidden flex flex-col gap-2 justify-center">
+                {/* Icono de Teléfono Clickeable */}
+                <a
+                  href={`tel:+1234567890`}
+                  className="flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors cursor-pointer shadow-md"
+                  title={`Llamar a +1234567890`}
+                >
+                  <Phone className="w-4 h-4 text-white" />
+                </a>
+
+                {/* Icono de WhatsApp Clickeable */}
+                <a
+                  href={`https://wa.me/1234567890`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-10 h-10 bg-green-600 hover:bg-green-500 rounded-full transition-colors cursor-pointer shadow-md"
+                  title={`Enviar WhatsApp a +1234567890`}
+                >
+                  <MessageCircle className="w-4 h-4 text-white" />
+                </a>
+
+                {/* Icono de Email Clickeable */}
+                <a
+                  href={`mailto:contacto@tienda.com`}
+                  className="flex items-center justify-center w-10 h-10 bg-purple-600 hover:bg-purple-500 rounded-full transition-colors cursor-pointer shadow-md"
+                  title={`Enviar email a contacto@tienda.com`}
+                >
+                  <Mail className="w-4 h-4 text-white" />
+                </a>
+
+                {/* Icono de Ubicación Clickeable */}
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=Negocio+Local`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-10 h-10 bg-red-600 hover:bg-red-500 rounded-full transition-colors cursor-pointer shadow-md"
+                  title={`Ver ubicación: Negocio Local`}
+                >
+                  <MapPin className="w-4 h-4 text-white" />
+                </a>
+              </div>
             </div>
 
-            {/* Información del Negocio - SIN TÍTULO */}
-            <div className="bg-white rounded-lg md:p-4 p-2 space-y-2 md:space-y-3 shadow-sm border border-gray-100">
-              {/* Iconos de Contacto Clickeables en una sola línea */}
+            {/* Iconos de Contacto para Desktop - en línea horizontal */}
+            <div className="hidden md:block bg-white rounded-lg md:p-4 p-2 space-y-2 md:space-y-3 shadow-sm border border-gray-100">
               <div className="flex gap-2 md:gap-3 justify-center">
                 {/* Icono de Teléfono Clickeable */}
                 <a

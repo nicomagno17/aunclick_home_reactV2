@@ -6,10 +6,22 @@ import { Product } from '@/types/product'
 
 interface AdminProductCardProps {
   producto: Product
+  onPopupOpen?: () => void
+  onPopupClose?: () => void
 }
 
-export function AdminProductCard({ producto }: AdminProductCardProps) {
+export function AdminProductCard({ producto, onPopupOpen, onPopupClose }: AdminProductCardProps) {
   const [showInfoPopup, setShowInfoPopup] = useState(false)
+
+  const handleOpen = () => {
+    setShowInfoPopup(true)
+    onPopupOpen?.()
+  }
+
+  const handleClose = () => {
+    setShowInfoPopup(false)
+    onPopupClose?.()
+  }
 
   // Calculate discount percentage
   const discountPercentage = producto.originalPrice 
@@ -20,12 +32,12 @@ export function AdminProductCard({ producto }: AdminProductCardProps) {
     <>
       <div
         className="bg-white rounded-lg hover:shadow-lg transition-shadow md:w-full w-28 md:h-auto h-[175px] cursor-pointer flex flex-col shadow-sm overflow-visible"
-        onClick={() => setShowInfoPopup(true)}
+        onClick={handleOpen}
       >
         {/* Parte superior con imagen - sin bordes visibles */}
         <div className="md:h-48 h-24 bg-white overflow-hidden flex-shrink-0 rounded-t-lg">
-          <img 
-            src={producto.image} 
+          <img
+            src={producto.image}
             alt={producto.name}
             className="w-full h-full object-contain bg-white"
             loading="lazy"
@@ -71,10 +83,10 @@ export function AdminProductCard({ producto }: AdminProductCardProps) {
       </div>
 
       {/* Popup de Información del Producto */}
-      <ProductInfoPopup 
+      <ProductInfoPopup
         product={producto}
         isOpen={showInfoPopup}
-        onClose={() => setShowInfoPopup(false)}
+        onClose={handleClose}
       />
     </>
   )

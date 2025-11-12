@@ -284,13 +284,13 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
 
   return (
     <section className="mb-12">
-      <div className="mb-6">
+      <div className="mb-6 px-6">
         <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       </div>
 
       {/* Fila 1 */}
-      <div className="relative mb-8">
+      <div className="relative mb-8 px-6">
         <div className="overflow-hidden">
           <div className={`grid ${visibleCardsPerRow === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-2 sm:gap-4 md:gap-6`}>
             {visibleProductsRow1.map((product) => (
@@ -324,7 +324,7 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
       </div>
 
       {/* Fila 2 */}
-      <div className="relative">
+      <div className="relative px-6">
         <div className="overflow-hidden">
           <div className={`grid ${visibleCardsPerRow === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-2 sm:gap-4 md:gap-6`}>
             {visibleProductsRow2.map((product) => (

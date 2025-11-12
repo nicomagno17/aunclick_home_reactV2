@@ -109,7 +109,7 @@ export function HeaderCarousel({ sections, autoPlayInterval = 7000 }: HeaderCaro
   }
 
   return (
-    <div className="w-full bg-gray-50 h-80 -mt-4 pt-0"> {/* Increased height and removed margin */}
+    <div className="relative w-full bg-gray-50 h-80 -mt-4 pt-0"> {/* Increased height and removed margin */}
       <div className="w-full h-full overflow-hidden">
         {isMobile ? (
           // Modo móvil: mostrar imágenes individuales
@@ -162,61 +162,6 @@ export function HeaderCarousel({ sections, autoPlayInterval = 7000 }: HeaderCaro
               </div>
             ))}
           </div>
-        )}
-      </div>
-      
-      {/* Indicadores de posición */}
-      <div className="flex justify-center mt-4 space-x-2">
-        {isMobile ? (
-          // Indicadores para modo móvil
-          getAllImages().map((_, index) => {
-            const isActive = getCurrentImageIndex() === index
-            return (
-              <button
-                key={index}
-                onClick={() => {
-                  // Encontrar a qué sección e imagen corresponde este índice
-                  let accumulated = 0
-                  for (let i = 0; i < sections.length; i++) {
-                    if (index < accumulated + sections[i].images.length) {
-                      setCurrentSection(i)
-                      setCurrentImage(index - accumulated)
-                      setDirection(index > getCurrentImageIndex() ? 1 : -1)
-                      break
-                    }
-                    accumulated += sections[i].images.length
-                  }
-                }}
-                className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                  isActive 
-                    ? 'bg-purple-600' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-                aria-label={`Ir a la imagen ${index + 1}`}
-              />
-            )
-          })
-        ) : (
-          // Indicadores para modo desktop
-          sections.map((_, index) => {
-            const isActive = currentSection === index
-            return (
-              <button
-                key={index}
-                onClick={() => {
-                  setCurrentSection(index)
-                  // Establecer dirección basada en si nos movemos hacia adelante o atrás
-                  setDirection(index > currentSection ? 1 : -1)
-                }}
-                className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                  isActive 
-                    ? 'bg-purple-600' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-                aria-label={`Ir a la sección ${index + 1}`}
-              />
-            )
-          })
         )}
       </div>
     </div>

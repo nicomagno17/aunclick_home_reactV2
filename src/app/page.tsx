@@ -8,6 +8,7 @@ import { ImageCarouselContinuous } from '@/components/image-carousel-continuous'
 import { ImageCarouselContinuous2 } from '@/components/image-carousel-continuous2'
 import { HeaderCarousel } from '@/components/header-carousel'
 import { InfoBannerCarousel } from '@/components/info-banner-carousel'
+import { CategoryFilterCards } from '@/components/category-filter-cards'
 import { Product } from '@/types/product'
 import { Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, Package, Gift, Lock, Key, Eye, AlertTriangle, Search, MapPin, Ban } from 'lucide-react'
 import { ResponsiveSearchSection } from '@/components/responsive-search-section'
@@ -49,33 +50,36 @@ export default function Home() {
         showFloatingSearch={true}
       />
 
-      {/* Nuevo Carrusel entre Header y Destacados */}
-      <HeaderCarousel 
-        sections={[
-          {
-            images: [
-              "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
-              "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=400&h=300&fit=crop"
-            ]
-          },
-          {
-            images: [
-              "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop",
-              "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop"
-            ]
-          },
-          {
-            images: [
-              "https://images.unsplash.com/photo-1551818255-e6e10975bc51?w=400&h=300&fit=crop",
-              "https://images.unsplash.com/photo-1526170375885-4d8ec677e1c8?w=400&h=300&fit=crop"
-            ]
-          }
-        ]}
-        autoPlayInterval={7000}
-      />
+      {/* Nuevo Carrusel entre Header y Destacados con tarjetas de filtro */}
+      <div className="relative">
+        <HeaderCarousel
+          sections={[
+            {
+              images: [
+                "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
+                "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=400&h=300&fit=crop"
+              ]
+            },
+            {
+              images: [
+                "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop",
+                "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop"
+              ]
+            },
+            {
+              images: [
+                "https://images.unsplash.com/photo-1551818255-e6e10975bc51?w=400&h=300&fit=crop",
+                "https://images.unsplash.com/photo-1526170375885-4d8ec677e1c8?w=400&h=300&fit=crop"
+              ]
+            }
+          ]}
+          autoPlayInterval={7000}
+        />
+        <CategoryFilterCards />
+      </div>
 
       {/* Main Content */}
-      <main className="container mx-auto py-8 px-6">
+      <main className="pt-20 md:pt-24 pb-8">
         {loading ? (
           <>
             {/* Skeletons de carga */}
@@ -169,9 +173,10 @@ export default function Home() {
             />
 
             {/* Carrusel Informativo */}
-            <InfoBannerCarousel autoPlayInterval={7000}>
-              {/* Banner 1: Regístrate y Obtén Beneficios */}
-              <section className="mb-6 md:mb-8">
+            <div className="px-6">
+              <InfoBannerCarousel autoPlayInterval={7000}>
+                {/* Banner 1: Regístrate y Obtén Beneficios */}
+                <section className="mb-6 md:mb-8">
                 <div className="relative overflow-hidden rounded-2xl md:rounded-3xl shadow-2xl h-[240px] md:h-[260px] bg-purple-200">
                   {/* Patrón decorativo sutil */}
                   <div className="absolute inset-0 opacity-10">
@@ -488,7 +493,8 @@ export default function Home() {
 
                 </div>
               </section>
-            </InfoBannerCarousel>     
+              </InfoBannerCarousel>
+            </div>
 
             {loading ? (
               <SkeletonCarousel
@@ -526,8 +532,8 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative text-white py-8 px-6 mt-12 shadow-2xl" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
-        <div className="container mx-auto">
+      <footer className="relative text-white py-8 mt-12 shadow-2xl" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
+        <div className="px-6">
           {/* Fila superior - 2 filas de 2 columnas en móvil, 4 columnas en desktop */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mb-8">
 
