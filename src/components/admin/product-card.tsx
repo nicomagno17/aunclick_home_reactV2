@@ -23,7 +23,7 @@ export const ProductCard = memo(function ProductCard({
   onDeleteClick
 }: ProductCardProps) {
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow md:w-44 w-28 md:h-auto h-auto">
+    <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow md:w-44 w-28">
       {/* Parte superior con imagen - ocupa todo el espacio */}
       <div className="md:h-40 h-24 bg-white overflow-hidden">
         <img
@@ -35,23 +35,26 @@ export const ProductCard = memo(function ProductCard({
       </div>
 
       {/* Parte inferior con información - ultra compacta */}
-      <div className="md:p-1.5 md:pb-1 p-1 pb-0.5">
+      <div className="md:p-1.5 md:pb-1.5 p-1 pb-1 flex flex-col gap-0">
         {/* Fila con categoría y subcategoría centradas */}
-        <div className="flex items-center justify-center md:text-[10px] text-[8px] text-gray-400 md:mb-0.5 mb-0">
+        <div className="flex items-center justify-center md:text-[9px] text-[8px] text-gray-400">
           <span className="text-center truncate max-w-[35%]">{getCategoriaLabel(producto.categoria)}</span>
           <span className="mx-0.5">/</span>
           <span className="text-center truncate max-w-[35%]">{getSubcategoriaLabel(producto.subcategoria)}</span>
         </div>
 
-        {/* Nombre del producto */}
-        <div className="md:mb-1 mb-0.5">
-          <h3 className="md:text-[10px] text-[8px] font-semibold text-gray-100 leading-tight line-clamp-2 text-center">
+        {/* Nombre del producto - una sola línea */}
+        <div className="px-1">
+          <h3 className="md:text-[9px] text-[8px] font-semibold text-gray-100 leading-none truncate text-center">
             {producto.nombre}
           </h3>
         </div>
 
         {/* Fila con precios */}
-        <div className="flex items-center justify-between md:mb-1 mb-0.5">
+        <div
+          className="flex items-center justify-center gap-2 cursor-pointer"
+          onClick={() => onInfoClick(producto)}
+        >
           {/* Precio actual */}
           <div className="text-purple-400 font-bold md:text-xs text-[9px]">
             ${producto.precioActual}
@@ -69,14 +72,6 @@ export const ProductCard = memo(function ProductCard({
             </div>
           )}
         </div>
-
-        {/* Botón +Información */}
-        <button
-          onClick={() => onInfoClick(producto)}
-          className="w-full bg-gray-700 hover:bg-gray-600 text-white md:py-0.5 py-0 md:px-1 px-0.5 rounded transition-colors md:text-[9px] text-[7px] font-medium md:mt-1 mt-0.5 md:mb-1 mb-0.5"
-        >
-          +Información
-        </button>
 
         {/* Botones de Editar y Eliminar */}
         {section && onEditClick && onDeleteClick && (

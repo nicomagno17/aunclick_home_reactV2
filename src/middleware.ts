@@ -14,9 +14,11 @@ function generateUUID(): string {
 }
 
 export const config = {
-  matcher: [
-    '/api/:path*',
-  ],
+  // Temporalmente deshabilitado - no hay DB conectada
+  matcher: [],
+  // matcher: [
+  //   '/api/:path*',
+  // ],
 }
 
 // Función para obtener la IP del cliente
@@ -41,84 +43,7 @@ export default withAuth(
     request.headers.set('x-correlation-id', correlationId)
     request.headers.set('x-request-start-time', startTime.toString())
 
-    // Lista de rutas públicas (no requieren autenticación)
-    const publicRoutes = [
-      '/api/auth/signin',   // NextAuth signin endpoint
-      '/api/auth/signout',  // NextAuth signout endpoint
-      '/api/auth/session',  // NextAuth session endpoint
-      '/api/auth/callback', // NextAuth callback endpoint
-      '/api/health',        // Health check
-      '/api/test-db',       // Test de conexión a BD
-      '/api/categorias-productos', // Categorías de productos
-    ]
-
-    // Rutas públicas por método HTTP
-    const publicByMethod = {
-      '/api/productos': ['GET'],           // Listado público de productos
-      '/api/products': ['GET'],           // Listado público de productos (English route)
-      '/api/negocios': ['GET'],          // Listado público de negocios
-      '/api/planes-suscripcion': ['GET'], // Listado público de planes
-      '/api/usuarios': ['POST'],          // Registro público de usuarios
-      '/api/auth/password/forgot': ['POST'], // Recuperación de contraseña
-      '/api/auth/password/reset': ['POST'],  // Restablecimiento de contraseña
-    }
-
-    // Verificar si la ruta es completamente pública
-    const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
-    if (isPublicRoute) {
-      return correlationStorage.run(
-        { correlationId, endpoint: pathname, method },
-        async () => {
-          try {
-            // Log incoming request
-            await logger.logRequest(method, pathname, Object.fromEntries(request.nextUrl.searchParams))
-
-            const response = NextResponse.next()
-            response.headers.set('X-Correlation-ID', correlationId)
-
-            // Log response for public route
-            const duration = Date.now() - startTime
-            await logger.logResponse(method, pathname, 200, duration, { correlationId })
-
-            return response
-          } catch (error) {
-            const response = NextResponse.next()
-            response.headers.set('X-Correlation-ID', correlationId)
-            return response
-          }
-        }
-      )
-    }
-
-    // Verificar si la ruta es pública por método HTTP
-    for (const [route, allowedMethods] of Object.entries(publicByMethod)) {
-      if (pathname.startsWith(route) && allowedMethods.includes(method)) {
-        return correlationStorage.run(
-          { correlationId, endpoint: pathname, method },
-          async () => {
-            try {
-              // Log incoming request
-              await logger.logRequest(method, pathname, Object.fromEntries(request.nextUrl.searchParams))
-
-              const response = NextResponse.next()
-              response.headers.set('X-Correlation-ID', correlationId)
-
-              // Log response for public route by method
-              const duration = Date.now() - startTime
-              await logger.logResponse(method, pathname, 200, duration, { correlationId })
-
-              return response
-            } catch (error) {
-              const response = NextResponse.next()
-              response.headers.set('X-Correlation-ID', correlationId)
-              return response
-            }
-          }
-        )
-      }
-    }
-
-    // Rate limiting para rutas sensibles
+    // Rate limiting para rutas sensibles (ANTES de verificar acceso público)
     let rateLimitResponse: any = null
 
     // Verificar rate limiting para login (solo IP-based)
@@ -231,6 +156,96 @@ export default withAuth(
       }
     }
 
+    // Lista de rutas públicas (no requieren autenticación)
+    const publicRoutes = [
+      '/api/auth',          // All NextAuth endpoints
+      '/api/health',        // Health check
+      '/api/test-db',       // Test de conexión a BD
+      '/api/categorias-productos', // Categorías de productos
+    ]
+
+    // Rutas públicas por método HTTP
+    const publicByMethod = {
+      '/api/productos': ['GET'],           // Listado público de productos
+      '/api/products': ['GET'],           // Listado público de productos (English route)
+      '/api/negocios': ['GET'],          // Listado público de negocios
+      '/api/planes-suscripcion': ['GET'], // Listado público de planes
+      '/api/usuarios': ['POST'],          // Registro público de usuarios
+      '/api/auth/password/forgot': ['POST'], // Recuperación de contraseña
+      '/api/auth/password/reset': ['POST'],  // Restablecimiento de contraseña
+    }
+
+    // Verificar si la ruta es completamente pública
+    const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
+    if (isPublicRoute) {
+      return correlationStorage.run(
+        { correlationId, endpoint: pathname, method },
+        async () => {
+          try {
+            // Log incoming request
+            await logger.logRequest(method, pathname, Object.fromEntries(request.nextUrl.searchParams))
+
+            const response = NextResponse.next()
+            response.headers.set('X-Correlation-ID', correlationId)
+
+            // Agregar headers de rate limit si se verificó
+            if (rateLimitResponse) {
+              const rateLimitHeaders = getRateLimitHeaders(rateLimitResponse)
+              Object.entries(rateLimitHeaders).forEach(([key, value]) => {
+                response.headers.set(key, value)
+              })
+            }
+
+            // Log response for public route
+            const duration = Date.now() - startTime
+            await logger.logResponse(method, pathname, 200, duration, { correlationId })
+
+            return response
+          } catch (error) {
+            const response = NextResponse.next()
+            response.headers.set('X-Correlation-ID', correlationId)
+            return response
+          }
+        }
+      )
+    }
+
+    // Verificar si la ruta es pública por método HTTP
+    for (const [route, allowedMethods] of Object.entries(publicByMethod)) {
+      if (pathname.startsWith(route) && allowedMethods.includes(method)) {
+        return correlationStorage.run(
+          { correlationId, endpoint: pathname, method },
+          async () => {
+            try {
+              // Log incoming request
+              await logger.logRequest(method, pathname, Object.fromEntries(request.nextUrl.searchParams))
+
+              const response = NextResponse.next()
+              response.headers.set('X-Correlation-ID', correlationId)
+
+              // Agregar headers de rate limit si se verificó
+              if (rateLimitResponse) {
+                const rateLimitHeaders = getRateLimitHeaders(rateLimitResponse)
+                Object.entries(rateLimitHeaders).forEach(([key, value]) => {
+                  response.headers.set(key, value)
+                })
+              }
+
+              // Log response for public route by method
+              const duration = Date.now() - startTime
+              await logger.logResponse(method, pathname, 200, duration, { correlationId })
+
+              return response
+            } catch (error) {
+              const response = NextResponse.next()
+              response.headers.set('X-Correlation-ID', correlationId)
+              return response
+            }
+          }
+        )
+      }
+    }
+
     // For protected routes, let NextAuth handle authentication
     // The response will be handled in the authorization callback
     const response = NextResponse.next()
@@ -261,10 +276,7 @@ export default withAuth(
           async () => {
             // Lista de rutas públicas (no requieren autenticación)
             const publicRoutes = [
-              '/api/auth/signin',
-              '/api/auth/signout',
-              '/api/auth/session',
-              '/api/auth/callback',
+              '/api/auth',
               '/api/health',
               '/api/test-db',
               '/api/categorias-productos',

@@ -90,32 +90,32 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
 
             {/* Parte Frontal (Contenido original del producto) */}
-            <div className="absolute inset-0 w-full h-full backface-hidden p-1.5 sm:p-2 flex flex-col bg-white">
+            <div className="absolute inset-0 w-full h-full backface-hidden p-1.5 sm:p-2 flex flex-col bg-white gap-0">
               {/* Category */}
-              <div className="mb-0.5 sm:mb-1">
+              <div>
                 <span className="text-[10px] sm:text-xs bg-gray-100 text-gray-600 px-1.5 sm:px-2 py-0.5 rounded">
                   {product.category}
                 </span>
               </div>
 
               {/* Title */}
-              <div 
+              <div
                 className="flex-1"
                 onClick={() => setShowInfoPopup(true)} // Agregar evento de clic para abrir el popup
               >
-                <h3 className="font-semibold text-gray-900 line-clamp-2 leading-tight mb-0.5 min-h-[1.8em] sm:min-h-[2.2em] text-xs sm:text-sm">
+                <h3 className="font-semibold text-gray-900 truncate leading-none text-xs sm:text-sm">
                   {product.name}
                 </h3>
 
                 {/* Description */}
-                <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 leading-tight mb-0.5 min-h-[2.4em] sm:min-h-[3.6em]">
+                <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 leading-tight min-h-[2.4em] sm:min-h-[3.6em]">
                   {product.description}
                 </p>
               </div>
 
               {/* Price */}
-              <div 
-                className="flex items-center gap-1 sm:gap-2 mb-0.5"
+              <div
+                className="flex items-center justify-center gap-1 sm:gap-2"
                 onClick={() => setShowInfoPopup(true)} // Agregar evento de clic para abrir el popup
               >
                 <span className="text-sm sm:text-lg font-bold text-purple-900">

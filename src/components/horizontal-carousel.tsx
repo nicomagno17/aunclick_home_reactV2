@@ -24,8 +24,8 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
 
   // Configuración responsive
   const getViewportConfig = () => {
-    if (typeof window === 'undefined') return { width: 176, gap: 12, visible: 4 }
-    
+    if (typeof window === 'undefined') return { width: 220, gap: 0, visible: 4 }
+
     const windowWidth = window.innerWidth
     if (windowWidth < 640) {
       // Mobile
@@ -34,8 +34,8 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
       // Tablet
       return { width: 150, gap: 16, visible: 3.5 }
     } else {
-      // Desktop
-      return { width: 176, gap: 12, visible: 4 }
+      // Desktop - 4 tarjetas más grandes sin espacio
+      return { width: 220, gap: 0, visible: 4 }
     }
   }
 
@@ -188,10 +188,10 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
         <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       </div>
-      
-      <div className="relative">
+
+      <div className="relative md:pb-16 pb-4">
         {/* Container con scroll horizontal */}
-        <div 
+        <div
           ref={scrollContainerRef}
           className="overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -206,9 +206,10 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
           onMouseUp={handleEnd}
           onMouseLeave={handleEnd}
         >
-          <div 
-            className="flex gap-3 pb-2"
+          <div
+            className="flex"
             style={{
+              gap: `${config.gap}px`,
               width: `${products.length * (config.width + config.gap) - config.gap}px`
             }}
           >

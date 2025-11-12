@@ -18,12 +18,12 @@ export function AdminProductCard({ producto }: AdminProductCardProps) {
 
   return (
     <>
-      <div 
-        className="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow md:w-44 w-28 md:h-[280px] h-[220px] cursor-pointer flex flex-col shadow-sm"
+      <div
+        className="bg-white rounded-lg hover:shadow-lg transition-shadow md:w-full w-28 md:h-auto h-[175px] cursor-pointer flex flex-col shadow-sm overflow-visible"
         onClick={() => setShowInfoPopup(true)}
       >
         {/* Parte superior con imagen - sin bordes visibles */}
-        <div className="md:h-40 h-24 bg-white overflow-hidden flex-shrink-0">
+        <div className="md:h-48 h-24 bg-white overflow-hidden flex-shrink-0 rounded-t-lg">
           <img 
             src={producto.image} 
             alt={producto.name}
@@ -33,32 +33,32 @@ export function AdminProductCard({ producto }: AdminProductCardProps) {
         </div>
         
         {/* Parte inferior con información - fondo blanco */}
-        <div className="md:p-1.5 md:pb-1 p-1 pb-0.5 flex flex-col flex-grow bg-white">
+        <div className="md:p-1.5 md:pb-2 p-1 pb-1 flex flex-col flex-grow bg-white justify-center gap-0 rounded-b-lg">
           {/* Fila con categoría y subcategoría centradas - altura fija */}
-          <div className="flex items-center justify-center md:text-[10px] text-[8px] text-gray-500 md:mb-0.5 mb-0 h-4">
+          <div className="flex items-center justify-center md:text-[10px] text-[8px] text-gray-500 md:h-3.5 h-3">
             <span className="text-center truncate max-w-[35%]">{producto.category}</span>
             <span className="mx-0.5">/</span>
             <span className="text-center truncate max-w-[35%]">{producto.category}</span>
           </div>
-          
-          {/* Nombre del producto - altura fija */}
-          <div className="md:h-[2.5rem] h-10 flex items-center justify-center">
-            <h3 className="md:text-[10px] text-[8px] font-semibold text-gray-700 leading-tight line-clamp-2 text-center w-full">
+
+          {/* Nombre del producto - altura fija, una sola línea */}
+          <div className="md:h-5 h-6 flex items-center justify-center px-1">
+            <h3 className="md:text-xs text-[8px] font-semibold text-gray-700 leading-none truncate text-center w-full">
               {producto.name}
             </h3>
           </div>
-          
+
           {/* Fila con precios - altura fija */}
-          <div className="flex items-center justify-between md:mb-1 mb-0.5 h-5">
+          <div className="flex items-center justify-center gap-2 md:h-5 h-4">
             {/* Precio actual */}
-            <div className="text-purple-600 font-bold md:text-xs text-[9px]">
+            <div className="text-purple-600 font-bold md:text-base text-[9px]">
               ${producto.price.toLocaleString('es-CL')}
             </div>
-            
+
             {/* Precio anterior tachado */}
             {producto.originalPrice && (
               <div className="relative">
-                <span className="text-gray-500 line-through md:text-[9px] text-[7px]">
+                <span className="text-gray-500 line-through md:text-sm text-[7px]">
                   ${producto.originalPrice.toLocaleString('es-CL')}
                 </span>
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -66,19 +66,6 @@ export function AdminProductCard({ producto }: AdminProductCardProps) {
                 </div>
               </div>
             )}
-          </div>
-          
-          {/* Botón +Información - altura fija */}
-          <div className="mt-auto mb-1">
-            <button 
-              onClick={(e) => {
-                e.stopPropagation()
-                setShowInfoPopup(true)
-              }}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white md:py-0.5 py-0 md:px-1 px-0.5 rounded transition-colors md:text-[9px] text-[7px] font-medium"
-            >
-              +Información
-            </button>
           </div>
         </div>
       </div>

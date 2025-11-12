@@ -2,7 +2,8 @@
 
 import { X, Phone, MessageCircle, Mail, MapPin } from 'lucide-react'
 import { Product } from '@/types/product'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { VisuallyHidden } from '@/components/ui/visually-hidden'
 
 interface ProductInfoPopupProps {
   product: Product | null
@@ -47,21 +48,26 @@ export function ProductInfoPopup({ product, isOpen, onClose }: ProductInfoPopupP
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-white text-gray-700 md:p-6 p-4 shadow-md">
+      <DialogContent className="max-w-4xl w-[92vw] md:w-full max-h-[80vh] md:max-h-[90vh] overflow-y-auto bg-white text-gray-700 md:p-6 p-3 shadow-md">
+        {/* Título oculto para accesibilidad */}
+        <VisuallyHidden>
+          <DialogTitle>{product.name}</DialogTitle>
+        </VisuallyHidden>
+
         {/* Botón cerrar */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10"
+          className="absolute right-2 top-2 md:right-4 md:top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10 p-1"
         >
-          <X className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+          <X className="h-5 w-5 md:h-4 md:w-4 text-gray-500 hover:text-gray-700" />
           <span className="sr-only">Cerrar</span>
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:p-6 p-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 md:p-6 p-1">
           {/* Columna Izquierda - Imagen y Info del Negocio (50%) */}
-          <div className="col-span-1 space-y-4">
+          <div className="col-span-1 space-y-2 md:space-y-4">
             {/* Imagen del Producto */}
-            <div className="aspect-square bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
+            <div className="aspect-square max-h-[35vh] md:max-h-none bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
               <img
                 src={product.image}
                 alt={product.name}
@@ -70,67 +76,67 @@ export function ProductInfoPopup({ product, isOpen, onClose }: ProductInfoPopupP
             </div>
 
             {/* Información del Negocio - SIN TÍTULO */}
-            <div className="bg-white rounded-lg md:p-4 p-3 space-y-3 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-lg md:p-4 p-2 space-y-2 md:space-y-3 shadow-sm border border-gray-100">
               {/* Iconos de Contacto Clickeables en una sola línea */}
-              <div className="flex gap-3 justify-center">
+              <div className="flex gap-2 md:gap-3 justify-center">
                 {/* Icono de Teléfono Clickeable */}
-                <a 
+                <a
                   href={`tel:+1234567890`}
-                  className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors cursor-pointer"
+                  className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors cursor-pointer"
                   title={`Llamar a +1234567890`}
                 >
-                  <Phone className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                  <Phone className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                 </a>
-                
+
                 {/* Icono de WhatsApp Clickeable */}
-                <a 
+                <a
                   href={`https://wa.me/1234567890`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-green-600 hover:bg-green-500 rounded-full transition-colors cursor-pointer"
+                  className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 bg-green-600 hover:bg-green-500 rounded-full transition-colors cursor-pointer"
                   title={`Enviar WhatsApp a +1234567890`}
                 >
-                  <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                  <MessageCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                 </a>
-                
+
                 {/* Icono de Email Clickeable */}
-                <a 
+                <a
                   href={`mailto:contacto@tienda.com`}
-                  className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-purple-600 hover:bg-purple-500 rounded-full transition-colors cursor-pointer"
+                  className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 bg-purple-600 hover:bg-purple-500 rounded-full transition-colors cursor-pointer"
                   title={`Enviar email a contacto@tienda.com`}
                 >
-                  <Mail className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                  <Mail className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                 </a>
-                
+
                 {/* Icono de Ubicación Clickeable */}
-                <a 
+                <a
                   href={`https://www.google.com/maps/search/?api=1&query=Negocio+Local`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 bg-red-600 hover:bg-red-500 rounded-full transition-colors cursor-pointer"
+                  className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 bg-red-600 hover:bg-red-500 rounded-full transition-colors cursor-pointer"
                   title={`Ver ubicación: Negocio Local`}
                 >
-                  <MapPin className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                  <MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                 </a>
               </div>
             </div>
 
             {/* Información en 2 columnas para modo responsive */}
-            <div className="md:hidden grid grid-cols-2 gap-4 md:p-4 p-2">
+            <div className="md:hidden grid grid-cols-2 gap-2 p-1">
               {/* Columna Izquierda - Información principal */}
-              <div className="space-y-2 md:p-2 p-1">
+              <div className="space-y-1.5 p-1">
                 {/* Nombre del Negocio - ARRIBA DEL PRODUCTO CON SUBRAYADO */}
-                <h3 className="text-xs font-medium text-gray-500 underline decoration-gray-300">
+                <h3 className="text-[0.65rem] font-medium text-gray-500 underline decoration-gray-300">
                   {product.source || 'Tienda Ejemplo'}
                 </h3>
 
                 {/* Título del producto - más chico */}
-                <h2 className="text-sm font-bold text-gray-700 leading-tight">
+                <h2 className="text-xs font-bold text-gray-700 leading-tight">
                   {product.name}
                 </h2>
 
                 {/* Categoría y Subcategoría */}
-                <div className="flex items-center gap-1 text-[9px] text-gray-500">
+                <div className="flex items-center gap-0.5 text-[8px] text-gray-500">
                   <span className="truncate max-w-[35%]">{getCategoriaLabel(product.category)}</span>
                   <span className="mx-0.5">/</span>
                   <span className="truncate max-w-[35%]">{getSubcategoriaLabel(product.category)}</span>
@@ -138,18 +144,18 @@ export function ProductInfoPopup({ product, isOpen, onClose }: ProductInfoPopupP
 
                 {/* Descripción - más pequeña */}
                 <div>
-                  <p className="text-gray-600 text-[0.6rem] leading-snug text-justify">
+                  <p className="text-gray-600 text-[0.55rem] leading-tight text-justify line-clamp-3">
                     {product.description || 'Sin descripción disponible.'}
                   </p>
                 </div>
 
                 {/* Precios */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-purple-600">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-purple-600">
                     ${product.price.toLocaleString('es-CL')}
                   </span>
                   {product.originalPrice && (
-                    <span className="text-[0.6rem] text-gray-500 line-through">
+                    <span className="text-[0.55rem] text-gray-500 line-through">
                       ${product.originalPrice.toLocaleString('es-CL')}
                     </span>
                   )}
@@ -157,11 +163,11 @@ export function ProductInfoPopup({ product, isOpen, onClose }: ProductInfoPopupP
               </div>
 
               {/* Columna Derecha - Horarios y características */}
-              <div className="space-y-3 md:p-2 p-1">
+              <div className="space-y-2 p-1">
                 {/* Horarios de Atención */}
                 <div>
-                  <h5 className="text-[0.65rem] font-medium text-gray-500 mb-1">Horarios:</h5>
-                  <div className="flex flex-col gap-1 text-[0.6rem]">
+                  <h5 className="text-[0.6rem] font-medium text-gray-500 mb-0.5">Horarios:</h5>
+                  <div className="flex flex-col gap-0.5 text-[0.55rem]">
                     <div className="flex justify-between">
                       <span className="text-gray-600">L-V:</span>
                       <span className="text-gray-500">09:00-18:00</span>
@@ -178,19 +184,19 @@ export function ProductInfoPopup({ product, isOpen, onClose }: ProductInfoPopupP
                 </div>
 
                 {/* Información adicional del producto */}
-                <div className="space-y-1 text-[0.6rem]">
+                <div className="space-y-0.5 text-[0.55rem]">
                   {/* Características ficticias */}
-                  <div className="flex items-start gap-1">
+                  <div className="flex items-start gap-0.5">
                     <span className="text-gray-500">Tallas:</span>
                     <span className="text-gray-600">S, M, L, XL</span>
                   </div>
-                  
-                  <div className="flex items-start gap-1">
+
+                  <div className="flex items-start gap-0.5">
                     <span className="text-gray-500">Género:</span>
                     <span className="text-gray-600 capitalize">Unisex</span>
                   </div>
-                  
-                  <div className="flex items-start gap-1">
+
+                  <div className="flex items-start gap-0.5">
                     <span className="text-gray-500">Medidas:</span>
                     <span className="text-gray-600">20 x 15 x 10 cm</span>
                   </div>

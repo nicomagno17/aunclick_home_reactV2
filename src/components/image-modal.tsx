@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog'
 import { ExternalLink, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -24,7 +24,7 @@ export function ImageModal({ imageSrc, imageAlt, productName, children }: ImageM
       <DialogContent className="max-w-4xl w-full p-0 bg-background" showCloseButton={false}>
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="text-lg font-semibold text-foreground">{productName}</h3>
+          <DialogTitle className="text-lg font-semibold text-foreground">{productName}</DialogTitle>
           <Button
             variant="ghost"
             size="sm"

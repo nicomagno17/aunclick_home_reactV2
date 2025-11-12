@@ -2994,6 +2994,13 @@ export default function AdminPage() {
       {/* Popup de Información del Producto */}
       <Dialog open={selectedProducto !== null} onOpenChange={(open) => !open && setSelectedProducto(null)}>
         <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700 text-white md:p-6 p-4">
+          {/* Título oculto para accesibilidad */}
+          {selectedProducto && (
+            <VisuallyHidden>
+              <DialogTitle>{selectedProducto.nombre}</DialogTitle>
+            </VisuallyHidden>
+          )}
+
           {/* Botón cerrar */}
           <button
             onClick={() => setSelectedProducto(null)}
