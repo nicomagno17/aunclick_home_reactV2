@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -24,6 +24,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   BarChart3,
   Image,
   ShoppingBag,
@@ -108,6 +109,10 @@ export default function AdminPage() {
   const [showHelpPopup, setShowHelpPopup] = useState(false)
   const [helpContent, setHelpContent] = useState<{ title: string, content: string } | null>(null)
 
+  // Estados para el acordeón del footer móvil
+  const [openFooterSection, setOpenFooterSection] = useState<string | null>(null)
+  const footerRef = useRef<HTMLDivElement>(null)
+
   // Contenido de ayuda para cada sección
   const helpContentData = {
     'datos-negocio': {
@@ -144,6 +149,28 @@ export default function AdminPage() {
     setShowHelpPopup(false)
     setHelpContent(null)
   }
+
+  // Función para alternar secciones del footer
+  const toggleFooterSection = (section: string) => {
+    setOpenFooterSection(openFooterSection === section ? null : section)
+  }
+
+  // useEffect para cerrar el acordeón al hacer clic fuera del footer
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (footerRef.current && !footerRef.current.contains(event.target as Node)) {
+        setOpenFooterSection(null)
+      }
+    }
+
+    if (openFooterSection) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [openFooterSection])
 
   // Estado para información del negocio
   const [businessInfo, setBusinessInfo] = useState({
@@ -2043,9 +2070,12 @@ export default function AdminPage() {
 
         {/* Overlay Message */}
         <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
-            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
-            <p className="md:text-sm text-xs text-gray-600">Panel de análisis avanzado para monitorear el rendimiento y visualización de tus productos en tiempo real.</p>
+          <div className="bg-white border-2 border-purple-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-3 mb-2">📊 Analytics Dashboard</h3>
+            <p className="md:text-sm text-xs text-gray-700 md:mb-3 mb-2">Panel de análisis avanzado que te permite monitorear en tiempo real el rendimiento de tu negocio: visualizaciones de productos, interacciones de clientes, consultas recibidas y estadísticas detalladas de tus publicaciones.</p>
+            <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg md:py-2 py-1.5 md:px-3 px-2 border border-purple-300">
+              <p className="md:text-xs text-[10px] font-semibold text-purple-800">✨ Disponible para clientes Premium</p>
+            </div>
           </div>
         </div>
       </div>
@@ -2106,9 +2136,12 @@ export default function AdminPage() {
         <Tabs defaultValue="carrusel1" className={`w-full ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
           {/* Overlay Message */}
           <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
-              <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
-              <p className="md:text-sm text-xs text-gray-600">Sistema de gestión de carruseles para mostrar tus productos destacados en la página principal.</p>
+            <div className="bg-white border-2 border-purple-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+              <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-3 mb-2">🎠 Gestión de Carruseles</h3>
+              <p className="md:text-sm text-xs text-gray-700 md:mb-3 mb-2">Sistema avanzado de carruseles que te permite organizar y exhibir tus productos destacados en galerías visuales rotativas en la página principal de tu negocio. Hasta 16 posiciones disponibles en 2 carruseles personalizables.</p>
+              <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg md:py-2 py-1.5 md:px-3 px-2 border border-purple-300">
+                <p className="md:text-xs text-[10px] font-semibold text-purple-800">✨ Disponible para clientes Premium</p>
+              </div>
             </div>
           </div>
           <TabsList className="grid grid-cols-2 w-full md:max-w-md max-w-xs mx-auto md:px-6 px-3 md:mb-8 mb-6 bg-gray-800 border border-gray-700 rounded-lg p-1">
@@ -2818,9 +2851,12 @@ export default function AdminPage() {
       <div className={`px-6 pb-4 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'} relative`}>
         {/* Overlay Message - Colocado fuera del contenedor con distorsión */}
         <div className="absolute inset-0 flex items-center justify-center z-20">
-          <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
-            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
-            <p className="md:text-sm text-xs text-gray-600">Sistema de gestión de banners para promocionar ofertas especiales en lugares destacados de tu página.</p>
+          <div className="bg-white border-2 border-purple-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-3 mb-2">🎯 Gestión de Banners</h3>
+            <p className="md:text-sm text-xs text-gray-700 md:mb-3 mb-2">Sistema de banners publicitarios que te permite crear y gestionar anuncios visuales prominentes en zonas estratégicas de tu página. Ideal para promocionar ofertas especiales, productos destacados o eventos importantes.</p>
+            <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg md:py-2 py-1.5 md:px-3 px-2 border border-purple-300">
+              <p className="md:text-xs text-[10px] font-semibold text-purple-800">✨ Disponible para clientes Premium</p>
+            </div>
           </div>
         </div>
 
@@ -3518,7 +3554,7 @@ export default function AdminPage() {
       </Dialog>
 
       {/* Mobile-only footer - appears at the end */}
-      <div className="md:hidden block bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white py-6 px-6">
+      <div ref={footerRef} className="md:hidden block bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white py-6 px-6">
         <div className="container mx-auto">
           {/* Fila superior - 2 filas de 2 columnas en móvil, 4 columnas en desktop */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mb-8">
@@ -3532,20 +3568,28 @@ export default function AdminPage() {
                   <h2 className="text-lg md:text-2xl font-bold text-white mb-0.5">Solo a un</h2>
                   <h2 className="text-xl md:text-3xl font-bold text-yellow-300">CLICK</h2>
                 </div>
-                <p className="text-primary-foreground/80 text-xs md:text-sm leading-relaxed">
-                  Tu guía completa de comercios, servicios y eventos.
-                </p>
-                <p className="text-primary-foreground/80 text-xs md:text-sm leading-relaxed">
-                  Descubre todo lo que tu ciudad tiene para ofrecer.
-                </p>
               </div>
 
               {/* Columna 2 - Avisos Legales (intercambiado con Contacto) */}
               <div className="text-left">
-                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
-                  Avisos Legales
-                </h3>
-                <div className="space-y-1 md:space-y-2">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleFooterSection('avisos-legales')}
+                >
+                  <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2 flex-1">
+                    Avisos Legales
+                  </h3>
+                  <ChevronDown
+                    className={`w-4 h-4 text-yellow-300 transition-transform duration-300 mb-3 md:mb-4 ${
+                      openFooterSection === 'avisos-legales' ? 'rotate-180' : ''
+                    }`}
+                  />
+                </div>
+                <div
+                  className={`space-y-1 md:space-y-2 overflow-hidden transition-all duration-300 ${
+                    openFooterSection === 'avisos-legales' ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
                   <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Privacidad
@@ -3575,10 +3619,24 @@ export default function AdminPage() {
 
               {/* Columna 3 - Información */}
               <div className="text-left">
-                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
-                  Información
-                </h3>
-                <div className="space-y-1 md:space-y-2">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleFooterSection('informacion')}
+                >
+                  <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2 flex-1">
+                    Información
+                  </h3>
+                  <ChevronDown
+                    className={`w-4 h-4 text-yellow-300 transition-transform duration-300 mb-3 md:mb-4 ${
+                      openFooterSection === 'informacion' ? 'rotate-180' : ''
+                    }`}
+                  />
+                </div>
+                <div
+                  className={`space-y-1 md:space-y-2 overflow-hidden transition-all duration-300 ${
+                    openFooterSection === 'informacion' ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
                   <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
                     <Users className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Sobre Nosotros
@@ -3596,10 +3654,24 @@ export default function AdminPage() {
 
               {/* Columna 4 - Contacto (intercambiado con Avisos Legales) */}
               <div className="text-left">
-                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
-                  Contacto
-                </h3>
-                <div className="space-y-2 md:space-y-3">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleFooterSection('contacto')}
+                >
+                  <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2 flex-1">
+                    Contacto
+                  </h3>
+                  <ChevronDown
+                    className={`w-4 h-4 text-yellow-300 transition-transform duration-300 mb-3 md:mb-4 ${
+                      openFooterSection === 'contacto' ? 'rotate-180' : ''
+                    }`}
+                  />
+                </div>
+                <div
+                  className={`space-y-2 md:space-y-3 overflow-hidden transition-all duration-300 ${
+                    openFooterSection === 'contacto' ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
                   <div className="flex items-center gap-2 md:gap-3">
                     <Mail className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     <span className="text-primary-foreground/80 text-xs">soloaunclick@gmail.com</span>
