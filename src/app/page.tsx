@@ -122,21 +122,17 @@ export default function Home() {
               cardKeyPrefix="ofertas"
             />
 
-            {/* Segundo Carrusel Continuo de 12 Imágenes */}
-            <ImageCarouselContinuous2 
+            {/* Carrusel Circular Infinito de 8 Tiendas */}
+            <ImageCarouselContinuous2
               images={[
-                "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1503376780353-7b66bfc32e44?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1551818255-e6e10975bc51?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1526170375885-4d8ec677e1c8?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1551024601-bec78aea804d?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&h=300&fit=crop"
+                "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop",
+                "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=400&fit=crop",
+                "https://images.unsplash.com/photo-1503376780353-7b66bfc32e44?w=400&h=400&fit=crop",
+                "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=400&h=400&fit=crop",
+                "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
+                "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=400&h=400&fit=crop",
+                "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=400&fit=crop",
+                "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop"
               ]}
               sourceNames={[
                 "ElectroMax",
@@ -146,14 +142,9 @@ export default function Home() {
                 "Wellness Center",
                 "Art Studio",
                 "Tech Solutions",
-                "Fashion Elite",
-                "Smart Home",
-                "Digital World",
-                "Innovation Lab",
-                "Future Tech"
+                "Fashion Elite"
               ]}
               showSource={true}
-              autoPlayInterval={6000}
             />
 
             {/* Sección Novedades */}

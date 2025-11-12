@@ -25,8 +25,6 @@ export function Header({
 
   // Estados para los modales desplegables
   const [showCategorias, setShowCategorias] = useState(false)
-  const [showArriendos, setShowArriendos] = useState(false)
-  const [showServicios, setShowServicios] = useState(false)
 
   // Estado para el menú móvil
   const [showMobileMenu, setShowMobileMenu] = useState(false)
@@ -53,8 +51,6 @@ export function Header({
   // Función para cerrar todos los modales
   const closeAllModals = () => {
     setShowCategorias(false)
-    setShowArriendos(false)
-    setShowServicios(false)
     setShowMobileMenu(false)
     setShowUserMenu(false)
   }
@@ -66,26 +62,6 @@ export function Header({
     } else {
       closeAllModals()
       setShowCategorias(true)
-    }
-  }
-
-  // Función para toggle de arriendos (cierra otros modales)
-  const toggleArriendos = () => {
-    if (showArriendos) {
-      setShowArriendos(false)
-    } else {
-      closeAllModals()
-      setShowArriendos(true)
-    }
-  }
-
-  // Función para toggle de servicios (cierra otros modales)
-  const toggleServicios = () => {
-    if (showServicios) {
-      setShowServicios(false)
-    } else {
-      closeAllModals()
-      setShowServicios(true)
     }
   }
 
@@ -125,7 +101,7 @@ export function Header({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // Si algún modal está abierto y el clic fue fuera de los modales
-      if ((showCategorias || showArriendos || showServicios || showMobileMenu || showUserMenu) &&
+      if ((showCategorias || showMobileMenu || showUserMenu) &&
         !(event.target as Element).closest('.modal-container')) {
         closeAllModals()
       }
@@ -138,7 +114,7 @@ export function Header({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [showCategorias, showArriendos, showServicios, showMobileMenu, showUserMenu])
+  }, [showCategorias, showMobileMenu, showUserMenu])
 
   // Efecto para detectar scroll y mostrar/ocultar barra de búsqueda flotante
   useEffect(() => {
@@ -190,23 +166,12 @@ export function Header({
                 <h1 className="text-5xl font-bold leading-tight text-yellow-300 mt-0 pt-0 -mt-3">un CLICK</h1>
               </div>
 
-              {/* Buscador centrado y más angosto con mayor margen izquierdo */}
-              <div className="flex justify-center flex-1 max-w-md ml-20">
-                <div className="w-full">
-                  <SearchBar
-                    value={searchTerm}
-                    onChange={onSearchTermChange}
-                    placeholder="Buscar productos, tiendas, categorías..."
-                  />
-                </div>
-              </div>
-
-              {/* Nuevo diseño de banner publicitario */}
-              <div className="relative overflow-hidden bg-purple-900 rounded-l-xl shadow-xl border-l-4 border-yellow-400 -mr-6 transform hover:scale-105 transition-all duration-300 w-48">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-400 rotate-45 translate-x-8 -translate-y-8"></div>
-                <div className="relative z-10 py-3 px-5">
-                  <p className="text-sm font-bold text-white mb-1">¡PROMOCIONA</p>
-                  <p className="text-lg font-extrabold text-white">TU NEGOCIO!</p>
+              {/* Banner publicitario mucho más ancho */}
+              <div className="relative overflow-hidden bg-purple-900 rounded-l-xl shadow-xl border-l-4 border-yellow-400 -mr-6 transform hover:scale-105 transition-all duration-300 flex-1 max-w-2xl ml-12">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400 rotate-45 translate-x-12 -translate-y-12"></div>
+                <div className="relative z-10 py-4 px-8 text-center">
+                  <p className="text-xl font-bold text-white mb-1">¡PROMOCIONA TU NEGOCIO!</p>
+                  <p className="text-base font-medium text-yellow-300">Llega a más clientes con nosotros</p>
                 </div>
               </div>
             </div>
@@ -214,26 +179,16 @@ export function Header({
 
           {/* Versión Móvil */}
           <div className="sm:hidden w-full">
-            {/* Primera fila: Título y buscador centrados uno al lado del otro */}
-            <div className="flex items-center justify-center px-4 py-3 space-x-8">
-              {/* Título con filas casi juntas */}
-              <div className="flex flex-col items-center cursor-pointer -mt-2" onClick={() => router.push('/')}>
-                <h1 className="text-lg font-bold leading-tight text-white mb-0 pb-0">Solo a</h1>
-                <h1 className="text-2xl font-bold leading-tight text-yellow-300 mt-0 pt-0 -mt-2">un CLICK</h1>
-              </div>
-
-              {/* Buscador */}
-              <div className="flex-1 max-w-[180px]">
-                <SearchBar
-                  value={searchTerm}
-                  onChange={onSearchTermChange}
-                  placeholder="Buscar..."
-                  className="text-sm"
-                />
+            {/* Primera fila: Título centrado en una sola línea */}
+            <div className="flex items-center justify-center px-4 py-3">
+              {/* Título en una sola fila */}
+              <div className="flex items-baseline cursor-pointer space-x-1" onClick={() => router.push('/')}>
+                <h1 className="text-lg font-bold text-white">Solo a</h1>
+                <h1 className="text-2xl font-bold text-yellow-300">un CLICK</h1>
               </div>
             </div>
 
-            {/* Segunda fila: Banner publicitario más alto */}
+            {/* Segunda fila: Banner publicitario */}
             <div className="flex justify-center py-2 px-4 mb-2">
               {/* Banner publicitario - ligeramente más angosto y más bajo */}
               <div className="relative overflow-hidden bg-purple-900 rounded-xl shadow-lg border-l-2 border-r-2 border-yellow-400 transform hover:scale-105 transition-all duration-300 w-11/12">
@@ -254,12 +209,12 @@ export function Header({
       <nav className="bg-gradient-to-r from-purple-900 via-purple-800 to-purple-700 border-t border-yellow-400 shadow-md mb-4">
         {/* Versión Desktop */}
         <div className="hidden sm:block">
-          <div className="container mx-auto px-6">
-            <div className="flex items-center justify-between py-1">
-              {/* Enlaces centrados: Categorías, Arriendos, Servicios */}
-              <div className="flex-1 flex items-center justify-center space-x-8 relative">
+          <div className="container mx-auto">
+            <div className="flex items-center justify-between py-2 pl-2 pr-6">
+              {/* Categorías a la izquierda */}
+              <div className="flex items-center min-w-[120px]">
                 {/* Categorías */}
-                <div className="relative modal-container">
+                <div className="modal-container">
                   <button
                     onClick={toggleCategorias}
                     className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors cursor-pointer text-sm font-medium"
@@ -267,72 +222,35 @@ export function Header({
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showCategorias ? 'rotate-180' : ''}`} />
                     <span>Categorías</span>
                   </button>
-
-                  {/* Modal desplegable de Categorías */}
-                  {showCategorias && (
-                    <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                      <div className="py-2">
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Electrónica</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Ropa y Accesorios</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Hogar y Jardín</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Deportes</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Belleza y Salud</div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Arriendos */}
-                <div className="relative modal-container">
-                  <button
-                    onClick={toggleArriendos}
-                    className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors cursor-pointer text-sm font-medium"
-                  >
-                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showArriendos ? 'rotate-180' : ''}`} />
-                    <span>Arriendos</span>
-                  </button>
-
-                  {/* Modal desplegable de Arriendos */}
-                  {showArriendos && (
-                    <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                      <div className="py-2">
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Departamentos</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Casas</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Oficinas</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Bodegas</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Estacionamientos</div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Servicios */}
-                <div className="relative modal-container">
-                  <button
-                    onClick={toggleServicios}
-                    className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors cursor-pointer text-sm font-medium"
-                  >
-                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showServicios ? 'rotate-180' : ''}`} />
-                    <span>Servicios</span>
-                  </button>
-
-                  {/* Modal desplegable de Servicios */}
-                  {showServicios && (
-                    <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                      <div className="py-2">
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Servicios Profesionales</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Mantenimiento y Reparación</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Consultoría</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Educación y Cursos</div>
-                        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Salud y Bienestar</div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
 
+              {/* Modal desplegable de Categorías - Pegado al borde izquierdo de la página */}
+              {showCategorias && (
+                <div className="absolute left-0 top-[218px] w-auto min-w-[160px] bg-gradient-to-r from-purple-900 via-purple-800 to-purple-700 rounded-br-lg shadow-xl border-r border-b border-yellow-400 z-50 modal-container">
+                  <div className="py-2">
+                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Arriendos</div>
+                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Viviendas</div>
+                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Servicios</div>
+                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Vta. Productos</div>
+                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Deporte</div>
+                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Mascota</div>
+                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Belleza</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Buscador centrado */}
+              <div className="flex-1 max-w-xl mx-4">
+                <SearchBar
+                  value={searchTerm}
+                  onChange={onSearchTermChange}
+                  placeholder="Buscar productos, tiendas, categorías..."
+                />
+              </div>
+
               {/* Enlaces al lado derecho: Panel de administrador o Registrarse/Ingresar */}
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 min-w-[200px] justify-end">
                 {status === 'loading' ? (
                   <div className="flex items-center space-x-2 text-white">
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -396,84 +314,48 @@ export function Header({
 
         {/* Versión Móvil */}
         <div className="sm:hidden w-full">
-          <div className="flex items-center justify-between px-4 py-1">
-            {/* Enlaces a la izquierda: Categorías, Arriendos, Servicios - nombres completos */}
-            <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between px-2 py-2 gap-2">
+            {/* Categorías a la izquierda */}
+            <div className="flex items-center flex-shrink-0">
               {/* Categorías */}
-              <div className="relative modal-container">
+              <div className="modal-container">
                 <button
                   onClick={toggleCategorias}
-                  className="flex items-center space-x-1 text-white/90 hover:text-white transition-colors cursor-pointer text-[10px] font-medium"
+                  className="flex items-center space-x-1 text-white/90 hover:text-white transition-colors cursor-pointer text-xs font-medium"
                 >
                   <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showCategorias ? 'rotate-180' : ''}`} />
                   <span>Categorías</span>
                 </button>
-
-                {/* Modal desplegable de Categorías */}
-                {showCategorias && (
-                  <div className="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                    <div className="py-1">
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Electrónica</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Ropa</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Hogar</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Deportes</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Belleza</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Arriendos */}
-              <div className="relative modal-container">
-                <button
-                  onClick={toggleArriendos}
-                  className="flex items-center space-x-1 text-white/90 hover:text-white transition-colors cursor-pointer text-[10px] font-medium"
-                >
-                  <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showArriendos ? 'rotate-180' : ''}`} />
-                  <span>Arriendos</span>
-                </button>
-
-                {/* Modal desplegable de Arriendos */}
-                {showArriendos && (
-                  <div className="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                    <div className="py-1">
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Departamentos</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Casas</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Oficinas</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Bodegas</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Estaciona</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Servicios */}
-              <div className="relative modal-container">
-                <button
-                  onClick={toggleServicios}
-                  className="flex items-center space-x-1 text-white/90 hover:text-white transition-colors cursor-pointer text-[10px] font-medium"
-                >
-                  <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showServicios ? 'rotate-180' : ''}`} />
-                  <span>Servicios</span>
-                </button>
-
-                {/* Modal desplegable de Servicios */}
-                {showServicios && (
-                  <div className="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                    <div className="py-1">
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Profesionales</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Mantenimiento</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Consultoría</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Educación</div>
-                      <div className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer">Salud</div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
+            {/* Modal desplegable de Categorías - Pegado al borde izquierdo de la página (Móvil) */}
+            {showCategorias && (
+              <div className="sm:hidden absolute left-0 top-[208px] w-auto min-w-[140px] bg-gradient-to-r from-purple-900 via-purple-800 to-purple-700 rounded-br-lg shadow-xl border-r border-b border-yellow-400 z-50 modal-container">
+                <div className="py-1">
+                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Arriendos</div>
+                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Viviendas</div>
+                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Servicios</div>
+                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Vta. Productos</div>
+                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Deporte</div>
+                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Mascota</div>
+                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Belleza</div>
+                </div>
+              </div>
+            )}
+
+            {/* Buscador centrado en móvil */}
+            <div className="flex-1 min-w-0">
+              <SearchBar
+                value={searchTerm}
+                onChange={onSearchTermChange}
+                placeholder="Buscar..."
+                className="text-xs"
+              />
+            </div>
+
             {/* Icono de hamburguesa a la derecha */}
-            <div className="relative modal-container">
+            <div className="relative modal-container flex-shrink-0">
               <button
                 onClick={toggleMobileMenu}
                 className="flex items-center justify-center w-8 h-8 text-white/90 hover:text-white transition-colors cursor-pointer"

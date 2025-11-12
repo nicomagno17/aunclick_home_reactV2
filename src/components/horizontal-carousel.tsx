@@ -14,13 +14,9 @@ interface HorizontalCarouselProps {
 
 export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }: HorizontalCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-  const [startX, setStartX] = useState(0)
-  const [scrollLeft, setScrollLeft] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const [featuredProductIndex, setFeaturedProductIndex] = useState(0)
   const [isFeaturedRotationPaused, setIsFeaturedRotationPaused] = useState(false)
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
   const restartAutoPlayRef = useRef<NodeJS.Timeout | null>(null)
   const featuredProductRef = useRef<NodeJS.Timeout | null>(null)
@@ -31,8 +27,8 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
 
     const windowWidth = window.innerWidth
     if (windowWidth < 640) {
-      // Mobile
-      return { width: 112, gap: 12, visible: 2.5 }
+      // Mobile - 3 tarjetas completas con menos gap
+      return { width: 110, gap: 4, visible: 3 }
     } else if (windowWidth < 1024) {
       // Tablet
       return { width: 150, gap: 16, visible: 3.5 }
@@ -58,116 +54,66 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
 
   // Auto-play functionality
   useEffect(() => {
-    if (!isAutoPlaying || products.length <= Math.floor(config.visible)) return
+    if (!isAutoPlaying || products.length === 0) return
 
     const autoPlay = () => {
       setCurrentIndex(prev => {
-        if (prev >= maxIndex) {
-          return 0 // Volver al inicio
+        // Rotación automática: siempre mover 4 tarjetas en desktop, 1 en móvil
+        const moveAmount = window.innerWidth >= 1024 ? 4 : 1
+        const nextIndex = prev + moveAmount
+
+        // Si llegamos al final o más allá, volver al inicio
+        if (nextIndex >= products.length) {
+          return 0
         }
-        return prev + 1
+        return nextIndex
       })
     }
 
-    autoPlayRef.current = setTimeout(autoPlay, 4000)
+    // 7 segundos para rotación automática
+    const interval = 7000
+    autoPlayRef.current = setTimeout(autoPlay, interval)
 
     return () => {
       if (autoPlayRef.current) {
         clearTimeout(autoPlayRef.current)
       }
     }
-  }, [currentIndex, isAutoPlaying, maxIndex, config.visible, products.length])
+  }, [currentIndex, isAutoPlaying, products.length])
 
   // Función para pausar y reanudar auto-play
   const handleUserInteraction = () => {
     setIsAutoPlaying(false)
-    
+
     if (autoPlayRef.current) {
       clearTimeout(autoPlayRef.current)
     }
-    
+
     if (restartAutoPlayRef.current) {
       clearTimeout(restartAutoPlayRef.current)
     }
-    
-    // Reanudar auto-play después de 5 segundos
+
+    // Reanudar auto-play después de 7 segundos
     restartAutoPlayRef.current = setTimeout(() => {
       setIsAutoPlaying(true)
-    }, 5000)
+    }, 7000)
   }
 
-  // Touch/Mouse events
-  const handleStart = (clientX: number) => {
-    if (!scrollContainerRef.current) return
-    
-    setIsDragging(true)
-    setStartX(clientX)
-    setScrollLeft(scrollContainerRef.current.scrollLeft)
-    handleUserInteraction()
-  }
-
-  const handleMove = (clientX: number) => {
-    if (!isDragging || !scrollContainerRef.current) return
-    
-    const x = clientX
-    const walk = (x - startX) * 2 // Multiplicador para mayor sensibilidad
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk
-  }
-
-  const handleEnd = () => {
-    if (!isDragging || !scrollContainerRef.current) return
-    
-    setIsDragging(false)
-    
-    // Snap to nearest card position
-    const scrollPosition = scrollContainerRef.current.scrollLeft
-    const cardWidth = config.width + config.gap
-    const nearestIndex = Math.round(scrollPosition / cardWidth)
-    const clampedIndex = Math.max(0, Math.min(nearestIndex, maxIndex))
-    
-    setCurrentIndex(clampedIndex)
-    scrollContainerRef.current.scrollTo({
-      left: clampedIndex * cardWidth,
-      behavior: 'smooth'
-    })
-  }
 
   // Arrow navigation
   const handlePrevious = () => {
+    // Flechas siempre mueven de 1 en 1
     const newIndex = Math.max(0, currentIndex - 1)
     setCurrentIndex(newIndex)
     handleUserInteraction()
-    
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({
-        left: newIndex * (config.width + config.gap),
-        behavior: 'smooth'
-      })
-    }
   }
 
   const handleNext = () => {
+    // Flechas siempre mueven de 1 en 1
     const newIndex = Math.min(maxIndex, currentIndex + 1)
     setCurrentIndex(newIndex)
     handleUserInteraction()
-    
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({
-        left: newIndex * (config.width + config.gap),
-        behavior: 'smooth'
-      })
-    }
   }
-
-  // Efecto para sincronizar scroll con currentIndex
-  useEffect(() => {
-    if (scrollContainerRef.current && !isDragging) {
-      scrollContainerRef.current.scrollTo({
-        left: currentIndex * (config.width + config.gap),
-        behavior: 'smooth'
-      })
-    }
-  }, [currentIndex, config.width, config.gap, isDragging])
 
   // Auto-rotate featured product (tarjeta dorada)
   useEffect(() => {
@@ -257,39 +203,34 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
           )}
 
           {/* Container con scroll horizontal */}
-          <div className="flex-1 min-w-0 px-6 lg:px-0 lg:pr-6 relative">
-            <div
-              ref={scrollContainerRef}
-              className="overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              onTouchStart={(e) => handleStart(e.touches[0].clientX)}
-              onTouchMove={(e) => handleMove(e.touches[0].clientX)}
-              onTouchEnd={handleEnd}
-              onMouseDown={(e) => {
-                e.preventDefault()
-                handleStart(e.clientX)
-              }}
-              onMouseMove={(e) => isDragging && handleMove(e.clientX)}
-              onMouseUp={handleEnd}
-              onMouseLeave={handleEnd}
-            >
-              <div
-                className="flex"
-                style={{
-                  gap: `${config.gap}px`,
-                  width: `${products.length * (config.width + config.gap) - config.gap}px`
-                }}
-              >
-                {products.map((product) => (
-                  <div
-                    key={`${cardKeyPrefix}-${product.id}`}
-                    className="flex-shrink-0"
-                    style={{ width: config.width }}
-                    onClick={() => handleUserInteraction()}
-                  >
-                    <AdminProductCard producto={product} />
-                  </div>
-                ))}
+          <div className="flex-1 min-w-0 px-2 lg:px-0 lg:pr-6 relative lg:max-w-[880px]">
+            <div className="overflow-hidden">
+              <div className="overflow-x-auto lg:overflow-hidden scrollbar-hide">
+                <div
+                  className="flex transition-opacity duration-700 ease-in-out"
+                  style={{
+                    gap: `${config.gap}px`
+                  }}
+                >
+                  {products.slice(currentIndex, currentIndex + Math.floor(config.visible)).map((product) => (
+                    <div
+                      key={`${cardKeyPrefix}-${product.id}`}
+                      className="flex-shrink-0 animate-fadeIn"
+                      style={{ width: config.width }}
+                      onClick={() => handleUserInteraction()}
+                    >
+                      <AdminProductCard producto={product} />
+                    </div>
+                  ))}
+                  {/* Espacios vacíos si no hay suficientes productos */}
+                  {Array.from({ length: Math.max(0, Math.floor(config.visible) - products.slice(currentIndex, currentIndex + Math.floor(config.visible)).length) }).map((_, index) => (
+                    <div
+                      key={`empty-${index}`}
+                      className="flex-shrink-0"
+                      style={{ width: config.width }}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -307,7 +248,7 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
             {currentIndex < maxIndex && (
               <button
                 onClick={handleNext}
-                className="hidden lg:flex absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-gradient-to-r from-purple-900 to-purple-500 border border-yellow-400 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 touch-none items-center justify-center"
+                className="hidden lg:flex absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-purple-900 to-purple-500 border border-yellow-400 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 touch-none items-center justify-center"
                 aria-label="Ver más productos"
               >
                 <ChevronRight className="h-5 w-5 text-yellow-300" />
