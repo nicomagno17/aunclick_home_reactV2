@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Header } from '@/components/header'
 import { HorizontalCarousel } from '@/components/horizontal-carousel'
 import { SkeletonCarousel } from '@/components/skeleton-carousel'
@@ -9,20 +10,49 @@ import { ImageCarouselContinuous2 } from '@/components/image-carousel-continuous
 import { HeaderCarousel } from '@/components/header-carousel'
 import { InfoBannerCarousel } from '@/components/info-banner-carousel'
 import { CategoryFilterCards } from '@/components/category-filter-cards'
+import { ProductInfoPopup } from '@/components/product-info-popup'
+import { PrivacyPolicyPopup } from '@/components/privacy-policy-popup'
+import { CookiesPolicyPopup } from '@/components/cookies-policy-popup'
 import { Product } from '@/types/product'
 import { Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, Package, Gift, Lock, Key, Eye, AlertTriangle, Search, MapPin, Ban } from 'lucide-react'
 import { ResponsiveSearchSection } from '@/components/responsive-search-section'
 
 export default function Home() {
+  const searchParams = useSearchParams()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-
-
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [showPopup, setShowPopup] = useState(false)
+  const [showPrivacyPopup, setShowPrivacyPopup] = useState(false)
+  const [showCookiesPopup, setShowCookiesPopup] = useState(false)
 
   useEffect(() => {
     fetchProducts()
   }, [])
+
+  // Restaurar posición de scroll y abrir popup si es necesario
+  useEffect(() => {
+    if (!loading && products.length > 0) {
+      // Restaurar scroll
+      const scrollY = searchParams.get('scrollY')
+      if (scrollY) {
+        setTimeout(() => {
+          window.scrollTo(0, parseInt(scrollY))
+        }, 100)
+      }
+
+      // Abrir popup si viene de la página de tienda
+      const openProductId = searchParams.get('openProductId')
+      if (openProductId) {
+        const product = products.find(p => p.id === openProductId)
+        if (product) {
+          setSelectedProduct(product)
+          setShowPopup(true)
+        }
+      }
+    }
+  }, [loading, products, searchParams])
 
 
 
@@ -225,12 +255,6 @@ export default function Home() {
                           </div>
                         </div>
 
-                        {/* Botón en la parte inferior */}
-                        <div>
-                          <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-5 py-2 rounded-lg text-sm transition-colors shadow-lg">
-                            Crear mi cuenta gratis
-                          </button>
-                        </div>
                       </div>
 
                       {/* Columna Derecha - Grid de 4 tarjetas con iconos (Solo Desktop) */}
@@ -331,12 +355,6 @@ export default function Home() {
                           </div>
                         </div>
 
-                        {/* Botón en la parte inferior */}
-                        <div>
-                          <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-5 py-2 rounded-lg text-sm transition-colors shadow-lg">
-                            Conoce más sobre nuestra seguridad
-                          </button>
-                        </div>
                       </div>
 
                       {/* Columna Derecha - Grid de 4 tarjetas con iconos de seguridad (Solo Desktop) */}
@@ -437,12 +455,6 @@ export default function Home() {
                           </div>
                         </div>
 
-                        {/* Botón en la parte inferior */}
-                        <div>
-                          <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-5 py-2 rounded-lg text-sm transition-colors shadow-lg">
-                            Leer consejos de seguridad
-                          </button>
-                        </div>
                       </div>
 
                       {/* Columna Derecha - Grid de 4 tarjetas con iconos de precaución (Solo Desktop) */}
@@ -551,14 +563,20 @@ export default function Home() {
                   Avisos Legales
                 </h3>
                 <div className="space-y-1 md:space-y-2">
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowPrivacyPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Privacidad
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowCookiesPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Cookie className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Cookies
-                  </a>
+                  </button>
                   <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
                     <RefreshCw className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Reembolso
@@ -635,6 +653,27 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Popup de producto - para cuando se vuelve desde la tienda */}
+      {selectedProduct && (
+        <ProductInfoPopup
+          product={selectedProduct}
+          isOpen={showPopup}
+          onClose={() => setShowPopup(false)}
+        />
+      )}
+
+      {/* Popup de Políticas de Privacidad */}
+      <PrivacyPolicyPopup
+        isOpen={showPrivacyPopup}
+        onClose={() => setShowPrivacyPopup(false)}
+      />
+
+      {/* Popup de Políticas de Cookies */}
+      <CookiesPolicyPopup
+        isOpen={showCookiesPopup}
+        onClose={() => setShowCookiesPopup(false)}
+      />
     </div>
   )
 }

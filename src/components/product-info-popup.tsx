@@ -1,6 +1,7 @@
 'use client'
 
-import { X, Phone, MessageCircle, Mail, MapPin } from 'lucide-react'
+import { X, Phone, MessageCircle, Mail, MapPin, Store } from 'lucide-react'
+import { useRouter, usePathname } from 'next/navigation'
 import { Product } from '@/types/product'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@/components/ui/visually-hidden'
@@ -12,7 +13,28 @@ interface ProductInfoPopupProps {
 }
 
 export function ProductInfoPopup({ product, isOpen, onClose }: ProductInfoPopupProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+
   if (!product) return null
+
+  // Función para navegar a la página de la tienda
+  const handleStoreClick = () => {
+    // Obtener posición de scroll actual
+    const scrollY = window.scrollY
+
+    // Crear un ID único para la tienda basado en el nombre (en el futuro será el ID real)
+    const storeId = product.source?.toLowerCase().replace(/\s+/g, '-') || 'tienda'
+
+    // Construir URL con parámetros para preservar estado
+    const params = new URLSearchParams()
+    params.append('fromPopup', 'true')
+    params.append('productId', product.id)
+    params.append('scrollY', scrollY.toString())
+
+    // Navegar a la página de la tienda
+    router.push(`/tienda/${storeId}?${params.toString()}`)
+  }
 
   // Función para obtener la etiqueta de categoría (simulación)
   const getCategoriaLabel = (categoriaValue: string) => {
@@ -57,6 +79,17 @@ export function ProductInfoPopup({ product, isOpen, onClose }: ProductInfoPopupP
           <DialogTitle>{product.name}</DialogTitle>
         </VisuallyHidden>
 
+        {/* Icono de Tienda - Parte superior izquierda */}
+        <button
+          onClick={handleStoreClick}
+          className="absolute left-2 top-2 md:left-4 md:top-4 z-10 group"
+          title={`Ir a la tienda: ${product.source || 'Tienda'}`}
+        >
+          <div className="bg-gradient-to-br from-purple-600 to-purple-800 p-2 md:p-2.5 rounded-full shadow-lg transition-all group-hover:scale-110 group-hover:shadow-xl cursor-pointer">
+            <Store className="h-4 w-4 md:h-5 md:w-5 text-yellow-300" />
+          </div>
+        </button>
+
         {/* Botón cerrar - Movido a la parte inferior derecha */}
         <button
           onClick={onClose}
@@ -76,7 +109,7 @@ export function ProductInfoPopup({ product, isOpen, onClose }: ProductInfoPopupP
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain md:object-cover"
                 />
               </div>
 

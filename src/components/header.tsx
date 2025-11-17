@@ -169,9 +169,10 @@ export function Header({
               {/* Banner publicitario mucho más ancho */}
               <div className="relative overflow-hidden bg-purple-900 rounded-l-xl shadow-xl border-l-4 border-yellow-400 -mr-6 transform hover:scale-105 transition-all duration-300 flex-1 max-w-2xl ml-12">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400 rotate-45 translate-x-12 -translate-y-12"></div>
-                <div className="relative z-10 py-4 px-8 text-center">
-                  <p className="text-xl font-bold text-white mb-1">¡PROMOCIONA TU NEGOCIO!</p>
-                  <p className="text-base font-medium text-yellow-300">Llega a más clientes con nosotros</p>
+                <div className="relative z-10 py-2 px-8 text-center">
+                  <p className="text-lg font-bold text-white mb-0.5">¡PROMOCIONA TU NEGOCIO!</p>
+                  <p className="text-sm font-medium text-yellow-300 leading-tight">Llega a más clientes con nosotros</p>
+                  <p className="text-xs font-semibold text-yellow-200 mt-0.5">Espacio disponible</p>
                 </div>
               </div>
             </div>
@@ -189,14 +190,15 @@ export function Header({
             </div>
 
             {/* Segunda fila: Banner publicitario */}
-            <div className="flex justify-center py-2 px-4 mb-2">
+            <div className="flex justify-center py-1 px-4 mb-1">
               {/* Banner publicitario - ligeramente más angosto y más bajo */}
               <div className="relative overflow-hidden bg-purple-900 rounded-xl shadow-lg border-l-2 border-r-2 border-yellow-400 transform hover:scale-105 transition-all duration-300 w-11/12">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-400 rotate-45 translate-x-6 -translate-y-6"></div>
-                <div className="relative z-10 py-3 px-4 flex justify-center">
+                <div className="relative z-10 py-2 px-4 flex justify-center">
                   <div className="text-center">
-                    <p className="text-sm font-bold text-white leading-tight mb-1">¡PROMOCIONA</p>
+                    <p className="text-sm font-bold text-white leading-tight mb-0.5">¡PROMOCIONA</p>
                     <p className="text-lg font-extrabold text-white leading-tight">TU NEGOCIO!</p>
+                    <p className="text-[10px] font-semibold text-yellow-200 mt-0.5 leading-tight">Espacio disponible</p>
                   </div>
                 </div>
               </div>
@@ -227,15 +229,36 @@ export function Header({
 
               {/* Modal desplegable de Categorías - Pegado al borde izquierdo de la página */}
               {showCategorias && (
-                <div className="absolute left-0 top-[218px] w-auto min-w-[160px] bg-gradient-to-r from-purple-900 via-purple-800 to-purple-700 rounded-br-lg shadow-xl border-r border-b border-yellow-400 z-50 modal-container">
-                  <div className="py-2">
-                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Arriendos</div>
-                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Viviendas</div>
-                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Servicios</div>
-                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Vta. Productos</div>
-                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Deporte</div>
-                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Mascota</div>
-                    <div className="px-4 py-2 text-sm text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Belleza</div>
+                <div className="absolute left-0 top-[218px] w-auto min-w-[220px] max-w-[260px] bg-gradient-to-br from-purple-50 via-white to-purple-50 rounded-br-2xl shadow-2xl border-r-4 border-b-4 border-purple-300 z-50 modal-container">
+                  <div className="p-4 pb-6 space-y-2">
+                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                      <span className="relative z-10">Arriendos</span>
+                    </button>
+                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                      <span className="relative z-10">Viviendas</span>
+                    </button>
+                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                      <span className="relative z-10">Servicios</span>
+                    </button>
+                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                      <span className="relative z-10">Vta. Productos</span>
+                    </button>
+                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                      <span className="relative z-10">Deporte</span>
+                    </button>
+                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                      <span className="relative z-10">Mascota</span>
+                    </button>
+                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                      <span className="relative z-10">Belleza</span>
+                    </button>
                   </div>
                 </div>
               )}
@@ -331,15 +354,36 @@ export function Header({
 
             {/* Modal desplegable de Categorías - Pegado al borde izquierdo de la página (Móvil) */}
             {showCategorias && (
-              <div className="sm:hidden absolute left-0 top-[208px] w-auto min-w-[140px] bg-gradient-to-r from-purple-900 via-purple-800 to-purple-700 rounded-br-lg shadow-xl border-r border-b border-yellow-400 z-50 modal-container">
-                <div className="py-1">
-                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Arriendos</div>
-                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Viviendas</div>
-                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Servicios</div>
-                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Vta. Productos</div>
-                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Deporte</div>
-                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Mascota</div>
-                  <div className="px-3 py-1.5 text-xs text-white hover:bg-purple-600 cursor-pointer whitespace-nowrap">Belleza</div>
+              <div className="sm:hidden absolute left-0 top-[208px] w-auto min-w-[140px] max-w-[200px] bg-gradient-to-br from-purple-50 via-white to-purple-50 rounded-br-2xl shadow-2xl border-r-4 border-b-4 border-purple-300 z-50 modal-container">
+                <div className="p-3 space-y-1">
+                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                    <span className="relative z-10">Arriendos</span>
+                  </button>
+                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                    <span className="relative z-10">Viviendas</span>
+                  </button>
+                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                    <span className="relative z-10">Servicios</span>
+                  </button>
+                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                    <span className="relative z-10">Vta. Productos</span>
+                  </button>
+                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                    <span className="relative z-10">Deporte</span>
+                  </button>
+                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                    <span className="relative z-10">Mascota</span>
+                  </button>
+                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+                    <span className="relative z-10">Belleza</span>
+                  </button>
                 </div>
               </div>
             )}

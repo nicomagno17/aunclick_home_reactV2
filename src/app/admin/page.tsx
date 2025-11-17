@@ -30,7 +30,8 @@ import {
   ShoppingBag,
   ArrowLeft,
   Plus,
-  X
+  X,
+  Eye
 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -41,20 +42,20 @@ import { ProductoCarrusel } from '@/types/product'
 
 
 export default function AdminPage() {
-  // Estilos para la distorsión del banner
-  const bannerDistortionStyle = `
+  // Estilos para la distorsión del banner - PREMIUM FEATURE (commented for now, will be used later)
+  /* const bannerDistortionStyle = `
     .banner-distortion {
       filter: blur(3px) grayscale(70%);
       opacity: 0.5;
       pointer-events: none;
       transition: all 0.3s ease;
     }
-    
+
     .banner-distortion:hover {
       filter: blur(2px) grayscale(50%);
       opacity: 0.7;
     }
-  `;
+  `; */
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedSection, setSelectedSection] = useState('')
@@ -66,10 +67,10 @@ export default function AdminPage() {
     medidas: false
   })
   const [descripcion, setDescripcion] = useState('')
+  const [showStoreTooltip, setShowStoreTooltip] = useState(false)
 
   // Estados para los campos del formulario
   const [productoData, setProductoData] = useState({
-    tipoNegocio: '',
     categoria: '',
     subcategoria: '',
     nombre: '',
@@ -211,6 +212,12 @@ export default function AdminPage() {
     carrusel2: Array(8).fill(null)  // 8 productos para el carrusel 2
   })
 
+  // Estado para rastrear la tarjeta de carrusel actual
+  const [currentCarouselCard, setCurrentCarouselCard] = useState<{
+    carruselType: 'carrusel1' | 'carrusel2',
+    index: number
+  } | null>(null)
+
   // Estado para los títulos de los carruseles
   const [carouselTitles, setCarouselTitles] = useState({
     carrusel1: '',
@@ -244,12 +251,19 @@ export default function AdminPage() {
 
 
 
-  const openModal = (section: string) => {
-    setSelectedSection(section)
+  const openModal = (section?: string, carouselInfo?: { carruselType: 'carrusel1' | 'carrusel2', index: number }) => {
+    if (carouselInfo) {
+      // Modo carrusel
+      setCurrentCarouselCard(carouselInfo)
+      setSelectedSection('carrusel') // Sección especial para carruseles
+    } else if (section) {
+      // Modo normal (secciones de productos)
+      setSelectedSection(section)
+      setCurrentCarouselCard(null)
+    }
     setEditingProducto(null)
     // Limpiar todos los campos al abrir el modal
     setProductoData({
-      tipoNegocio: '',
       categoria: '',
       subcategoria: '',
       nombre: '',
@@ -279,7 +293,6 @@ export default function AdminPage() {
 
     // Pre-llenar todos los campos con los datos existentes
     setProductoData({
-      tipoNegocio: producto.tipoNegocio || '',
       categoria: producto.categoria || '',
       subcategoria: producto.subcategoria || '',
       nombre: producto.nombre || '',
@@ -524,7 +537,6 @@ export default function AdminPage() {
   const autollenarCampos = () => {
     const ejemplos = {
       destacados: {
-        tipoNegocio: 'productos',
         categoria: 'electronica',
         subcategoria: 'smartphones',
         nombre: 'iPhone 15 Pro Max',
@@ -538,7 +550,6 @@ export default function AdminPage() {
         imagen: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop'
       },
       ofertas: {
-        tipoNegocio: 'productos',
         categoria: 'ropa',
         subcategoria: 'hombre',
         nombre: 'Camisa Formal Premium',
@@ -552,7 +563,6 @@ export default function AdminPage() {
         imagen: 'https://images.unsplash.com/photo-1596755094512-f2912cd5b9e3?w=400&h=300&fit=crop'
       },
       novedades: {
-        tipoNegocio: 'servicios',
         categoria: 'profesionales',
         subcategoria: 'consultoria',
         nombre: 'Consultoría Digital Empresarial',
@@ -566,7 +576,6 @@ export default function AdminPage() {
         imagen: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop'
       },
       tendencias: {
-        tipoNegocio: 'arriendos',
         categoria: 'vehiculos',
         subcategoria: 'autos',
         nombre: 'Tesla Model 3 2024',
@@ -580,7 +589,6 @@ export default function AdminPage() {
         imagen: 'https://images.unsplash.com/photo-1554224712-d8560f709cbe?w=400&h=300&fit=crop'
       },
       'no-te-lo-pierdas': {
-        tipoNegocio: 'productos',
         categoria: 'hogar',
         subcategoria: 'cocina',
         nombre: 'Set de Ollas Premium 6 piezas',
@@ -594,7 +602,6 @@ export default function AdminPage() {
         imagen: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop'
       },
       liquidaciones: {
-        tipoNegocio: 'productos',
         categoria: 'deportes',
         subcategoria: 'fitness',
         nombre: 'Bicicleta Estática Profesional',
@@ -612,7 +619,6 @@ export default function AdminPage() {
     const ejemplo = ejemplos[selectedSection as keyof typeof ejemplos] || ejemplos.destacados
 
     setProductoData({
-      tipoNegocio: ejemplo.tipoNegocio,
       categoria: ejemplo.categoria,
       subcategoria: ejemplo.subcategoria,
       nombre: ejemplo.nombre,
@@ -648,11 +654,56 @@ export default function AdminPage() {
       return
     }
 
+    // Si estamos en modo carrusel
+    if (currentCarouselCard) {
+      const { carruselType, index } = currentCarouselCard
+
+      const productoData_carousel = {
+        categoria: productoData.categoria,
+        subcategoria: productoData.subcategoria,
+        nombre: productoData.nombre,
+        precioActual: Number.parseFloat(productoData.precioActual) || 0,
+        precioAnterior: productoData.precioAnterior ? Number.parseFloat(productoData.precioAnterior) : undefined,
+        imagen: imagenProducto!
+      }
+
+      console.log('📦 Guardando producto al carrusel:', {
+        carruselType,
+        index,
+        productoData_carousel
+      })
+
+      // Guardar imagen en carouselImages
+      setCarouselImages(prev => ({
+        ...prev,
+        [carruselType]: prev[carruselType].map((img, idx) =>
+          idx === index ? imagenProducto : img
+        )
+      }))
+
+      // Guardar datos del producto en carouselProductData
+      setCarouselProductData(prev => {
+        const newData = {
+          ...prev,
+          [carruselType]: prev[carruselType].map((data, idx) =>
+            idx === index ? productoData_carousel : data
+          )
+        }
+        console.log('✅ Nuevo estado de carouselProductData:', newData)
+        return newData
+      })
+
+      setCurrentCarouselCard(null)
+      setIsModalOpen(false)
+      setImagenProducto(null)
+      return
+    }
+
+    // Modo normal (productos en secciones)
     if (editingProducto) {
       // Modo edición: actualizar producto existente
       const productoActualizado: ProductoCarrusel = {
         id: editingProducto.id,
-        tipoNegocio: productoData.tipoNegocio,
         categoria: productoData.categoria,
         subcategoria: productoData.subcategoria,
         nombre: productoData.nombre,
@@ -677,7 +728,6 @@ export default function AdminPage() {
       // Modo agregar: crear nuevo producto
       const nuevoProducto: ProductoCarrusel = {
         id: Date.now(), // ID único basado en timestamp
-        tipoNegocio: productoData.tipoNegocio,
         categoria: productoData.categoria,
         subcategoria: productoData.subcategoria,
         nombre: productoData.nombre,
@@ -964,8 +1014,8 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Banner Distortion Styles */}
-      <style dangerouslySetInnerHTML={{ __html: bannerDistortionStyle }} />
+      {/* Banner Distortion Styles - PREMIUM FEATURE (commented for now, will be used later) */}
+      {/* <style dangerouslySetInnerHTML={{ __html: bannerDistortionStyle }} /> */}
 
       {/* Responsive Menu - Only shows on mobile */}
       <div className="md:hidden block">
@@ -1241,7 +1291,6 @@ export default function AdminPage() {
           if (!open) {
             // Limpiar todos los campos al cerrar el modal
             setProductoData({
-              tipoNegocio: '',
               categoria: '',
               subcategoria: '',
               nombre: '',
@@ -1312,25 +1361,8 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Tipo de Negocio, Categoría y Subcategoría en la misma fila SOLO PARA NORMAL MODE */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Tipo de Negocio */}
-                <div>
-                  <Label htmlFor="tipo-negocio" className="text-gray-300 mb-2 block md:text-sm text-xs">
-                    Tipo de Negocio
-                  </Label>
-                  <Select value={productoData.tipoNegocio} onValueChange={(value) => handleProductoDataChange('tipoNegocio', value)}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
-                      <SelectValue placeholder="Seleccionar" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600 w-full">
-                      <SelectItem value="productos">Productos</SelectItem>
-                      <SelectItem value="servicios">Servicios</SelectItem>
-                      <SelectItem value="arriendos">Arriendos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
+              {/* Categoría y Subcategoría en la misma fila */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Categoría */}
                 <div>
                   <Label htmlFor="categoria" className="text-gray-300 mb-2 block md:text-sm text-xs">
@@ -1899,7 +1931,7 @@ export default function AdminPage() {
 
       {/* Container Analytics */}
       <div className={`px-6 pb-4 relative ${activeContainer === 'analytics' ? 'block' : 'hidden md:block'}`}>
-        <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative banner-distortion">
+        <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative">{/* banner-distortion class removed - PREMIUM FEATURE */}
           {/* Fila Superior - 3 Columnas en desktop, apiladas en mobile */}
           <div className="grid md:grid-cols-3 grid-cols-1 md:gap-6 gap-4 md:mb-8 mb-6">
             {/* Columna 1 - 4 KPIs en 2 filas */}
@@ -2068,8 +2100,8 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Overlay Message */}
-        <div className="absolute inset-0 flex items-center justify-center z-10">
+        {/* Overlay Message - PREMIUM FEATURE (commented for now, will be used later) */}
+        {/* <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="bg-white border-2 border-purple-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
             <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-3 mb-2">📊 Analytics Dashboard</h3>
             <p className="md:text-sm text-xs text-gray-700 md:mb-3 mb-2">Panel de análisis avanzado que te permite monitorear en tiempo real el rendimiento de tu negocio: visualizaciones de productos, interacciones de clientes, consultas recibidas y estadísticas detalladas de tus publicaciones.</p>
@@ -2077,7 +2109,7 @@ export default function AdminPage() {
               <p className="md:text-xs text-[10px] font-semibold text-purple-800">✨ Disponible para clientes Premium</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
 
@@ -2134,8 +2166,8 @@ export default function AdminPage() {
       {/* Pestañas de Carruseles */}
       <div className={`px-6 pb-4 relative ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
         <Tabs defaultValue="carrusel1" className={`w-full ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
-          {/* Overlay Message */}
-          <div className="absolute inset-0 flex items-center justify-center z-10">
+          {/* Overlay Message - PREMIUM FEATURE (commented for now, will be used later) */}
+          {/* <div className="absolute inset-0 flex items-center justify-center z-10">
             <div className="bg-white border-2 border-purple-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
               <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-3 mb-2">🎠 Gestión de Carruseles</h3>
               <p className="md:text-sm text-xs text-gray-700 md:mb-3 mb-2">Sistema avanzado de carruseles que te permite organizar y exhibir tus productos destacados en galerías visuales rotativas en la página principal de tu negocio. Hasta 16 posiciones disponibles en 2 carruseles personalizables.</p>
@@ -2143,7 +2175,7 @@ export default function AdminPage() {
                 <p className="md:text-xs text-[10px] font-semibold text-purple-800">✨ Disponible para clientes Premium</p>
               </div>
             </div>
-          </div>
+          </div> */}
           <TabsList className="grid grid-cols-2 w-full md:max-w-md max-w-xs mx-auto md:px-6 px-3 md:mb-8 mb-6 bg-gray-800 border border-gray-700 rounded-lg p-1">
             <TabsTrigger
               value="carrusel1"
@@ -2163,7 +2195,7 @@ export default function AdminPage() {
           <div className="md:px-6 px-3">
             {/* Tab Carrusel 1 */}
             <TabsContent value="carrusel1" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative banner-distortion">
+              <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative">{/* banner-distortion class removed - PREMIUM FEATURE */}
                 <h2 className="text-base md:text-xl font-semibold text-white md:mb-6 mb-4">Carrusel 1 - Imágenes (1-8)</h2>
 
                 {/* Desktop Layout - 4 columns */}
@@ -2178,16 +2210,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2212,10 +2238,35 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel1[index] && (() => {
+                          console.log(`🎨 Renderizando info del producto en carrusel1[${index}]:`, carouselProductData.carrusel1[index])
+                          return (
+                            <div className="mt-2 text-xs text-gray-300 space-y-1">
+                              <div className="font-medium text-gray-400">
+                                {carouselProductData.carrusel1[index].categoria} / {carouselProductData.carrusel1[index].subcategoria}
+                              </div>
+                              <div className="font-semibold text-white truncate">
+                                {carouselProductData.carrusel1[index].nombre}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-400 font-bold">
+                                  ${carouselProductData.carrusel1[index].precioActual?.toLocaleString('es-CL')}
+                                </span>
+                                {carouselProductData.carrusel1[index].precioAnterior && (
+                                  <span className="text-gray-500 line-through text-[10px]">
+                                    ${carouselProductData.carrusel1[index].precioAnterior?.toLocaleString('es-CL')}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })()}
                       </div>
                     ))}
                   </div>
@@ -2230,16 +2281,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2264,10 +2309,35 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel1[index] && (() => {
+                          console.log(`🎨 Renderizando info del producto en carrusel1[${index}]:`, carouselProductData.carrusel1[index])
+                          return (
+                            <div className="mt-2 text-xs text-gray-300 space-y-1">
+                              <div className="font-medium text-gray-400">
+                                {carouselProductData.carrusel1[index].categoria} / {carouselProductData.carrusel1[index].subcategoria}
+                              </div>
+                              <div className="font-semibold text-white truncate">
+                                {carouselProductData.carrusel1[index].nombre}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-400 font-bold">
+                                  ${carouselProductData.carrusel1[index].precioActual?.toLocaleString('es-CL')}
+                                </span>
+                                {carouselProductData.carrusel1[index].precioAnterior && (
+                                  <span className="text-gray-500 line-through text-[10px]">
+                                    ${carouselProductData.carrusel1[index].precioAnterior?.toLocaleString('es-CL')}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })()}
                       </div>
                     ))}
                   </div>
@@ -2285,16 +2355,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2316,7 +2380,7 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
@@ -2334,16 +2398,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2368,7 +2426,7 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
@@ -2386,16 +2444,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2420,7 +2472,7 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
@@ -2438,16 +2490,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2472,7 +2518,7 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
@@ -2495,7 +2541,7 @@ export default function AdminPage() {
 
             {/* Tab Carrusel 2 */}
             <TabsContent value="carrusel2" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative banner-distortion">
+              <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative">{/* banner-distortion class removed - PREMIUM FEATURE */}
                 <h2 className="text-base md:text-xl font-semibold text-white md:mb-6 mb-4">Carrusel 2 - Imágenes (9-16)</h2>
 
                 {/* Desktop Layout - 4 columns */}
@@ -2510,16 +2556,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2544,10 +2584,32 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2562,16 +2624,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2596,10 +2652,32 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2617,16 +2695,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2651,10 +2723,32 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2669,16 +2763,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2703,10 +2791,32 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2721,16 +2831,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2755,10 +2859,32 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2773,16 +2899,10 @@ export default function AdminPage() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2806,10 +2926,32 @@ export default function AdminPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2849,8 +2991,8 @@ export default function AdminPage() {
 
       {/* Container Gestión de Banner */}
       <div className={`px-6 pb-4 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'} relative`}>
-        {/* Overlay Message - Colocado fuera del contenedor con distorsión */}
-        <div className="absolute inset-0 flex items-center justify-center z-20">
+        {/* Overlay Message - PREMIUM FEATURE (commented for now, will be used later) */}
+        {/* <div className="absolute inset-0 flex items-center justify-center z-20">
           <div className="bg-white border-2 border-purple-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
             <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-3 mb-2">🎯 Gestión de Banners</h3>
             <p className="md:text-sm text-xs text-gray-700 md:mb-3 mb-2">Sistema de banners publicitarios que te permite crear y gestionar anuncios visuales prominentes en zonas estratégicas de tu página. Ideal para promocionar ofertas especiales, productos destacados o eventos importantes.</p>
@@ -2858,9 +3000,9 @@ export default function AdminPage() {
               <p className="md:text-xs text-[10px] font-semibold text-purple-800">✨ Disponible para clientes Premium</p>
             </div>
           </div>
-        </div>
+        </div> */}
 
-        <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative banner-distortion">
+        <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative">{/* banner-distortion class removed - PREMIUM FEATURE */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
             {/* Columna 1 - Banner 1 */}
             <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
@@ -3700,6 +3842,37 @@ export default function AdminPage() {
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Botón flotante para visualizar tienda */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50">
+        <div className="relative">
+          {/* Tooltip */}
+          {showStoreTooltip && (
+            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-gray-800 text-white px-3 py-2 rounded-lg shadow-xl border border-yellow-400/50">
+              <span className="text-sm font-medium">Visualiza tu tienda</span>
+              {/* Flecha del tooltip */}
+              <div className="absolute left-full top-1/2 -translate-y-1/2 -ml-px">
+                <div className="border-8 border-transparent border-l-gray-800"></div>
+              </div>
+            </div>
+          )}
+
+          {/* Botón */}
+          <button
+            onClick={() => {
+              // TODO: Aquí deberías usar el ID real de la tienda del usuario
+              // Por ahora usaremos 'beautyplus' como ejemplo
+              window.open('/tienda/beautyplus', '_blank')
+            }}
+            onMouseEnter={() => setShowStoreTooltip(true)}
+            onMouseLeave={() => setShowStoreTooltip(false)}
+            className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-600 via-purple-500 to-purple-700 hover:from-purple-700 hover:via-purple-600 hover:to-purple-800 rounded-full shadow-2xl border-2 border-yellow-400 transition-all duration-300 hover:scale-110 hover:shadow-yellow-400/50"
+            aria-label="Visualizar tienda"
+          >
+            <Store className="w-7 h-7 text-yellow-300" />
+          </button>
         </div>
       </div>
     </div>
