@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { SearchBar } from '@/components/search-bar'
 import { FloatingSearchBar } from '@/components/floating-search-bar'
+import { PlansPopup } from '@/components/plans-popup'
 import { ChevronDown, Menu, ArrowLeft, Home, User, LogOut, Loader2, UserCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -13,13 +14,15 @@ interface HeaderProps {
   onSearchTermChange: (value: string) => void
   showBackButton?: boolean
   showFloatingSearch?: boolean
+  onCategorySelect?: (category: string) => void
 }
 
 export function Header({
   searchTerm,
   onSearchTermChange,
   showBackButton = false,
-  showFloatingSearch = true
+  showFloatingSearch = true,
+  onCategorySelect
 }: HeaderProps) {
   const router = useRouter()
 
@@ -34,6 +37,9 @@ export function Header({
 
   // Estado para el menú de usuario
   const [showUserMenu, setShowUserMenu] = useState(false)
+
+  // Estado para el modal de planes
+  const [showPlansPopup, setShowPlansPopup] = useState(false)
 
   // Estado de autenticación usando NextAuth
   const { data: session, status } = useSession()
@@ -53,6 +59,14 @@ export function Header({
     setShowCategorias(false)
     setShowMobileMenu(false)
     setShowUserMenu(false)
+  }
+
+  // Función para manejar selección de categoría
+  const handleCategoryClick = (category: string) => {
+    if (onCategorySelect) {
+      onCategorySelect(category)
+    }
+    closeAllModals()
   }
 
   // Función para toggle de categorías (cierra otros modales)
@@ -231,31 +245,31 @@ export function Header({
               {showCategorias && (
                 <div className="absolute left-0 top-[218px] w-auto min-w-[220px] max-w-[260px] bg-gradient-to-br from-purple-50 via-white to-purple-50 rounded-br-2xl shadow-2xl border-r-4 border-b-4 border-purple-300 z-50 modal-container">
                   <div className="p-4 pb-6 space-y-2">
-                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <button onClick={() => handleCategoryClick('Arriendos')} className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                       <span className="relative z-10">Arriendos</span>
                     </button>
-                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <button onClick={() => handleCategoryClick('Propiedades')} className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
-                      <span className="relative z-10">Viviendas</span>
+                      <span className="relative z-10">Propiedades</span>
                     </button>
-                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <button onClick={() => handleCategoryClick('Servicios')} className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                       <span className="relative z-10">Servicios</span>
                     </button>
-                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <button onClick={() => handleCategoryClick('Productos')} className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                       <span className="relative z-10">Vta. Productos</span>
                     </button>
-                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <button onClick={() => handleCategoryClick('Deportes')} className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                       <span className="relative z-10">Deporte</span>
                     </button>
-                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <button onClick={() => handleCategoryClick('Mascotas')} className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                       <span className="relative z-10">Mascota</span>
                     </button>
-                    <button className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
+                    <button onClick={() => handleCategoryClick('Belleza')} className="w-full text-left font-bold text-purple-900 py-2.5 px-4 text-sm rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300 border-l-4 border-purple-500 relative overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                       <span className="relative z-10">Belleza</span>
                     </button>
@@ -316,6 +330,15 @@ export function Header({
                   </>
                 ) : (
                   <>
+                    <button
+                      onClick={() => setShowPlansPopup(true)}
+                      className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span>Planes</span>
+                    </button>
                     <Link href="/register" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -356,31 +379,31 @@ export function Header({
             {showCategorias && (
               <div className="sm:hidden absolute left-0 top-[208px] w-auto min-w-[140px] max-w-[200px] bg-gradient-to-br from-purple-50 via-white to-purple-50 rounded-br-2xl shadow-2xl border-r-4 border-b-4 border-purple-300 z-50 modal-container">
                 <div className="p-3 space-y-1">
-                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                  <button onClick={() => handleCategoryClick('Arriendos')} className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                     <span className="relative z-10">Arriendos</span>
                   </button>
-                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                  <button onClick={() => handleCategoryClick('Propiedades')} className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
-                    <span className="relative z-10">Viviendas</span>
+                    <span className="relative z-10">Propiedades</span>
                   </button>
-                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                  <button onClick={() => handleCategoryClick('Servicios')} className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                     <span className="relative z-10">Servicios</span>
                   </button>
-                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                  <button onClick={() => handleCategoryClick('Productos')} className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                     <span className="relative z-10">Vta. Productos</span>
                   </button>
-                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                  <button onClick={() => handleCategoryClick('Deportes')} className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                     <span className="relative z-10">Deporte</span>
                   </button>
-                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                  <button onClick={() => handleCategoryClick('Mascotas')} className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                     <span className="relative z-10">Mascota</span>
                   </button>
-                  <button className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
+                  <button onClick={() => handleCategoryClick('Belleza')} className="w-full text-left font-bold text-purple-900 py-2 px-3 text-xs rounded-xl bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 active:scale-95 transition-all duration-200 border-l-4 border-purple-500 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                     <span className="relative z-10">Belleza</span>
                   </button>
@@ -458,6 +481,18 @@ export function Header({
                       </>
                     ) : (
                       <>
+                        <button
+                          onClick={() => {
+                            setShowPlansPopup(true)
+                            closeAllModals()
+                          }}
+                          className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer w-full text-left"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span>Planes</span>
+                        </button>
                         <Link
                           href="/register"
                           className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
@@ -487,6 +522,12 @@ export function Header({
           </div>
         </div>
       </nav>
+
+      {/* Modal de Planes */}
+      <PlansPopup
+        isOpen={showPlansPopup}
+        onClose={() => setShowPlansPopup(false)}
+      />
     </>
   )
 }

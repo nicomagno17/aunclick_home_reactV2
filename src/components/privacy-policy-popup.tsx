@@ -65,7 +65,7 @@ export function PrivacyPolicyPopup({ isOpen, onClose }: PrivacyPolicyPopupProps)
               <h3 className="text-base md:text-xl font-bold text-yellow-300 mb-1 md:mb-3">
                 Compromiso con tu Privacidad
               </h3>
-              <p className="text-xs md:text-sm leading-snug md:leading-relaxed">
+              <p className="text-xs md:text-sm leading-snug md:leading-relaxed text-justify">
                 En <span className="font-semibold text-yellow-300">Solo a un Click</span>, nos comprometemos a proteger tu privacidad y garantizar la seguridad de tus datos personales. Esta política describe cómo recopilamos, usamos y protegemos tu información de acuerdo con la legislación chilena vigente.
               </p>
             </section>
@@ -78,19 +78,19 @@ export function PrivacyPolicyPopup({ isOpen, onClose }: PrivacyPolicyPopupProps)
               <div className="space-y-1 md:space-y-3 text-xs md:text-sm">
                 <div>
                   <p className="font-semibold text-yellow-200">📜 Ley N° 19.628 - Protección de Datos Personales</p>
-                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed">
+                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed text-justify">
                     Cumplimos estrictamente con la Ley sobre Protección de la Vida Privada, garantizando el tratamiento adecuado de tus datos personales y tu derecho a la privacidad.
                   </p>
                 </div>
                 <div>
                   <p className="font-semibold text-yellow-200">🛡️ Ley N° 21.096 - Derechos del Consumidor Digital</p>
-                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed">
+                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed text-justify">
                     Respetamos tus derechos como consumidor en plataformas digitales, asegurando transparencia en el tratamiento de tu información.
                   </p>
                 </div>
                 <div>
                   <p className="font-semibold text-yellow-200">⚖️ Ley N° 19.496 - Protección de los Derechos de los Consumidores</p>
-                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed">
+                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed text-justify">
                     Nos adherimos a las normativas de protección del consumidor, garantizando información clara y veraz.
                   </p>
                 </div>
@@ -105,11 +105,11 @@ export function PrivacyPolicyPopup({ isOpen, onClose }: PrivacyPolicyPopupProps)
               <div className="space-y-2 text-xs md:text-sm">
                 <div className="flex gap-2">
                   <span className="text-yellow-300">•</span>
-                  <p className="leading-snug md:leading-relaxed"><strong>Datos de Navegación:</strong> Información sobre tu uso de la plataforma, páginas visitadas y productos consultados.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify"><strong>Datos de Navegación:</strong> Información sobre tu uso de la plataforma, páginas visitadas y productos consultados.</p>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-yellow-300">•</span>
-                  <p className="leading-snug md:leading-relaxed"><strong>Datos de Contacto:</strong> Información que proporcionas voluntariamente al contactar negocios a través de nuestra plataforma.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify"><strong>Datos de Contacto:</strong> Información que proporcionas voluntariamente al contactar negocios a través de nuestra plataforma.</p>
                 </div>
               </div>
             </section>
@@ -122,19 +122,19 @@ export function PrivacyPolicyPopup({ isOpen, onClose }: PrivacyPolicyPopupProps)
               <div className="space-y-2 text-xs md:text-sm">
                 <div className="flex gap-2">
                   <span className="text-yellow-300">✓</span>
-                  <p className="leading-snug md:leading-relaxed">Facilitar la conexión entre consumidores y negocios locales.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify">Facilitar la conexión entre consumidores y negocios locales.</p>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-yellow-300">✓</span>
-                  <p className="leading-snug md:leading-relaxed">Mejorar nuestros servicios y experiencia de usuario.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify">Mejorar nuestros servicios y experiencia de usuario.</p>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-yellow-300">✓</span>
-                  <p className="leading-snug md:leading-relaxed">Enviar comunicaciones relevantes (solo con tu consentimiento).</p>
+                  <p className="leading-snug md:leading-relaxed text-justify">Enviar comunicaciones relevantes (solo con tu consentimiento).</p>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-yellow-300">✓</span>
-                  <p className="leading-snug md:leading-relaxed">Cumplir con obligaciones legales y regulatorias.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify">Cumplir con obligaciones legales y regulatorias.</p>
                 </div>
               </div>
             </section>
@@ -147,19 +147,19 @@ export function PrivacyPolicyPopup({ isOpen, onClose }: PrivacyPolicyPopupProps)
               <div className="space-y-2 text-xs md:text-sm">
                 <div className="flex gap-2">
                   <span className="text-yellow-300">🔍</span>
-                  <p className="leading-snug md:leading-relaxed"><strong>Derecho de Acceso:</strong> Solicitar información sobre los datos que tenemos sobre ti.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify"><strong>Derecho de Acceso:</strong> Solicitar información sobre los datos que tenemos sobre ti.</p>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-yellow-300">✏️</span>
-                  <p className="leading-snug md:leading-relaxed"><strong>Derecho de Rectificación:</strong> Corregir datos inexactos o incompletos.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify"><strong>Derecho de Rectificación:</strong> Corregir datos inexactos o incompletos.</p>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-yellow-300">🗑️</span>
-                  <p className="leading-snug md:leading-relaxed"><strong>Derecho de Cancelación:</strong> Solicitar la eliminación de tus datos personales.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify"><strong>Derecho de Cancelación:</strong> Solicitar la eliminación de tus datos personales.</p>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-yellow-300">🚫</span>
-                  <p className="leading-snug md:leading-relaxed"><strong>Derecho de Oposición:</strong> Oponerte al tratamiento de tus datos en ciertos casos.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify"><strong>Derecho de Oposición:</strong> Oponerte al tratamiento de tus datos en ciertos casos.</p>
                 </div>
               </div>
             </section>
@@ -169,7 +169,7 @@ export function PrivacyPolicyPopup({ isOpen, onClose }: PrivacyPolicyPopupProps)
               <h3 className="text-base md:text-xl font-bold text-yellow-300 mb-1 md:mb-3">
                 Seguridad de tus Datos
               </h3>
-              <p className="text-xs md:text-sm leading-snug md:leading-relaxed">
+              <p className="text-xs md:text-sm leading-snug md:leading-relaxed text-justify">
                 Implementamos medidas técnicas y organizativas apropiadas para proteger tus datos personales contra acceso no autorizado, pérdida, destrucción o alteración. Utilizamos encriptación SSL/TLS y seguimos las mejores prácticas de la industria.
               </p>
             </section>
@@ -179,17 +179,17 @@ export function PrivacyPolicyPopup({ isOpen, onClose }: PrivacyPolicyPopupProps)
               <h3 className="text-base md:text-xl font-bold text-yellow-300 mb-1 md:mb-3">
                 Compartir Información
               </h3>
-              <p className="text-xs md:text-sm leading-snug md:leading-relaxed">
+              <p className="text-xs md:text-sm leading-snug md:leading-relaxed text-justify">
                 <span className="font-semibold text-yellow-300">Solo a un Click</span> es una plataforma de exhibición. No compartimos tu información personal con terceros, excepto:
               </p>
               <div className="space-y-2 mt-2 text-xs md:text-sm">
                 <div className="flex gap-2">
                   <span className="text-yellow-300">•</span>
-                  <p className="leading-snug md:leading-relaxed">Cuando tú decides contactar directamente a un negocio publicado.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify">Cuando tú decides contactar directamente a un negocio publicado.</p>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-yellow-300">•</span>
-                  <p className="leading-snug md:leading-relaxed">Cuando sea requerido por ley o autoridad competente.</p>
+                  <p className="leading-snug md:leading-relaxed text-justify">Cuando sea requerido por ley o autoridad competente.</p>
                 </div>
               </div>
             </section>

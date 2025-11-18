@@ -65,7 +65,7 @@ export function CookiesPolicyPopup({ isOpen, onClose }: CookiesPolicyPopupProps)
               <h3 className="text-base md:text-xl font-bold text-yellow-300 mb-1 md:mb-3">
                 ¿Qué son las Cookies?
               </h3>
-              <p className="text-xs md:text-sm leading-snug md:leading-relaxed">
+              <p className="text-xs md:text-sm leading-snug md:leading-relaxed text-justify">
                 Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas un sitio web. En <span className="font-semibold text-yellow-300">Solo a un Click</span>, utilizamos cookies para mejorar tu experiencia de navegación, recordar tus preferencias y analizar el uso de nuestra plataforma.
               </p>
             </section>
@@ -78,13 +78,13 @@ export function CookiesPolicyPopup({ isOpen, onClose }: CookiesPolicyPopupProps)
               <div className="space-y-2 text-xs md:text-sm">
                 <div>
                   <p className="font-semibold text-yellow-200">📜 Ley N° 19.628 - Protección de Datos Personales</p>
-                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed">
+                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed text-justify">
                     El uso de cookies está regulado por la ley chilena de protección de datos, garantizando la transparencia en el tratamiento de tu información.
                   </p>
                 </div>
                 <div>
                   <p className="font-semibold text-yellow-200">🌐 Reglamento General de Protección de Datos (GDPR)</p>
-                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed">
+                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed text-justify">
                     Aunque somos una empresa chilena, seguimos estándares internacionales de privacidad para proteger mejor tus datos.
                   </p>
                 </div>
@@ -109,15 +109,15 @@ export function CookiesPolicyPopup({ isOpen, onClose }: CookiesPolicyPopupProps)
                   <div className="space-y-1 text-xs md:text-sm">
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Mantener tu sesión activa</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Mantener tu sesión activa</p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Recordar tus preferencias de navegación</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Recordar tus preferencias de navegación</p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Garantizar la seguridad de la plataforma</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Garantizar la seguridad de la plataforma</p>
                     </div>
                   </div>
                 </div>
@@ -133,15 +133,15 @@ export function CookiesPolicyPopup({ isOpen, onClose }: CookiesPolicyPopupProps)
                   <div className="space-y-1 text-xs md:text-sm">
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Analizar el tráfico del sitio web</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Analizar el tráfico del sitio web</p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Identificar páginas más visitadas</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Identificar páginas más visitadas</p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Mejorar la experiencia del usuario</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Mejorar la experiencia del usuario</p>
                     </div>
                   </div>
                 </div>
@@ -157,15 +157,15 @@ export function CookiesPolicyPopup({ isOpen, onClose }: CookiesPolicyPopupProps)
                   <div className="space-y-1 text-xs md:text-sm">
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Recordar productos que has visto</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Recordar productos que has visto</p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Guardar tus preferencias de búsqueda</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Guardar tus preferencias de búsqueda</p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Personalizar contenido según tus intereses</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Personalizar contenido según tus intereses</p>
                     </div>
                   </div>
                 </div>
@@ -181,15 +181,15 @@ export function CookiesPolicyPopup({ isOpen, onClose }: CookiesPolicyPopupProps)
                   <div className="space-y-1 text-xs md:text-sm">
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Google Analytics (análisis de tráfico)</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Google Analytics (análisis de tráfico)</p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Servicios de mapas y geolocalización</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Servicios de mapas y geolocalización</p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">•</span>
-                      <p className="text-purple-100 leading-snug md:leading-normal">Plataformas de comunicación (WhatsApp, Email)</p>
+                      <p className="text-purple-100 leading-snug md:leading-normal text-justify">Plataformas de comunicación (WhatsApp, Email)</p>
                     </div>
                   </div>
                 </div>
@@ -204,13 +204,13 @@ export function CookiesPolicyPopup({ isOpen, onClose }: CookiesPolicyPopupProps)
               <div className="space-y-2 text-xs md:text-sm">
                 <div>
                   <p className="font-semibold text-yellow-200">⏱️ Cookies de Sesión</p>
-                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed">
+                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed text-justify">
                     Se eliminan automáticamente cuando cierras tu navegador. Se utilizan para funciones temporales durante tu visita.
                   </p>
                 </div>
                 <div>
                   <p className="font-semibold text-yellow-200">📅 Cookies Persistentes</p>
-                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed">
+                  <p className="text-purple-100 mt-0.5 md:mt-1 leading-snug md:leading-relaxed text-justify">
                     Permanecen en tu dispositivo durante un tiempo definido (generalmente hasta 12 meses) para recordar tus preferencias entre visitas.
                   </p>
                 </div>
@@ -286,7 +286,7 @@ export function CookiesPolicyPopup({ isOpen, onClose }: CookiesPolicyPopupProps)
               <h3 className="text-base md:text-xl font-bold text-yellow-300 mb-1 md:mb-3">
                 Tu Consentimiento
               </h3>
-              <p className="text-xs md:text-sm leading-snug md:leading-relaxed">
+              <p className="text-xs md:text-sm leading-snug md:leading-relaxed text-justify">
                 Al continuar navegando en <span className="font-semibold text-yellow-300">Solo a un Click</span>, aceptas el uso de cookies según esta política. Las cookies esenciales se utilizan automáticamente para el funcionamiento del sitio, mientras que puedes rechazar las cookies opcionales ajustando la configuración de tu navegador.
               </p>
             </section>

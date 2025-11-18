@@ -126,7 +126,7 @@ export function AdminProductCarousel({
 
             {/* Tarjetas de productos existentes */}
             {productos.map((producto) => (
-              <div key={producto.id} className="flex-shrink-0 md:w-44 w-28">
+              <div key={producto.id} className="flex-shrink-0 md:w-44 w-28 h-auto">
                 <ProductoCard producto={producto} />
               </div>
             ))}

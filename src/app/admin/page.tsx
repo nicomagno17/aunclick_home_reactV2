@@ -18,7 +18,6 @@ import {
   HelpCircle,
   Shield,
   Cookie,
-  RefreshCw,
   FileText,
   MapPin,
   Settings,
@@ -38,6 +37,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AdminProductCarousel } from '@/components/admin/admin-product-carousel'
 import { CarouselProductForm } from '@/components/admin/carousel-product-form'
 import { ProductoCarrusel } from '@/types/product'
+import { PrivacyPolicyPopup } from '@/components/privacy-policy-popup'
+import { CookiesPolicyPopup } from '@/components/cookies-policy-popup'
+import { SecurityPolicyPopup } from '@/components/security-policy-popup'
+import { TermsConditionsPopup } from '@/components/terms-conditions-popup'
+import { AboutUsPopup } from '@/components/about-us-popup'
+import { FaqPopup } from '@/components/faq-popup'
 
 
 
@@ -113,6 +118,14 @@ export default function AdminPage() {
   // Estados para el acordeón del footer móvil
   const [openFooterSection, setOpenFooterSection] = useState<string | null>(null)
   const footerRef = useRef<HTMLDivElement>(null)
+
+  // Estados para los pop-ups de políticas
+  const [showPrivacyPopup, setShowPrivacyPopup] = useState(false)
+  const [showCookiesPopup, setShowCookiesPopup] = useState(false)
+  const [showSecurityPopup, setShowSecurityPopup] = useState(false)
+  const [showTermsPopup, setShowTermsPopup] = useState(false)
+  const [showAboutUsPopup, setShowAboutUsPopup] = useState(false)
+  const [showFaqPopup, setShowFaqPopup] = useState(false)
 
   // Contenido de ayuda para cada sección
   const helpContentData = {
@@ -3578,26 +3591,34 @@ export default function AdminPage() {
                   Avisos Legales
                 </h3>
                 <div className="space-y-1 md:space-y-2">
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowPrivacyPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Privacidad
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowCookiesPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Cookie className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Cookies
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
-                    <RefreshCw className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
-                    Reembolso
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowSecurityPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Seguridad
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowTermsPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <FileText className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Condiciones y términos
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -3611,18 +3632,24 @@ export default function AdminPage() {
                   Información
                 </h3>
                 <div className="space-y-1 md:space-y-2">
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowAboutUsPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Users className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Sobre Nosotros
-                  </a>
+                  </button>
                   <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
                     <Store className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Registra tu Negocio
                   </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowFaqPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <HelpCircle className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Preguntas
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -3732,26 +3759,34 @@ export default function AdminPage() {
                     openFooterSection === 'avisos-legales' ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowPrivacyPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Privacidad
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowCookiesPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Cookie className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Cookies
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
-                    <RefreshCw className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
-                    Reembolso
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowSecurityPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Seguridad
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowTermsPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <FileText className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Condiciones y términos
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -3779,18 +3814,24 @@ export default function AdminPage() {
                     openFooterSection === 'informacion' ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowAboutUsPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Users className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Sobre Nosotros
-                  </a>
+                  </button>
                   <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
                     <Store className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Registra tu Negocio
                   </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowFaqPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <HelpCircle className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Preguntas
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -3875,6 +3916,42 @@ export default function AdminPage() {
           </button>
         </div>
       </div>
+
+      {/* Popup de Políticas de Privacidad */}
+      <PrivacyPolicyPopup
+        isOpen={showPrivacyPopup}
+        onClose={() => setShowPrivacyPopup(false)}
+      />
+
+      {/* Popup de Políticas de Cookies */}
+      <CookiesPolicyPopup
+        isOpen={showCookiesPopup}
+        onClose={() => setShowCookiesPopup(false)}
+      />
+
+      {/* Popup de Política de Seguridad */}
+      <SecurityPolicyPopup
+        isOpen={showSecurityPopup}
+        onClose={() => setShowSecurityPopup(false)}
+      />
+
+      {/* Popup de Términos y Condiciones */}
+      <TermsConditionsPopup
+        isOpen={showTermsPopup}
+        onClose={() => setShowTermsPopup(false)}
+      />
+
+      {/* Popup de Sobre Nosotros */}
+      <AboutUsPopup
+        isOpen={showAboutUsPopup}
+        onClose={() => setShowAboutUsPopup(false)}
+      />
+
+      {/* Popup de Preguntas Frecuentes */}
+      <FaqPopup
+        isOpen={showFaqPopup}
+        onClose={() => setShowFaqPopup(false)}
+      />
     </div>
   )
 }

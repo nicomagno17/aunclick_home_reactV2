@@ -13,8 +13,12 @@ import { CategoryFilterCards } from '@/components/category-filter-cards'
 import { ProductInfoPopup } from '@/components/product-info-popup'
 import { PrivacyPolicyPopup } from '@/components/privacy-policy-popup'
 import { CookiesPolicyPopup } from '@/components/cookies-policy-popup'
+import { SecurityPolicyPopup } from '@/components/security-policy-popup'
+import { TermsConditionsPopup } from '@/components/terms-conditions-popup'
+import { AboutUsPopup } from '@/components/about-us-popup'
+import { FaqPopup } from '@/components/faq-popup'
 import { Product } from '@/types/product'
-import { Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, RefreshCw, FileText, Package, Gift, Lock, Key, Eye, AlertTriangle, Search, MapPin, Ban } from 'lucide-react'
+import { Mail, Phone, MessageCircle, Users, Store, HelpCircle, Shield, Cookie, FileText, Package, Gift, Lock, Key, Eye, AlertTriangle, Search, MapPin, Ban, ArrowLeft } from 'lucide-react'
 import { ResponsiveSearchSection } from '@/components/responsive-search-section'
 
 export default function Home() {
@@ -26,6 +30,11 @@ export default function Home() {
   const [showPopup, setShowPopup] = useState(false)
   const [showPrivacyPopup, setShowPrivacyPopup] = useState(false)
   const [showCookiesPopup, setShowCookiesPopup] = useState(false)
+  const [showSecurityPopup, setShowSecurityPopup] = useState(false)
+  const [showTermsPopup, setShowTermsPopup] = useState(false)
+  const [showAboutUsPopup, setShowAboutUsPopup] = useState(false)
+  const [showFaqPopup, setShowFaqPopup] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   useEffect(() => {
     fetchProducts()
@@ -68,16 +77,35 @@ export default function Home() {
     }
   }
 
+  // Función para manejar selección de categoría
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category)
+    // Scroll al contenido principal
+    window.scrollTo({ top: 400, behavior: 'smooth' })
+  }
+
+  // Función para volver al estado normal
+  const handleBackToNormal = () => {
+    setSelectedCategory(null)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // Filtrar productos según categoría seleccionada
+  const filteredProducts = selectedCategory
+    ? products.filter(p => p.category.toLowerCase() === selectedCategory.toLowerCase())
+    : products
+
 
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header Reutilizable */}
-      <Header 
+      <Header
         searchTerm={searchTerm}
         onSearchTermChange={setSearchTerm}
         showBackButton={false}
         showFloatingSearch={true}
+        onCategorySelect={handleCategorySelect}
       />
 
       {/* Nuevo Carrusel entre Header y Destacados con tarjetas de filtro */}
@@ -105,8 +133,22 @@ export default function Home() {
           ]}
           autoPlayInterval={7000}
         />
-        <CategoryFilterCards />
+        <CategoryFilterCards
+          onCategorySelect={handleCategorySelect}
+          selectedCategory={selectedCategory}
+        />
       </div>
+
+      {/* Botón flotante "Volver" - solo visible cuando hay categoría seleccionada */}
+      {selectedCategory && (
+        <button
+          onClick={handleBackToNormal}
+          className="fixed left-4 md:left-8 top-1/2 -translate-y-1/2 z-40 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-4 py-3 md:px-5 md:py-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 flex items-center gap-2 font-bold text-sm md:text-base border-2 border-yellow-400"
+        >
+          <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+          <span>Volver</span>
+        </button>
+      )}
 
       {/* Main Content */}
       <main className="pt-20 md:pt-24 pb-8">
@@ -137,20 +179,24 @@ export default function Home() {
         ) : (
           <>
             {/* Sección Destacados */}
-            <HorizontalCarousel
-              title="Destacados"
-              subtitle="Los productos más populares del momento"
-              products={products.slice(0, 10)}
-              cardKeyPrefix="destacados"
-            />
+            {filteredProducts.slice(0, 10).length > 0 && (
+              <HorizontalCarousel
+                title={selectedCategory ? `Destacados - ${selectedCategory}` : "Destacados"}
+                subtitle={selectedCategory ? `Productos destacados de ${selectedCategory}` : "Los productos más populares del momento"}
+                products={filteredProducts.slice(0, 10)}
+                cardKeyPrefix="destacados"
+              />
+            )}
 
             {/* Sección Ofertas */}
-            <HorizontalCarousel
-              title="Ofertas"
-              subtitle="Descuentos exclusivos por tiempo limitado"
-              products={products.filter(p => p.discount && p.discount > 0).slice(0, 10)}
-              cardKeyPrefix="ofertas"
-            />
+            {filteredProducts.filter(p => p.discount && p.discount > 0).slice(0, 10).length > 0 && (
+              <HorizontalCarousel
+                title={selectedCategory ? `Ofertas - ${selectedCategory}` : "Ofertas"}
+                subtitle={selectedCategory ? `Descuentos exclusivos en ${selectedCategory}` : "Descuentos exclusivos por tiempo limitado"}
+                products={filteredProducts.filter(p => p.discount && p.discount > 0).slice(0, 10)}
+                cardKeyPrefix="ofertas"
+              />
+            )}
 
             {/* Carrusel Circular Infinito de 8 Tiendas */}
             <ImageCarouselContinuous2
@@ -178,20 +224,24 @@ export default function Home() {
             />
 
             {/* Sección Novedades */}
-            <HorizontalCarousel
-              title="Novedades"
-              subtitle="Los últimos lanzamientos del mercado"
-              products={products.slice(4, 14)}
-              cardKeyPrefix="novedades"
-            />
+            {filteredProducts.slice(4, 14).length > 0 && (
+              <HorizontalCarousel
+                title={selectedCategory ? `Novedades - ${selectedCategory}` : "Novedades"}
+                subtitle={selectedCategory ? `Últimos lanzamientos en ${selectedCategory}` : "Los últimos lanzamientos del mercado"}
+                products={filteredProducts.slice(4, 14)}
+                cardKeyPrefix="novedades"
+              />
+            )}
 
             {/* Sección Tendencias */}
-            <HorizontalCarousel
-              title="Tendencias"
-              subtitle="Lo más buscado y deseado actualmente"
-              products={products.slice(2, 12)}
-              cardKeyPrefix="tendencias"
-            />
+            {filteredProducts.slice(2, 12).length > 0 && (
+              <HorizontalCarousel
+                title={selectedCategory ? `Tendencias - ${selectedCategory}` : "Tendencias"}
+                subtitle={selectedCategory ? `Lo más buscado en ${selectedCategory}` : "Lo más buscado y deseado actualmente"}
+                products={filteredProducts.slice(2, 12)}
+                cardKeyPrefix="tendencias"
+              />
+            )}
 
             {/* Carrusel Informativo */}
             <div className="px-6">
@@ -507,12 +557,14 @@ export default function Home() {
               />
             ) : (
               /* Sección ¡No te lo Pierdas! */
-              <HorizontalCarousel
-                title="¡No te lo Pierdas!"
-                subtitle="Oportunidades únicas que no puedes dejar pasar"
-                products={products.slice(6, 16)}
-                cardKeyPrefix="no-te-lo-pierdas"
-              />
+              filteredProducts.slice(6, 16).length > 0 && (
+                <HorizontalCarousel
+                  title={selectedCategory ? `¡No te lo Pierdas! - ${selectedCategory}` : "¡No te lo Pierdas!"}
+                  subtitle={selectedCategory ? `Oportunidades únicas en ${selectedCategory}` : "Oportunidades únicas que no puedes dejar pasar"}
+                  products={filteredProducts.slice(6, 16)}
+                  cardKeyPrefix="no-te-lo-pierdas"
+                />
+              )
             )}
 
             {loading ? (
@@ -523,12 +575,14 @@ export default function Home() {
               />
             ) : (
               /* Sección Liquidaciones */
-              <HorizontalCarousel
-                title="Liquidaciones"
-                subtitle="Precios increíbles en productos seleccionados"
-                products={products.slice(4, 12)}
-                cardKeyPrefix="liquidaciones"
-              />
+              filteredProducts.slice(4, 12).length > 0 && (
+                <HorizontalCarousel
+                  title={selectedCategory ? `Liquidaciones - ${selectedCategory}` : "Liquidaciones"}
+                  subtitle={selectedCategory ? `Precios increíbles en ${selectedCategory}` : "Precios increíbles en productos seleccionados"}
+                  products={filteredProducts.slice(4, 12)}
+                  cardKeyPrefix="liquidaciones"
+                />
+              )
             )}
           </>
         )}
@@ -577,18 +631,20 @@ export default function Home() {
                     <Cookie className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Cookies
                   </button>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
-                    <RefreshCw className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
-                    Reembolso
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowSecurityPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Seguridad
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowTermsPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <FileText className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Condiciones y términos
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -602,18 +658,24 @@ export default function Home() {
                   Información
                 </h3>
                 <div className="space-y-1 md:space-y-2">
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowAboutUsPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Users className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Sobre Nosotros
-                  </a>
+                  </button>
                   <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
                     <Store className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Registra tu Negocio
                   </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowFaqPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <HelpCircle className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Preguntas
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -673,6 +735,30 @@ export default function Home() {
       <CookiesPolicyPopup
         isOpen={showCookiesPopup}
         onClose={() => setShowCookiesPopup(false)}
+      />
+
+      {/* Popup de Política de Seguridad */}
+      <SecurityPolicyPopup
+        isOpen={showSecurityPopup}
+        onClose={() => setShowSecurityPopup(false)}
+      />
+
+      {/* Popup de Términos y Condiciones */}
+      <TermsConditionsPopup
+        isOpen={showTermsPopup}
+        onClose={() => setShowTermsPopup(false)}
+      />
+
+      {/* Popup de Sobre Nosotros */}
+      <AboutUsPopup
+        isOpen={showAboutUsPopup}
+        onClose={() => setShowAboutUsPopup(false)}
+      />
+
+      {/* Popup de Preguntas Frecuentes */}
+      <FaqPopup
+        isOpen={showFaqPopup}
+        onClose={() => setShowFaqPopup(false)}
       />
     </div>
   )

@@ -18,7 +18,12 @@ const categories: Category[] = [
   { name: 'Deportes', icon: <Dumbbell className="w-5 h-5 md:w-6 md:h-6" /> },
 ]
 
-export function CategoryFilterCards() {
+interface CategoryFilterCardsProps {
+  onCategorySelect?: (category: string) => void
+  selectedCategory?: string | null
+}
+
+export function CategoryFilterCards({ onCategorySelect, selectedCategory }: CategoryFilterCardsProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [showArrow, setShowArrow] = useState(true)
 
@@ -42,7 +47,12 @@ export function CategoryFilterCards() {
         {categories.map((category, index) => (
           <button
             key={index}
-            className="flex flex-col items-center justify-center bg-gradient-to-br from-purple-300 via-purple-200 to-yellow-100 hover:from-purple-400 hover:via-purple-300 hover:to-yellow-200 text-purple-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 p-3 flex-1 min-w-0 h-24 border border-purple-300"
+            onClick={() => onCategorySelect?.(category.name)}
+            className={`flex flex-col items-center justify-center rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 p-3 flex-1 min-w-0 h-24 border ${
+              selectedCategory === category.name
+                ? 'bg-gradient-to-br from-purple-600 via-purple-500 to-purple-700 text-yellow-300 border-yellow-400 scale-105'
+                : 'bg-gradient-to-br from-purple-300 via-purple-200 to-yellow-100 hover:from-purple-400 hover:via-purple-300 hover:to-yellow-200 text-purple-800 border-purple-300'
+            }`}
           >
             <div className="mb-1.5">
               {category.icon}
@@ -65,7 +75,12 @@ export function CategoryFilterCards() {
             {categories.map((category, index) => (
               <button
                 key={index}
-                className="flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-purple-300 via-purple-200 to-yellow-100 active:from-purple-400 active:via-purple-300 active:to-yellow-200 text-purple-800 rounded-lg shadow-md transition-all duration-300 active:scale-95 w-14 h-14 border border-purple-300"
+                onClick={() => onCategorySelect?.(category.name)}
+                className={`flex-shrink-0 flex items-center justify-center rounded-lg shadow-md transition-all duration-300 active:scale-95 w-14 h-14 border ${
+                  selectedCategory === category.name
+                    ? 'bg-gradient-to-br from-purple-600 via-purple-500 to-purple-700 text-yellow-300 border-yellow-400'
+                    : 'bg-gradient-to-br from-purple-300 via-purple-200 to-yellow-100 active:from-purple-400 active:via-purple-300 active:to-yellow-200 text-purple-800 border-purple-300'
+                }`}
                 title={category.name}
               >
                 {category.icon}
