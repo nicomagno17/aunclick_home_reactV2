@@ -104,7 +104,63 @@ const accountInfoSchema = z.object({
     path: ['confirmPassword'],
 });
 
-// Step 3: Business Information
+// Step 3: Plan Selection
+const planSelectionSchema = z.object({
+    selectedPlan: z
+        .enum(['gratuito', 'normal', 'premium']),
+});
+
+// Step 3.5: Payment Information (only for paid plans)
+const paymentInfoSchema = z.object({
+    cardNumber: z
+        .string()
+        .min(15, 'Número de tarjeta inválido')
+        .max(19, 'Número de tarjeta inválido')
+        .regex(/^[\d\s]+$/, 'Solo se permiten números')
+        .trim()
+        .optional()
+        .or(z.literal('')),
+
+    cardHolderName: z
+        .string()
+        .min(3, 'El nombre debe tener al menos 3 caracteres')
+        .max(100, 'El nombre no puede tener más de 100 caracteres')
+        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, 'Solo se permiten letras y espacios')
+        .trim()
+        .optional()
+        .or(z.literal('')),
+
+    cardExpiryDate: z
+        .string()
+        .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Formato inválido (MM/AA)')
+        .trim()
+        .optional()
+        .or(z.literal('')),
+
+    cardCvv: z
+        .string()
+        .min(3, 'CVV debe tener 3 o 4 dígitos')
+        .max(4, 'CVV debe tener 3 o 4 dígitos')
+        .regex(/^\d+$/, 'Solo se permiten números')
+        .trim()
+        .optional()
+        .or(z.literal('')),
+
+    cardType: z
+        .enum(['credito', 'debito'])
+        .optional(),
+
+    rut: z
+        .string()
+        .min(8, 'El RUT es inválido')
+        .max(12, 'El RUT es inválido')
+        .regex(/^\d{1,2}\.\d{3}\.\d{3}[-][0-9kK]$/, 'Formato de RUT inválido (ej: 12.345.678-9)')
+        .trim()
+        .optional()
+        .or(z.literal('')),
+});
+
+// Step 4: Business Information
 const businessInfoSchema = z.object({
     businessName: z
         .string()
@@ -157,13 +213,17 @@ const businessInfoSchema = z.object({
 // Complete registration schema combining all steps
 export const registerSchema = personalInfoSchema
     .merge(accountInfoSchema)
+    .merge(planSelectionSchema)
+    .merge(paymentInfoSchema)
     .merge(businessInfoSchema);
 
 // Individual step schemas for validation
-export { personalInfoSchema, accountInfoSchema, businessInfoSchema };
+export { personalInfoSchema, accountInfoSchema, planSelectionSchema, paymentInfoSchema, businessInfoSchema };
 
 // Type definitions
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type PersonalInfoInput = z.infer<typeof personalInfoSchema>;
 export type AccountInfoInput = z.infer<typeof accountInfoSchema>;
+export type PlanSelectionInput = z.infer<typeof planSelectionSchema>;
+export type PaymentInfoInput = z.infer<typeof paymentInfoSchema>;
 export type BusinessInfoInput = z.infer<typeof businessInfoSchema>;

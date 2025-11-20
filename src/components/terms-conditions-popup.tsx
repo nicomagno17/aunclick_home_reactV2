@@ -32,18 +32,18 @@ export function TermsConditionsPopup({ isOpen, onClose }: TermsConditionsPopupPr
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-center p-4 bg-black/60 backdrop-blur-sm md:items-start items-start md:pt-24 pt-20"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
       onClick={onClose}
     >
       {/* Popup Container */}
       <div
-        className="relative bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] md:max-h-[85vh] max-h-[calc(100vh-100px)] overflow-hidden border-2 border-yellow-400/50"
+        className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden border-2 border-purple-500"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header con gradiente */}
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-purple-900 via-purple-700 to-purple-600 px-4 md:px-6 py-3 md:py-4 border-b-2 border-yellow-400 shadow-lg">
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-purple-600 to-purple-700 px-4 md:px-6 py-3 md:py-4 border-b border-purple-400 shadow-lg">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg md:text-2xl font-bold text-yellow-300 flex items-center gap-2">
+            <h2 className="text-lg md:text-2xl font-bold text-white flex items-center gap-2">
               📋 Términos y Condiciones
             </h2>
             <button
@@ -51,13 +51,13 @@ export function TermsConditionsPopup({ isOpen, onClose }: TermsConditionsPopupPr
               className="p-1.5 md:p-2 hover:bg-purple-800 rounded-full transition-colors group"
               aria-label="Cerrar"
             >
-              <X className="w-5 h-5 md:w-6 md:h-6 text-yellow-300 group-hover:text-yellow-400" />
+              <X className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:text-gray-300" />
             </button>
           </div>
         </div>
 
         {/* Contenido con scroll */}
-        <div className="overflow-y-auto max-h-[calc(85vh-80px)] px-4 md:px-6 py-3 md:py-6">
+        <div className="overflow-y-auto max-h-[calc(80vh-80px)] px-4 md:px-6 py-3 md:py-6">
           <div className="space-y-2 md:space-y-6 text-purple-50">
 
             {/* Introducción */}
@@ -123,7 +123,7 @@ export function TermsConditionsPopup({ isOpen, onClose }: TermsConditionsPopupPr
                     <span className="text-lg">👑</span>
                     <p className="text-purple-100 leading-snug md:leading-relaxed">
                       <strong className="text-yellow-300">Plan Premium</strong>
-                      <span className="ml-2 bg-yellow-400/20 rounded px-2 py-0.5 text-[10px] md:text-xs font-bold text-yellow-300">PRIMER MES GRATIS</span>
+                      <span className="ml-2 bg-yellow-400/20 rounded px-2 py-0.5 text-[10px] md:text-xs font-bold text-yellow-300">UN MES GRATIS PARA CLIENTES NUEVOS PAGANDO EL TRIMESTRE</span>
                     </p>
                   </div>
                 </div>
@@ -136,14 +136,14 @@ export function TermsConditionsPopup({ isOpen, onClose }: TermsConditionsPopupPr
               </div>
             </section>
 
-            {/* Promoción Primer Mes Gratis - Plan Premium */}
+            {/* Promoción Un Mes Gratis - Plan Premium */}
             <section className="bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-lg p-2 md:p-4 border-2 border-yellow-400/50">
               <h3 className="text-base md:text-xl font-bold text-yellow-300 mb-1 md:mb-3 flex items-center gap-2">
-                <span className="text-xl">🎁</span> 3. Promoción: Primer Mes Gratis - Plan Premium
+                <span className="text-xl">🎁</span> 3. Un mes gratis en plan Premium para clientes nuevos
               </h3>
               <div className="space-y-2 text-xs md:text-sm">
                 <p className="text-yellow-100 leading-snug md:leading-relaxed">
-                  Todos los nuevos usuarios pueden disfrutar del <strong>Plan Premium completamente gratis durante el primer mes</strong>.
+                  Los nuevos clientes pueden acceder al <strong>Plan Premium con un mes completamente gratis pagando el trimestre completo</strong>.
                 </p>
 
                 <div className="bg-purple-900/40 rounded p-2 md:p-3 border border-yellow-400/30 mt-2">
@@ -152,25 +152,25 @@ export function TermsConditionsPopup({ isOpen, onClose }: TermsConditionsPopupPr
                     <div className="flex gap-2">
                       <span className="text-yellow-300">1.</span>
                       <p className="text-yellow-100 leading-snug md:leading-relaxed">
-                        <strong>Registro de tarjeta obligatorio:</strong> Para acceder al mes gratuito, debes registrar una tarjeta de débito o crédito.
+                        <strong>Pago por transferencia:</strong> Debes realizar el pago del trimestre mediante transferencia bancaria en un plazo de 48 horas para validar tu inscripción.
                       </p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">2.</span>
                       <p className="text-yellow-100 leading-snug md:leading-relaxed">
-                        <strong>Responsabilidad del usuario:</strong> Al cumplir el mes de gratuidad, es tu <u>exclusiva responsabilidad</u> cambiar tu plan a Normal o Gratuito si no deseas continuar con el Plan Premium.
+                        <strong>Responsabilidad del usuario:</strong> Al cumplir el trimestre, es tu <u>exclusiva responsabilidad</u> renovar tu suscripción o cambiar tu plan a Normal o Gratuito si no deseas continuar con el Plan Premium.
                       </p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">3.</span>
                       <p className="text-yellow-100 leading-snug md:leading-relaxed">
-                        <strong>Renovación automática:</strong> Si NO cambias de plan antes de que termine el mes gratuito, se realizará automáticamente el cobro del Plan Premium y se mantendrá activo por un mes más.
+                        <strong>Avisos de renovación:</strong> Recibirás notificaciones desde una semana antes del término de tu suscripción para que puedas renovar o cambiar de plan.
                       </p>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-300">4.</span>
                       <p className="text-yellow-100 leading-snug md:leading-relaxed">
-                        <strong>Sin reembolsos:</strong> Una vez realizado el cobro automático, no se realizarán reembolsos del mes en curso.
+                        <strong>Sin reembolsos:</strong> Una vez realizado el pago del trimestre, no se realizarán reembolsos.
                       </p>
                     </div>
                   </div>
@@ -185,33 +185,24 @@ export function TermsConditionsPopup({ isOpen, onClose }: TermsConditionsPopupPr
               </h3>
               <div className="space-y-2 text-xs md:text-sm">
                 <p className="leading-snug md:leading-relaxed">
-                  Aceptamos los siguientes métodos de pago para los planes Normal y Premium:
+                  Actualmente aceptamos el siguiente método de pago para los planes Normal y Premium:
                 </p>
                 <div className="bg-purple-800/30 rounded p-2 md:p-3">
                   <div className="space-y-1">
                     <div className="flex gap-2">
-                      <span className="text-yellow-300">💳</span>
-                      <p className="leading-snug md:leading-relaxed text-justify">
-                        <strong className="text-yellow-200">Tarjeta de Débito:</strong> Cobro automático mensual desde la fecha de inscripción.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <span className="text-yellow-300">💳</span>
-                      <p className="leading-snug md:leading-relaxed text-justify">
-                        <strong className="text-yellow-200">Tarjeta de Crédito:</strong> Cobro automático mensual desde la fecha de inscripción.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
                       <span className="text-yellow-300">🏦</span>
                       <p className="leading-snug md:leading-relaxed text-justify">
-                        <strong className="text-yellow-200">Transferencia Bancaria:</strong> Pago manual mensual (requiere confirmación).
+                        <strong className="text-yellow-200">Transferencia Bancaria:</strong> Pago mediante transferencia bancaria. Debes enviar el comprobante con tu RUT y nombre completo para validar el pago.
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="bg-yellow-900/30 rounded p-2 md:p-3 border border-yellow-400/30 mt-2">
+                  <p className="text-yellow-100 leading-snug md:leading-relaxed mb-2">
+                    <strong>⏰ Avisos de renovación:</strong> Se te enviarán notificaciones por correo electrónico y WhatsApp desde <strong>una semana antes</strong> del término de tu suscripción para recordarte la fecha de renovación.
+                  </p>
                   <p className="text-yellow-100 leading-snug md:leading-relaxed">
-                    <strong>⏰ Ciclo de facturación:</strong> Los cobros automáticos se realizan mensualmente desde la fecha exacta de tu inscripción al plan. Por ejemplo, si te inscribes el día 15, el cobro se realizará cada día 15 de cada mes.
+                    <strong>📅 Plazo de pago:</strong> Tendrás hasta <strong>5 días corridos</strong> previos a la fecha de término de tu suscripción para realizar el pago de renovación.
                   </p>
                 </div>
               </div>
@@ -332,7 +323,7 @@ export function TermsConditionsPopup({ isOpen, onClose }: TermsConditionsPopupPr
                   </div>
                   <div className="flex gap-2">
                     <span className="text-red-400">•</span>
-                    <p className="leading-snug md:leading-relaxed text-justify">Tengan pagos pendientes o rechazados por más de 30 días (planes pagados).</p>
+                    <p className="leading-snug md:leading-relaxed text-justify">No realicen el pago de renovación dentro de los 5 días corridos previos a la fecha de término de la suscripción. En este caso, la cuenta quedará inactiva.</p>
                   </div>
                   <div className="flex gap-2">
                     <span className="text-red-400">•</span>
@@ -420,10 +411,10 @@ export function TermsConditionsPopup({ isOpen, onClose }: TermsConditionsPopupPr
         </div>
 
         {/* Footer del popup */}
-        <div className="sticky bottom-0 bg-gradient-to-r from-purple-900 via-purple-700 to-purple-600 px-4 md:px-6 py-3 md:py-4 border-t-2 border-yellow-400">
+        <div className="sticky bottom-0 bg-gray-900 px-4 md:px-6 py-3 md:py-4 border-t border-gray-700">
           <button
             onClick={onClose}
-            className="w-full bg-yellow-400 hover:bg-yellow-500 text-purple-900 font-bold py-2 md:py-3 px-4 rounded-lg transition-colors text-xs md:text-sm shadow-lg"
+            className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 md:py-3 px-4 rounded-lg transition-all text-xs md:text-sm shadow-lg"
           >
             Acepto los Términos y Condiciones
           </button>
