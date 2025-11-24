@@ -83,24 +83,20 @@ export default function RegisterPage() {
       form.setValue('birthDate', '1990-01-15')
       form.setValue('gender', 'masculino')
       form.setValue('phone', '+56 9 1234 5678')
+      form.setValue('email', 'juan.perez@email.com')
+      form.setValue('backupEmail', 'juan.perez@email.com')
       form.setValue('region', 'metropolitana')
       form.setValue('commune', 'santiago')
       form.setValue('address', 'Av. Providencia 1234, Santiago')
+      form.setValue('password', 'Password123!')
+      form.setValue('confirmPassword', 'Password123!')
       console.log('✅ Paso 1 completado')
     } else if (step === 2) {
       console.log('📝 Llenando campos del paso 2')
-      form.setValue('username', 'juanperez')
-      form.setValue('email', 'juan.perez@email.com')
-      form.setValue('backupEmail', 'juan.perez.backup@email.com')
-      form.setValue('password', 'Password123!')
-      form.setValue('confirmPassword', 'Password123!')
+      form.setValue('selectedPlan', 'normal')
       console.log('✅ Paso 2 completado')
     } else if (step === 3) {
       console.log('📝 Llenando campos del paso 3')
-      form.setValue('selectedPlan', 'normal')
-      console.log('✅ Paso 3 completado')
-    } else if (step === 4) {
-      console.log('📝 Llenando campos del paso 4')
       const sampleFeature = 'Venta de productos electrónicos y accesorios de alta calidad'
       const wordsInSample = sampleFeature.trim().split(/\s+/).length
       form.setValue('businessName', 'Tienda de Ejemplo')
@@ -108,10 +104,9 @@ export default function RegisterPage() {
       form.setValue('businessPhone', '+56 2 1234 5678')
       form.setValue('businessWhatsApp', '+56 9 1234 5678')
       form.setValue('businessEmail', 'info@tiendadeejemplo.cl')
-      form.setValue('businessOwner', 'María González')
       form.setValue('businessFeature', sampleFeature)
       setWordCount(30 - wordsInSample)
-      console.log('✅ Paso 4 completado')
+      console.log('✅ Paso 3 completado')
     }
   }
 
@@ -121,13 +116,10 @@ export default function RegisterPage() {
     if (step === 1) {
       isValid = await form.trigger([
         'firstName', 'lastName', 'rut', 'birthDate', 'gender',
-        'phone', 'region', 'commune', 'address'
+        'phone', 'region', 'commune', 'address', 'email', 'backupEmail',
+        'password', 'confirmPassword'
       ])
     } else if (step === 2) {
-      isValid = await form.trigger([
-        'username', 'email', 'backupEmail', 'password', 'confirmPassword'
-      ])
-    } else if (step === 3) {
       isValid = await form.trigger(['selectedPlan'])
       if (isValid) {
         const selectedPlan = form.getValues('selectedPlan')
@@ -137,12 +129,12 @@ export default function RegisterPage() {
           return // No avanzar el paso aún
         }
         // Si es gratuito, avanzar directamente
-        setStep(4)
+        setStep(3)
         return
       }
     }
 
-    if (isValid && step < 4) {
+    if (isValid && step < 3) {
       setStep(step + 1)
     }
   }
@@ -153,7 +145,7 @@ export default function RegisterPage() {
 
   const handlePaymentInstructionsClose = () => {
     setShowPaymentInstructions(false)
-    setStep(4)
+    setStep(3)
   }
 
   const onSubmit = async (data: RegisterInput) => {
@@ -170,25 +162,43 @@ export default function RegisterPage() {
     setIsLoading(true)
     try {
       // Submit registration data to API
-      const response = await fetch('/api/usuarios', {
+      const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          nombre: `${data.firstName} ${data.lastName}`,
-          apellidos: data.lastName,
+          // Paso 1: Información Personal
+          firstName: data.firstName,
+          lastName: data.lastName,
+          rut: data.rut,
+          birthDate: data.birthDate,
+          gender: data.gender,
+          phone: data.phone,
+          region: data.region,
+          commune: data.commune,
+          address: data.address,
           email: data.email,
+          backupEmail: data.backupEmail,
           password: data.password,
-          telefono: data.phone,
-          rol: 'propietario_negocio',
-          estado: 'pendiente_verificacion',
+          confirmPassword: data.confirmPassword,
+          // Paso 2: Plan
+          selectedPlan: data.selectedPlan,
+          // Paso 3: Información del Negocio
+          businessName: data.businessName,
+          businessAddress: data.businessAddress,
+          businessPhone: data.businessPhone,
+          businessWhatsApp: data.businessWhatsApp,
+          businessEmail: data.businessEmail,
+          businessFeature: data.businessFeature,
+          acceptedTerms: acceptedTerms,
         }),
       })
 
+      const result = await response.json()
+
       if (!response.ok) {
-        const errorData = await response.json()
-        if (response.status === 409) {
+        if (response.status === 400 && result.message.includes('correo electrónico ya está registrado')) {
           toast({
             title: 'Email ya registrado',
             description: 'Este email ya está registrado en el sistema',
@@ -197,35 +207,24 @@ export default function RegisterPage() {
         } else {
           toast({
             title: 'Error en el registro',
-            description: errorData.message || 'Ocurrió un error durante el registro',
+            description: result.message || 'Ocurrió un error durante el registro',
             variant: 'destructive',
           })
         }
         return
       }
 
-      // Success - auto login
-      const result = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
-        redirect: false,
+      // Success - Mostrar mensaje y redirigir
+      toast({
+        title: '¡Registro exitoso!',
+        description: 'Tu cuenta ha sido creada correctamente. Serás redirigido al inicio de sesión.',
       })
 
-      if (result?.error) {
-        // Registration successful but login failed - redirect to login page
-        toast({
-          title: 'Registro exitoso',
-          description: 'Tu cuenta ha sido creada. Por favor, inicia sesión.',
-        })
+      // Redirigir al login después de 2 segundos
+      setTimeout(() => {
         router.push('/login')
-      } else {
-        // Both registration and login successful
-        toast({
-          title: '¡Bienvenido!',
-          description: 'Tu cuenta ha sido creada y has iniciado sesión correctamente',
-        })
-        router.push('/')
-      }
+      }, 2000)
+
     } catch (error) {
       console.error('Registration error:', error)
       toast({
@@ -279,12 +278,10 @@ export default function RegisterPage() {
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2 tracking-tight">Registro</h1>
               <p className="text-xs sm:text-sm md:text-base text-gray-400">
                 {step === 1
-                  ? 'Información personal'
+                  ? 'Información personal y acceso'
                   : step === 2
-                    ? 'Información de acceso'
-                    : step === 3
-                      ? 'Selección de plan'
-                      : 'Información del negocio'}
+                    ? 'Selección de plan'
+                    : 'Información del negocio'}
               </p>
             </div>
             <div className="w-32"></div> {/* Spacer for alignment */}
@@ -293,10 +290,10 @@ export default function RegisterPage() {
           {/* Progress Bar */}
           <div className="mb-4 sm:mb-6 md:mb-8">
             <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-6">
-              {[1, 2, 3, 4].map((stepNum) => (
+              {[1, 2, 3].map((stepNum) => (
                 <div key={stepNum} className="flex flex-col items-center relative">
                   {/* Línea conectora */}
-                  {stepNum < 4 && (
+                  {stepNum < 3 && (
                     <div className={`absolute top-3 sm:top-4 left-full w-3 sm:w-4 md:w-6 h-0.5 sm:h-1 ${
                       step > stepNum ? 'bg-purple-600' : 'bg-gray-700'
                     }`}></div>
@@ -308,10 +305,9 @@ export default function RegisterPage() {
                     {stepNum}
                   </div>
                   <span className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-gray-400">
-                    {stepNum === 1 && 'Personal'}
-                    {stepNum === 2 && 'Acceso'}
-                    {stepNum === 3 && 'Plan'}
-                    {stepNum === 4 && 'Negocio'}
+                    {stepNum === 1 && 'Info Personal'}
+                    {stepNum === 2 && 'Plan'}
+                    {stepNum === 3 && 'Negocio'}
                   </span>
                 </div>
               ))}
@@ -321,13 +317,13 @@ export default function RegisterPage() {
           {/* Registration Form */}
           <div className="bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-700 p-4 sm:p-6 md:p-8 shadow-2xl">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 sm:space-y-3">
                 {step === 1 && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 pb-2 border-b-2 border-gray-700">Información Personal</h2>
+                  <div className="space-y-2 sm:space-y-3">
+                    <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 pb-2 border-b-2 border-gray-700">Información Personal y Acceso</h2>
 
                     {/* First Row: Nombre y Apellidos */}
-                    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <FormField
                         control={form.control}
                         name="firstName"
@@ -365,7 +361,7 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Second Row: RUT y Sexo */}
-                    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <FormField
                         control={form.control}
                         name="rut"
@@ -394,7 +390,7 @@ export default function RegisterPage() {
                                 {...field}
                                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 text-xs sm:text-base"
                               >
-                                <option value="" className="bg-gray-800">Selecciona tu sexo</option>
+                                <option value="" className="bg-gray-800">Selecciona</option>
                                 <option value="masculino" className="bg-gray-800">Masculino</option>
                                 <option value="femenino" className="bg-gray-800">Femenino</option>
                                 <option value="otro" className="bg-gray-800">Otro</option>
@@ -407,7 +403,7 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Third Row: Fecha de Nacimiento y Teléfono */}
-                    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <FormField
                         control={form.control}
                         name="birthDate"
@@ -446,7 +442,7 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Fourth Row: Región y Comuna */}
-                    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <FormField
                         control={form.control}
                         name="region"
@@ -458,10 +454,10 @@ export default function RegisterPage() {
                                 {...field}
                                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 text-xs sm:text-base"
                               >
-                                <option value="" className="bg-gray-800">Selecciona tu región</option>
-                                <option value="metropolitana" className="bg-gray-800">Región Metropolitana</option>
-                                <option value="valparaiso" className="bg-gray-800">Región de Valparaíso</option>
-                                <option value="biobio" className="bg-gray-800">Región del Biobío</option>
+                                <option value="" className="bg-gray-800">Selecciona</option>
+                                <option value="metropolitana" className="bg-gray-800">Metropolitana</option>
+                                <option value="valparaiso" className="bg-gray-800">Valparaíso</option>
+                                <option value="biobio" className="bg-gray-800">Biobío</option>
                               </select>
                             </FormControl>
                             <FormMessage />
@@ -479,7 +475,7 @@ export default function RegisterPage() {
                                 {...field}
                                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 text-xs sm:text-base"
                               >
-                                <option value="" className="bg-gray-800">Selecciona tu comuna</option>
+                                <option value="" className="bg-gray-800">Selecciona</option>
                                 <option value="santiago" className="bg-gray-800">Santiago</option>
                                 <option value="las-condes" className="bg-gray-800">Las Condes</option>
                                 <option value="providencia" className="bg-gray-800">Providencia</option>
@@ -501,7 +497,7 @@ export default function RegisterPage() {
                           <FormControl>
                             <Input
                               {...field}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-purple-500"
+                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-purple-500 text-xs sm:text-base"
                               placeholder="Tu dirección completa"
                             />
                           </FormControl>
@@ -510,59 +506,14 @@ export default function RegisterPage() {
                       )}
                     />
 
-                    {/* Auto-fill and Next buttons */}
-                    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-4 sm:mt-6 md:mt-8">
-                      <Button
-                        type="button"
-                        onClick={handleAutoFill}
-                        variant="outline"
-                        className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600 text-xs sm:text-sm px-3 sm:px-4"
-                      >
-                        Autocompletar
-                      </Button>
-                      <Button
-                        type="button"
-                        onClick={nextStep}
-                        className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs sm:text-sm px-3 sm:px-4"
-                      >
-                        Siguiente
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {step === 2 && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 text-center pb-2 border-b-2 border-gray-700">Información de Acceso</h2>
-
-                    {/* Username */}
-                    <FormField
-                      control={form.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs sm:text-sm font-medium text-gray-300">Nombre de Usuario</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-purple-500"
-                              placeholder="Nombre de usuario único"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Email Row - Desktop: side by side, Mobile: stacked */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Email Personal */}
+                    {/* Sixth Row: Correo Electrónico y Confirmar Correo */}
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                       <FormField
                         control={form.control}
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-xs sm:text-sm font-medium text-gray-300">Correo Electrónico Personal</FormLabel>
+                            <FormLabel className="text-xs sm:text-sm font-medium text-gray-300">Correo Electrónico</FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
@@ -575,20 +526,18 @@ export default function RegisterPage() {
                           </FormItem>
                         )}
                       />
-
-                      {/* Backup Email */}
                       <FormField
                         control={form.control}
                         name="backupEmail"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-xs sm:text-sm font-medium text-gray-300">Correo Electrónico de Respaldo (Opcional)</FormLabel>
+                            <FormLabel className="text-xs sm:text-sm font-medium text-gray-300">Confirmar Correo</FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
                                 type="email"
                                 className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-purple-500 text-xs sm:text-base"
-                                placeholder="respaldo@email.com"
+                                placeholder="tu@email.com"
                               />
                             </FormControl>
                             <FormMessage />
@@ -597,9 +546,8 @@ export default function RegisterPage() {
                       />
                     </div>
 
-                    {/* Password Row - Desktop: side by side, Mobile: stacked */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Password */}
+                    {/* Seventh Row: Contraseña y Confirmar Contraseña */}
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                       <FormField
                         control={form.control}
                         name="password"
@@ -629,8 +577,6 @@ export default function RegisterPage() {
                           </FormItem>
                         )}
                       />
-
-                      {/* Confirm Password */}
                       <FormField
                         control={form.control}
                         name="confirmPassword"
@@ -692,8 +638,8 @@ export default function RegisterPage() {
                       </div>
                     )}
 
-                    {/* Auto-fill and Next/Previous buttons */}
-                    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-4 sm:mt-6 md:mt-8">
+                    {/* Auto-fill and Next buttons */}
+                    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-3 sm:mt-4">
                       <Button
                         type="button"
                         onClick={handleAutoFill}
@@ -701,14 +647,6 @@ export default function RegisterPage() {
                         className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600 text-xs sm:text-sm px-3 sm:px-4"
                       >
                         Autocompletar
-                      </Button>
-                      <Button
-                        type="button"
-                        onClick={prevStep}
-                        variant="outline"
-                        className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600 text-xs sm:text-sm px-3 sm:px-4"
-                      >
-                        Anterior
                       </Button>
                       <Button
                         type="button"
@@ -721,9 +659,9 @@ export default function RegisterPage() {
                   </div>
                 )}
 
-                {step === 3 && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 text-center pb-2 border-b-2 border-gray-700">Selección de Plan</h2>
+                {step === 2 && (
+                  <div className="space-y-2 sm:space-y-3">
+                    <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 text-center pb-2 border-b-2 border-gray-700">Selección de Plan</h2>
 
                     {/* Plan Selection */}
                     <FormField
@@ -855,7 +793,7 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Botones de navegación */}
-                    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-4 sm:mt-6 md:mt-8">
+                    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-3 sm:mt-4">
                       <Button
                         type="button"
                         onClick={prevStep}
@@ -875,12 +813,12 @@ export default function RegisterPage() {
                   </div>
                 )}
 
-                {step === 4 && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 text-center pb-2 border-b-2 border-gray-700">Información del Negocio</h2>
+                {step === 3 && (
+                  <div className="space-y-2 sm:space-y-3">
+                    <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 text-center pb-2 border-b-2 border-gray-700">Información del Negocio</h2>
 
-                    {/* Business Name and Owner - Desktop: side by side, Mobile: stacked */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Business Name and Address - Same row, equal space */}
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                       <FormField
                         control={form.control}
                         name="businessName"
@@ -898,18 +836,17 @@ export default function RegisterPage() {
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={form.control}
-                        name="businessOwner"
+                        name="businessAddress"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-xs sm:text-sm font-medium text-gray-300">Responsable del Negocio</FormLabel>
+                            <FormLabel className="text-xs sm:text-sm font-medium text-gray-300">Dirección</FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
                                 className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-purple-500 text-xs sm:text-base"
-                                placeholder="Nombre del responsable"
+                                placeholder="Ingresa la dirección completa"
                               />
                             </FormControl>
                             <FormMessage />
@@ -917,25 +854,6 @@ export default function RegisterPage() {
                         )}
                       />
                     </div>
-
-                    {/* Business Address */}
-                    <FormField
-                      control={form.control}
-                      name="businessAddress"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs sm:text-sm font-medium text-gray-300">Dirección</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-purple-500"
-                              placeholder="Ingresa la dirección completa"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
                     {/* Business Phone, WhatsApp and Email - Mobile: Phone & WhatsApp side by side, Desktop: all 3 side by side */}
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
@@ -1072,7 +990,7 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Auto-fill and Next/Previous buttons */}
-                    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-4 sm:mt-6 md:mt-8">
+                    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-3 sm:mt-4">
                       <Button
                         type="button"
                         onClick={handleAutoFill}

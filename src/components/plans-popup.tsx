@@ -258,7 +258,7 @@ export function PlansPopup({ isOpen, onClose }: PlansPopupProps) {
           <ul className="space-y-0.5 text-[10px] md:text-xs text-purple-100">
             <li className="flex items-start gap-1.5">
               <ChevronRight className="w-3 h-3 text-yellow-300 flex-shrink-0 mt-0.5" />
-              <span>El Plan Premium incluye el primer mes completamente gratis (requiere tarjeta)</span>
+              <span>El Plan Premium incluye un mes gratis por ser cliente nuevo en Plan Premium</span>
             </li>
             <li className="flex items-start gap-1.5">
               <ChevronRight className="w-3 h-3 text-yellow-300 flex-shrink-0 mt-0.5" />
@@ -266,7 +266,7 @@ export function PlansPopup({ isOpen, onClose }: PlansPopupProps) {
             </li>
             <li className="flex items-start gap-1.5">
               <ChevronRight className="w-3 h-3 text-yellow-300 flex-shrink-0 mt-0.5" />
-              <span>No cobramos comisiones por tus ventas, solo la suscripción mensual</span>
+              <span>No cobramos comisiones por tus ventas.</span>
             </li>
           </ul>
         </div>
