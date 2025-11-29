@@ -1,10 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, LogOut, User } from 'lucide-react'
+import { Home, LogOut, User, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import { useNavigation } from '@/components/admin/NavigationContext'
 
 export function AdminHeader() {
   const router = useRouter()
@@ -12,6 +13,7 @@ export function AdminHeader() {
   const isActive = (path: string) => pathname === path
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [userName, setUserName] = useState('Usuario')
+  const { isMobileMenuOpen, toggleMobileMenu, isCollapsed, toggleCollapse } = useNavigation()
 
   // Get user name from localStorage or use default
   useEffect(() => {
@@ -26,15 +28,16 @@ export function AdminHeader() {
     setShowUserMenu(!showUserMenu)
   }
 
+
   // Handle logout
   const handleLogout = () => {
     // Clear authentication state
     localStorage.setItem('isAuthenticated', 'false')
     localStorage.removeItem('userName')
-    
+
     // Close menu
     setShowUserMenu(false)
-    
+
     // Redirect to login page
     router.push('/login')
   }
@@ -57,21 +60,50 @@ export function AdminHeader() {
     <header className="sticky top-0 z-50 w-full border-b shadow-2xl text-white" style={{ background: 'linear-gradient(90deg, #3b0764 0%, #4c1d95 20%, #6d28d9 40%, var(--yellow-accent) 100%)' }}>
       <div className="flex h-16 items-center justify-between px-6 w-full">
         {/* Left side - Home link */}
-        <Link 
-          href="/" 
-          className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-        >
-          {/* Desktop version - with text */}
-          <div className="hidden md:flex items-center space-x-2">
-            <Home className="h-5 w-5 text-yellow-300" />
-            <span className="font-medium text-white">Home</span>
-          </div>
-          
-          {/* Mobile version - only icon with circular border */}
-          <div className="md:hidden flex items-center justify-center w-8 h-8 rounded-full border border-white/80 transition-colors hover:border-white">
-            <Home className="h-4 w-4 text-yellow-300" />
-          </div>
-        </Link>
+        <div className="flex items-center space-x-2">
+          {/* Mobile menu toggle */}
+          <button
+            onClick={toggleMobileMenu}
+            className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg border border-white/80 transition-colors hover:border-white hover:bg-white/10"
+            aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-4 w-4 text-yellow-300" />
+            ) : (
+              <Menu className="h-4 w-4 text-yellow-300" />
+            )}
+          </button>
+
+          {/* Desktop collapse toggle */}
+          <button
+            onClick={toggleCollapse}
+            className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg border border-white/80 transition-colors hover:border-white hover:bg-white/10"
+            aria-label={isCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4 text-yellow-300" />
+            ) : (
+              <ChevronLeft className="h-4 w-4 text-yellow-300" />
+            )}
+          </button>
+
+          {/* Home link */}
+          <Link
+            href="/"
+            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+          >
+            {/* Desktop version - with text */}
+            <div className="hidden md:flex items-center space-x-2">
+              <Home className="h-5 w-5 text-yellow-300" />
+              <span className="font-medium text-white">Home</span>
+            </div>
+
+            {/* Mobile version - only icon with circular border */}
+            <div className="md:hidden flex items-center justify-center w-8 h-8 rounded-full border border-white/80 transition-colors hover:border-white">
+              <Home className="h-4 w-4 text-yellow-300" />
+            </div>
+          </Link>
+        </div>
 
         {/* Center - Title */}
         <h1 className="text-xl font-bold text-center text-white flex-1">
@@ -82,22 +114,22 @@ export function AdminHeader() {
         <div className="flex items-center space-x-2">
           <div className="relative user-menu-container">
             {/* Desktop version */}
-            <div 
+            <div
               onClick={toggleUserMenu}
               className="hidden md:flex items-center space-x-2 text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg transition-colors cursor-pointer"
             >
               <User className="h-5 w-5 text-yellow-300" />
               <span className="text-white">{userName}</span>
             </div>
-            
+
             {/* Mobile version - only icon with circular border */}
-            <div 
+            <div
               onClick={toggleUserMenu}
               className="md:hidden flex items-center justify-center w-8 h-8 rounded-full border border-white/80 transition-colors hover:border-white cursor-pointer"
             >
               <User className="h-4 w-4 text-yellow-300" />
             </div>
-            
+
             {/* Dropdown menu */}
             {showUserMenu && (
               <div className="absolute top-full right-0 mt-2 w-40 bg-gray-800 rounded-lg shadow-xl border border-gray-600 z-50">
@@ -106,7 +138,7 @@ export function AdminHeader() {
                     <User className="w-4 h-4 text-purple-400" />
                     <span>Mi Perfil</span>
                   </div>
-                  <div 
+                  <div
                     onClick={handleLogout}
                     className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
                   >

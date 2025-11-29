@@ -1,51 +1,48 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../[...nextauth]/route";
-import { executeQuerySingle } from "@/lib/database";
+import { NextRequest, NextResponse } from 'next/server';
+import { executeQuerySingle } from '@/lib/database';
 
+/**
+ * API endpoint to check the status of OAuth providers
+ * Returns availability status for each OAuth provider based on recent success rates
+ */
 export async function GET(request: NextRequest) {
+  try {
+    // Check if oauth_provider_status table exists and has data
+    let providerStatus;
+    
     try {
-        const session = await getServerSession(authOptions);
-
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: "No autorizado" },
-                { status: 401 }
-            );
-        }
-
-        const userId = session.user.id;
-
-        // Check which OAuth providers have tokens stored
-        const userTokens = await executeQuerySingle<any>(
-            'SELECT access_token, refresh_token FROM usuarios WHERE id = ?',
-            [userId]
-        );
-
-        const connectedProviders: string[] = [];
-
-        // In a real implementation, you might want to validate tokens
-        // For now, we just check if tokens exist
-        if (userTokens?.access_token) {
-            // This is a simplified check - in production you'd validate with providers
-            // For Google, you could call https://www.googleapis.com/oauth2/v1/tokeninfo
-            // For Facebook, you could call https://graph.facebook.com/me
-
-            // For this implementation, we'll assume if tokens exist, providers are connected
-            // In practice, you'd want to validate token validity
-            connectedProviders.push('google'); // Simplified - you'd check which provider the token belongs to
-            connectedProviders.push('facebook'); // Simplified
-        }
-
-        return NextResponse.json({
-            connectedProviders,
-        });
-
+      // Try to get status from database
+      const googleStatus = await executeQuerySingle<{is_available: boolean}>(
+        'SELECT is_available FROM oauth_provider_status WHERE provider = ?',
+        ['google']
+      );
+      
+      const facebookStatus = await executeQuerySingle<{is_available: boolean}>(
+        'SELECT is_available FROM oauth_provider_status WHERE provider = ?',
+        ['facebook']
+      );
+      
+      providerStatus = {
+        google: googleStatus?.is_available ?? true, // Default to true if no record
+        facebook: facebookStatus?.is_available ?? true, // Default to true if no record
+      };
     } catch (error) {
-        console.error('Error checking provider status:', error);
-        return NextResponse.json(
-            { error: "Error interno del servidor" },
-            { status: 500 }
-        );
+      // Table doesn't exist or other database error, default to available
+      console.warn('OAuth provider status table not found, defaulting to available:', error);
+      providerStatus = {
+        google: true,
+        facebook: true,
+      };
     }
+
+    return NextResponse.json(providerStatus);
+  } catch (error) {
+    console.error('Error checking OAuth provider status:', error);
+    
+    // Default to available on error to avoid blocking users
+    return NextResponse.json({
+      google: true,
+      facebook: true,
+    });
+  }
 }

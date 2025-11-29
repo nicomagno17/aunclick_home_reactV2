@@ -331,8 +331,12 @@ export function Header({
                 </div>
               </div>
 
-              {/* Enlaces al lado derecho: Panel de administrador o Registrarse/Ingresar */}
+              {/* Enlaces al lado derecho: Panel de administrador, Registrarse/Ingresar */}
               <div className="flex items-center space-x-4">
+                <Link href="/admin" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
+                  <User className="w-4 h-4" />
+                  <span>Panel de administrador</span>
+                </Link>
                 {status === 'loading' ? (
                   <div className="flex items-center space-x-2 text-white">
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -340,14 +344,6 @@ export function Header({
                   </div>
                 ) : status === 'authenticated' ? (
                   <>
-                    {/* Show admin panel only for specific roles */}
-                    {session?.user?.rol && ['admin', 'moderador', 'propietario_negocio'].includes(session.user.rol) && (
-                      <Link href="/admin" className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors cursor-pointer text-sm font-medium">
-                        <User className="w-4 h-4" />
-                        <span>Panel de administrador</span>
-                      </Link>
-                    )}
-
                     {/* Show user name/avatar */}
                     <div className="flex items-center space-x-2 text-white/90 text-sm">
                       {session?.user?.avatar_url ? (
@@ -494,17 +490,14 @@ export function Header({
                       </div>
                     ) : status === 'authenticated' ? (
                       <>
-                        {/* Show admin panel only for specific roles */}
-                        {session?.user?.rol && ['admin', 'moderador', 'propietario_negocio'].includes(session.user.rol) && (
-                          <Link
-                            href="/admin"
-                            className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
-                            onClick={closeAllModals}
-                          >
-                            <User className="w-3 h-3" />
-                            <span>Panel de administrador</span>
-                          </Link>
-                        )}
+                        <Link
+                          href="/admin"
+                          className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
+                          onClick={closeAllModals}
+                        >
+                          <User className="w-3 h-3" />
+                          <span>Panel de administrador</span>
+                        </Link>
 
                         {/* Show user name */}
                         <div className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700">
@@ -532,6 +525,14 @@ export function Header({
                       </>
                     ) : (
                       <>
+                        <Link
+                          href="/admin"
+                          className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
+                          onClick={closeAllModals}
+                        >
+                          <User className="w-3 h-3" />
+                          <span>Panel de administrador</span>
+                        </Link>
                         <Link
                           href="/register"
                           className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"

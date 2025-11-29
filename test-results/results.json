@@ -1,0 +1,562 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\playwright.config.ts",
+    "rootDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 6
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "C:/Users/pc/OneDrive - kayze/Laboral/villarrica_click/aunclick_home_reactV2/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 6,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3001",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "login-credentials.spec.ts",
+      "file": "login-credentials.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Login con Credenciales",
+          "file": "login-credentials.spec.ts",
+          "line": 14,
+          "column": 6,
+          "specs": [
+            {
+              "title": "debe mostrar el formulario de login correctamente",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12393,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-21T01:55:21.521Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b3cfa9714e892f79095a-ac79e634312f0b347b1f",
+              "file": "login-credentials.spec.ts",
+              "line": 26,
+              "column": 7
+            },
+            {
+              "title": "debe permitir login exitoso con credenciales correctas",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 18109,
+                      "error": {
+                        "message": "TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"http://localhost:3001/\" until \"load\"\n============================================================",
+                        "stack": "TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"http://localhost:3001/\" until \"load\"\n============================================================\n    at C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts:51:16",
+                        "location": {
+                          "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                          "column": 16,
+                          "line": 51
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Esperar a que la navegación se complete\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 51 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL(\u001b[32m`${BASE_URL}/`\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 52 |\u001b[39m     \n \u001b[90m 53 |\u001b[39m     \u001b[90m// Verificar que estamos en la página principal\u001b[39m\n \u001b[90m 54 |\u001b[39m     expect(page\u001b[33m.\u001b[39murl())\u001b[33m.\u001b[39mtoBe(\u001b[32m`${BASE_URL}/`\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                            "column": 16,
+                            "line": 51
+                          },
+                          "message": "TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"http://localhost:3001/\" until \"load\"\n============================================================\n\n\u001b[0m \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Esperar a que la navegación se complete\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 51 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL(\u001b[32m`${BASE_URL}/`\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 52 |\u001b[39m     \n \u001b[90m 53 |\u001b[39m     \u001b[90m// Verificar que estamos en la página principal\u001b[39m\n \u001b[90m 54 |\u001b[39m     expect(page\u001b[33m.\u001b[39murl())\u001b[33m.\u001b[39mtoBe(\u001b[32m`${BASE_URL}/`\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts:51:16\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-21T01:55:21.514Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-41772--con-credenciales-correctas-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-41772--con-credenciales-correctas-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-41772--con-credenciales-correctas-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                        "column": 16,
+                        "line": 51
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "b3cfa9714e892f79095a-f102533af7b3ebbfc0b5",
+              "file": "login-credentials.spec.ts",
+              "line": 42,
+              "column": 7
+            },
+            {
+              "title": "debe mostrar error con credenciales incorrectas - email inválido",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 12315,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[role=\"alert\"], .toast, [data-sonner-toast]')\nExpected pattern: \u001b[32m/credenciales incorrectas|email o contraseña/i\u001b[39m\nError: strict mode violation: locator('[role=\"alert\"], .toast, [data-sonner-toast]') resolved to 2 elements:\n    1) <p role=\"alert\" aria-live=\"polite\" id=\"password-error\" class=\"text-red-500 text-sm mt-1\">La contraseña debe contener una mayúscula, un núm…</p> aka getByText('La contraseña debe contener')\n    2) <div role=\"alert\" aria-live=\"assertive\" id=\"__next-route-announcer__\"></div> aka locator('[id=\"__next-route-announcer__\"]')\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[role=\"alert\"], .toast, [data-sonner-toast]')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[role=\"alert\"], .toast, [data-sonner-toast]')\nExpected pattern: \u001b[32m/credenciales incorrectas|email o contraseña/i\u001b[39m\nError: strict mode violation: locator('[role=\"alert\"], .toast, [data-sonner-toast]') resolved to 2 elements:\n    1) <p role=\"alert\" aria-live=\"polite\" id=\"password-error\" class=\"text-red-500 text-sm mt-1\">La contraseña debe contener una mayúscula, un núm…</p> aka getByText('La contraseña debe contener')\n    2) <div role=\"alert\" aria-live=\"assertive\" id=\"__next-route-announcer__\"></div> aka locator('[id=\"__next-route-announcer__\"]')\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[role=\"alert\"], .toast, [data-sonner-toast]')\u001b[22m\n\n    at C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts:75:32",
+                        "location": {
+                          "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                          "column": 32,
+                          "line": 75
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 73 |\u001b[39m     \u001b[90m// Verificar que el mensaje de error contiene texto relevante\u001b[39m\n \u001b[90m 74 |\u001b[39m     \u001b[36mconst\u001b[39m errorMessage \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'[role=\"alert\"], .toast, [data-sonner-toast]'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 75 |\u001b[39m     \u001b[36mawait\u001b[39m expect(errorMessage)\u001b[33m.\u001b[39mtoContainText(\u001b[35m/credenciales incorrectas|email o contraseña/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 76 |\u001b[39m     \n \u001b[90m 77 |\u001b[39m     \u001b[90m// Verificar que NO fuimos redirigidos (seguimos en login)\u001b[39m\n \u001b[90m 78 |\u001b[39m     expect(page\u001b[33m.\u001b[39murl())\u001b[33m.\u001b[39mtoContain(\u001b[32m'/login-modern'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                            "column": 32,
+                            "line": 75
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[role=\"alert\"], .toast, [data-sonner-toast]')\nExpected pattern: \u001b[32m/credenciales incorrectas|email o contraseña/i\u001b[39m\nError: strict mode violation: locator('[role=\"alert\"], .toast, [data-sonner-toast]') resolved to 2 elements:\n    1) <p role=\"alert\" aria-live=\"polite\" id=\"password-error\" class=\"text-red-500 text-sm mt-1\">La contraseña debe contener una mayúscula, un núm…</p> aka getByText('La contraseña debe contener')\n    2) <div role=\"alert\" aria-live=\"assertive\" id=\"__next-route-announcer__\"></div> aka locator('[id=\"__next-route-announcer__\"]')\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[role=\"alert\"], .toast, [data-sonner-toast]')\u001b[22m\n\n\n\u001b[0m \u001b[90m 73 |\u001b[39m     \u001b[90m// Verificar que el mensaje de error contiene texto relevante\u001b[39m\n \u001b[90m 74 |\u001b[39m     \u001b[36mconst\u001b[39m errorMessage \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'[role=\"alert\"], .toast, [data-sonner-toast]'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 75 |\u001b[39m     \u001b[36mawait\u001b[39m expect(errorMessage)\u001b[33m.\u001b[39mtoContainText(\u001b[35m/credenciales incorrectas|email o contraseña/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 76 |\u001b[39m     \n \u001b[90m 77 |\u001b[39m     \u001b[90m// Verificar que NO fuimos redirigidos (seguimos en login)\u001b[39m\n \u001b[90m 78 |\u001b[39m     expect(page\u001b[33m.\u001b[39murl())\u001b[33m.\u001b[39mtoContain(\u001b[32m'/login-modern'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts:75:32\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-21T01:55:21.532Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-7d590-ncorrectas---email-inválido-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-7d590-ncorrectas---email-inválido-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-7d590-ncorrectas---email-inválido-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                        "column": 32,
+                        "line": 75
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "b3cfa9714e892f79095a-654f3e331d42a583c6f5",
+              "file": "login-credentials.spec.ts",
+              "line": 61,
+              "column": 7
+            },
+            {
+              "title": "debe mostrar error con credenciales incorrectas - password inválido",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 13568,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[role=\"alert\"], .toast, [data-sonner-toast]')\nExpected pattern: \u001b[32m/credenciales incorrectas|email o contraseña/i\u001b[39m\nReceived string:  \u001b[31m\"\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[role=\"alert\"], .toast, [data-sonner-toast]')\u001b[22m\n\u001b[2m    8 × locator resolved to <div role=\"alert\" aria-live=\"assertive\" id=\"__next-route-announcer__\"></div>\u001b[22m\n\u001b[2m      - unexpected value \"\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[role=\"alert\"], .toast, [data-sonner-toast]')\nExpected pattern: \u001b[32m/credenciales incorrectas|email o contraseña/i\u001b[39m\nReceived string:  \u001b[31m\"\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[role=\"alert\"], .toast, [data-sonner-toast]')\u001b[22m\n\u001b[2m    8 × locator resolved to <div role=\"alert\" aria-live=\"assertive\" id=\"__next-route-announcer__\"></div>\u001b[22m\n\u001b[2m      - unexpected value \"\"\u001b[22m\n\n    at C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts:94:32",
+                        "location": {
+                          "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                          "column": 32,
+                          "line": 94
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 92 |\u001b[39m     \u001b[90m// Verificar que el mensaje de error contiene texto relevante\u001b[39m\n \u001b[90m 93 |\u001b[39m     \u001b[36mconst\u001b[39m errorMessage \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'[role=\"alert\"], .toast, [data-sonner-toast]'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 94 |\u001b[39m     \u001b[36mawait\u001b[39m expect(errorMessage)\u001b[33m.\u001b[39mtoContainText(\u001b[35m/credenciales incorrectas|email o contraseña/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 95 |\u001b[39m     \n \u001b[90m 96 |\u001b[39m     \u001b[90m// Verificar que NO fuimos redirigidos (seguimos en login)\u001b[39m\n \u001b[90m 97 |\u001b[39m     expect(page\u001b[33m.\u001b[39murl())\u001b[33m.\u001b[39mtoContain(\u001b[32m'/login-modern'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                            "column": 32,
+                            "line": 94
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[role=\"alert\"], .toast, [data-sonner-toast]')\nExpected pattern: \u001b[32m/credenciales incorrectas|email o contraseña/i\u001b[39m\nReceived string:  \u001b[31m\"\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[role=\"alert\"], .toast, [data-sonner-toast]')\u001b[22m\n\u001b[2m    8 × locator resolved to <div role=\"alert\" aria-live=\"assertive\" id=\"__next-route-announcer__\"></div>\u001b[22m\n\u001b[2m      - unexpected value \"\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 92 |\u001b[39m     \u001b[90m// Verificar que el mensaje de error contiene texto relevante\u001b[39m\n \u001b[90m 93 |\u001b[39m     \u001b[36mconst\u001b[39m errorMessage \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'[role=\"alert\"], .toast, [data-sonner-toast]'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 94 |\u001b[39m     \u001b[36mawait\u001b[39m expect(errorMessage)\u001b[33m.\u001b[39mtoContainText(\u001b[35m/credenciales incorrectas|email o contraseña/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 95 |\u001b[39m     \n \u001b[90m 96 |\u001b[39m     \u001b[90m// Verificar que NO fuimos redirigidos (seguimos en login)\u001b[39m\n \u001b[90m 97 |\u001b[39m     expect(page\u001b[33m.\u001b[39murl())\u001b[33m.\u001b[39mtoContain(\u001b[32m'/login-modern'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts:94:32\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-21T01:55:21.550Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-65669-rrectas---password-inválido-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-65669-rrectas---password-inválido-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-65669-rrectas---password-inválido-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                        "column": 32,
+                        "line": 94
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "b3cfa9714e892f79095a-8b910160941e34330fba",
+              "file": "login-credentials.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "debe validar formato de email en tiempo real",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 10985,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=/formato.*email.*inválido/i, text=/email.*válido/i').first()\nExpected: visible\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=/formato.*email.*inválido/i, text=/email.*válido/i').first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=/formato.*email.*inválido/i, text=/email.*válido/i').first()\nExpected: visible\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=/formato.*email.*inválido/i, text=/email.*válido/i').first()\u001b[22m\n\n    at C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts:110:45",
+                        "location": {
+                          "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                          "column": 45,
+                          "line": 110
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 108 |\u001b[39m     \u001b[90m// Ajusta el selector según tu implementación\u001b[39m\n \u001b[90m 109 |\u001b[39m     \u001b[36mconst\u001b[39m validationMessage \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=/formato.*email.*inválido/i, text=/email.*válido/i'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 110 |\u001b[39m     \u001b[36mawait\u001b[39m expect(validationMessage\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m2000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 111 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 112 |\u001b[39m\n \u001b[90m 113 |\u001b[39m   test(\u001b[32m'debe mostrar/ocultar contraseña al hacer clic en el icono'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                            "column": 45,
+                            "line": 110
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=/formato.*email.*inválido/i, text=/email.*válido/i').first()\nExpected: visible\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=/formato.*email.*inválido/i, text=/email.*válido/i').first()\u001b[22m\n\n\n\u001b[0m \u001b[90m 108 |\u001b[39m     \u001b[90m// Ajusta el selector según tu implementación\u001b[39m\n \u001b[90m 109 |\u001b[39m     \u001b[36mconst\u001b[39m validationMessage \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=/formato.*email.*inválido/i, text=/email.*válido/i'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 110 |\u001b[39m     \u001b[36mawait\u001b[39m expect(validationMessage\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m2000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 111 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 112 |\u001b[39m\n \u001b[90m 113 |\u001b[39m   test(\u001b[32m'debe mostrar/ocultar contraseña al hacer clic en el icono'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m\n\u001b[2m    at C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts:110:45\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-21T01:55:21.498Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-a6b8c-ato-de-email-en-tiempo-real-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-a6b8c-ato-de-email-en-tiempo-real-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\test-results\\login-credentials-Login-co-a6b8c-ato-de-email-en-tiempo-real-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\pc\\OneDrive - kayze\\Laboral\\villarrica_click\\aunclick_home_reactV2\\tests\\e2e\\login-credentials.spec.ts",
+                        "column": 45,
+                        "line": 110
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "b3cfa9714e892f79095a-246acd7d2e4c51f23aac",
+              "file": "login-credentials.spec.ts",
+              "line": 100,
+              "column": 7
+            },
+            {
+              "title": "debe mostrar/ocultar contraseña al hacer clic en el icono",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 11726,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-21T01:55:21.554Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b3cfa9714e892f79095a-18c933ca5b5a1e2cf698",
+              "file": "login-credentials.spec.ts",
+              "line": 113,
+              "column": 7
+            },
+            {
+              "title": "debe deshabilitar el botón de submit mientras se procesa el login",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 5280,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Login fue muy rápido para verificar el estado deshabilitado\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-21T01:55:34.166Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b3cfa9714e892f79095a-2f651f862941a0534f75",
+              "file": "login-credentials.spec.ts",
+              "line": 137,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-11-21T01:55:19.265Z",
+    "duration": 21265.317,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}
