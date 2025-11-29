@@ -12,6 +12,10 @@
         "MYSQL_PASSWORD": "N1c0l7as17",
         "MYSQL_DATABASE": "operaciones_tqw"
       }
+    },
+    "serena": {
+      "command": "/ruta/a/uv",
+      "args": ["run", "--directory", "/ruta/a/serena", "serena", "start-mcp-server", "--context", "ide-assistant", "--project", "/ruta/a/tu/proyecto"]
     }
   }
 }

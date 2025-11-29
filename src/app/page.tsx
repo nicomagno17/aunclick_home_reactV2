@@ -1,6 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+
+// Force dynamic rendering for this client component
+export const dynamic = 'force-dynamic'
 import { Header } from '@/components/header'
 import { HorizontalCarousel } from '@/components/horizontal-carousel'
 import { SkeletonCarousel } from '@/components/skeleton-carousel'

@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt'
 import { executeQuerySingle, insertAndGetId } from '@/lib/database'
 import { JWT } from 'next-auth/jwt'
 import { DefaultSession } from 'next-auth'
-import { checkLoginPerAccountRateLimit } from '@/lib/rate-limit'
+import { checkLoginRateLimit, recordLoginFailure, recordLoginSuccess } from '@/lib/rate-limiting'
 import {
   isMFAEnabled,
   verifyMFASessionToken,
@@ -16,6 +16,20 @@ import {
 } from '@/lib/mfa'
 import { AuthErrorException, AuthErrorCode } from '@/lib/auth-errors'
 import crypto from 'crypto'
+import {
+  encryptOAuthToken,
+  decryptOAuthToken,
+  generateOAuthState,
+  validateOAuthState,
+  revokeOAuthToken,
+  validateOAuthScopes,
+  logOAuthEvent,
+  recordOAuthLoginAttempt,
+  updateOAuthProviderStatus,
+  getOAuthEncryptionStatus,
+  OAuthProvider
+} from '@/lib/oauth-security'
+import { checkOAuthRateLimit } from '@/lib/rate-limiting'
 
 // Verify NEXTAUTH_SECRET strength on startup
 if (!process.env.NEXTAUTH_SECRET) {
@@ -32,79 +46,139 @@ if (secretEntropy.match(/(.)\1{10,}/)) {
   console.warn('Warning: NEXTAUTH_SECRET appears to have low entropy. Consider using a more random secret.')
 }
 
-/**
- * Refresh OAuth tokens for Google and Facebook
- */
-async function refreshOAuthToken(provider: string, refreshToken: string) {
-  try {
-    if (provider === 'google') {
-      const response = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          client_id: process.env.GOOGLE_CLIENT_ID!,
-          client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-          refresh_token: refreshToken,
-          grant_type: 'refresh_token',
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to refresh Google token')
-      }
-
-      const data = await response.json()
-      return {
-        access_token: data.access_token,
-        refresh_token: data.refresh_token, // Google may return a new refresh token
-        expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600),
-      }
-    } else if (provider === 'facebook') {
-      const response = await fetch('https://graph.facebook.com/oauth/access_token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          client_id: process.env.FACEBOOK_CLIENT_ID!,
-          client_secret: process.env.FACEBOOK_CLIENT_SECRET!,
-          refresh_token: refreshToken,
-          grant_type: 'refresh_token',
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to refresh Facebook token')
-      }
-
-      const data = await response.json()
-      return {
-        access_token: data.access_token,
-        refresh_token: data.refresh_token, // Facebook may return a new refresh token
-        expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600),
-      }
-    }
-  } catch (error) {
-    console.error(`Error refreshing ${provider} token:`, error)
-    return null
+// Verify OAuth encryption key on startup
+const oauthEncryptionStatus = getOAuthEncryptionStatus()
+if (!oauthEncryptionStatus.valid) {
+  console.error('OAuth encryption key error:', oauthEncryptionStatus.error)
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(`OAuth encryption key error: ${oauthEncryptionStatus.error}`)
+  } else {
+    console.warn('OAuth encryption will not work properly in development without a valid key')
   }
 }
 
 /**
- * Update OAuth tokens in database
+ * Refresh OAuth tokens for Google and Facebook with retry logic
  */
-async function updateOAuthTokens(userId: number, tokens: any) {
+async function refreshOAuthToken(provider: OAuthProvider, refreshToken: string): Promise<any> {
+  const startTime = Date.now();
+  
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      let response: Response;
+      let tokenUrl: string;
+      let body: URLSearchParams;
+      
+      if (provider === 'google') {
+        tokenUrl = 'https://oauth2.googleapis.com/token';
+        body = new URLSearchParams({
+          client_id: process.env.GOOGLE_CLIENT_ID!,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+          refresh_token: refreshToken,
+          grant_type: 'refresh_token',
+        });
+      } else if (provider === 'facebook') {
+        tokenUrl = 'https://graph.facebook.com/oauth/access_token';
+        body = new URLSearchParams({
+          client_id: process.env.FACEBOOK_CLIENT_ID!,
+          client_secret: process.env.FACEBOOK_CLIENT_SECRET!,
+          refresh_token: refreshToken,
+          grant_type: 'refresh_token',
+        });
+      } else {
+        throw new Error(`Unsupported OAuth provider: ${provider}`);
+      }
+
+      response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const responseTime = Date.now() - startTime;
+      
+      // Update provider status with success
+      await updateOAuthProviderStatus(provider, true, responseTime);
+      
+      return {
+        access_token: data.access_token,
+        refresh_token: data.refresh_token || refreshToken,
+        expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600),
+      };
+      
+    } catch (error) {
+      console.error(`OAuth refresh attempt ${attempt + 1} failed for ${provider}:`, error);
+      
+      // If this is the last attempt, update provider status with failure
+      if (attempt === 2) {
+        const responseTime = Date.now() - startTime;
+        await updateOAuthProviderStatus(provider, false, responseTime, error instanceof Error ? error.message : 'Unknown error');
+        return null;
+      }
+      
+      // Wait before retry (exponential backoff)
+      if (attempt < 2) {
+        const backoffMs = [1000, 2000, 4000][attempt];
+        await new Promise(resolve => setTimeout(resolve, backoffMs));
+      }
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Update OAuth tokens in database with encryption
+ */
+async function updateOAuthTokens(userId: number, tokens: any, provider: OAuthProvider, providerUserId: string): Promise<void> {
   try {
-    // Store tokens securely in database
-    // In a real implementation, you would encrypt these tokens
+    // Encrypt tokens before storing
+    const encryptedAccessToken = encryptOAuthToken(tokens.access_token);
+    const encryptedRefreshToken = tokens.refresh_token ? encryptOAuthToken(tokens.refresh_token) : null;
+    
+    // Store encrypted tokens in database
     await executeQuerySingle(
-      'UPDATE usuarios SET access_token = ?, refresh_token = ?, token_expires_at = ? WHERE id = ?',
-      [tokens.access_token, tokens.refresh_token, new Date(tokens.expires_at * 1000), userId]
-    )
+      'UPDATE usuarios SET access_token = ?, refresh_token = ?, token_expires_at = ?, oauth_provider = ? WHERE id = ?',
+      [
+        JSON.stringify(encryptedAccessToken),
+        encryptedRefreshToken ? JSON.stringify(encryptedRefreshToken) : null,
+        new Date(tokens.expires_at * 1000),
+        provider,
+        userId
+      ]
+    );
+    
+    // Also store in oauth_connections table for better management
+    await insertAndGetId(`
+      INSERT INTO oauth_connections (
+        user_id, provider, provider_user_id, access_token_encrypted,
+        refresh_token_encrypted, token_expires_at, is_active, last_used
+      ) VALUES (?, ?, ?, ?, ?, ?, TRUE, NOW())
+      ON DUPLICATE KEY UPDATE
+        access_token_encrypted = VALUES(access_token_encrypted),
+        refresh_token_encrypted = VALUES(refresh_token_encrypted),
+        token_expires_at = VALUES(token_expires_at),
+        is_active = TRUE,
+        last_used = NOW(),
+        updated_at = NOW()
+    `, [
+      userId,
+      provider,
+      providerUserId, // Use the actual provider user ID
+      JSON.stringify(encryptedAccessToken),
+      encryptedRefreshToken ? JSON.stringify(encryptedRefreshToken) : null,
+      new Date(tokens.expires_at * 1000)
+    ]);
   } catch (error) {
-    console.error('Error updating OAuth tokens:', error)
+    console.error('Error updating OAuth tokens:', error);
+    throw error;
   }
 }
 
@@ -147,7 +221,6 @@ declare module 'next-auth' {
       trustedDevice?: boolean
     }
   }
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface User extends Usuario {
     rememberMe?: boolean
     mfaRequired?: boolean
@@ -197,6 +270,9 @@ export const authOptions: NextAuthOptions = {
     FacebookProvider({
       clientId: process.env.FACEBOOK_CLIENT_ID!,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+      authorization: {
+        params: {}
+      }
     }),
 
     // Credentials Provider (email/password)
@@ -214,9 +290,18 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          // Check per-email rate limit
-          const emailRateLimit = await checkLoginPerAccountRateLimit(credentials.email)
-          if (!emailRateLimit.success) {
+          // Check rate limit for login attempts
+          const rateLimitResult = await checkLoginRateLimit(credentials.email, {
+            userId: undefined, // No tenemos userId aún
+            ip: undefined, // Se obtiene del middleware
+          });
+
+          if (!rateLimitResult.success) {
+            // Registrar evento de seguridad
+            await recordLoginFailure(credentials.email, {
+              reason: 'rate_limit_exceeded',
+              ip: undefined,
+            });
             throw new AuthErrorException(AuthErrorCode.ACCOUNT_RATE_LIMIT_EXCEEDED);
           }
 
@@ -231,6 +316,24 @@ export const authOptions: NextAuthOptions = {
           `, [credentials.email])
 
           if (!usuario) {
+            // Registrar intento de login con email no existente en Redis
+            await recordLoginFailure(credentials.email, {
+              reason: 'user_not_found',
+              ip: undefined,
+            });
+
+            // Registrar en la tabla login_attempts
+            try {
+              await executeQuerySingle(`
+                INSERT INTO login_attempts (
+                  user_id, email, login_method, success, ip_address, user_agent,
+                  failure_reason, created_at
+                ) VALUES (NULL, ?, 'credentials', FALSE, NULL, NULL, 'user_not_found', NOW())
+              `, [credentials.email]);
+            } catch (dbError) {
+              console.error('Error registrando intento de login con usuario no encontrado:', dbError);
+            }
+
             return null // Email no encontrado
           }
 
@@ -254,6 +357,25 @@ export const authOptions: NextAuthOptions = {
           // Validar contraseña
           const passwordValid = await bcrypt.compare(credentials.password, usuario.password_hash)
           if (!passwordValid) {
+            // Registrar intento de login con contraseña incorrecta en Redis
+            await recordLoginFailure(credentials.email, {
+              reason: 'invalid_password',
+              userId: usuario.id,
+              ip: undefined,
+            });
+
+            // Registrar en la tabla login_attempts
+            try {
+              await executeQuerySingle(`
+                INSERT INTO login_attempts (
+                  user_id, email, login_method, success, ip_address, user_agent,
+                  failure_reason, created_at
+                ) VALUES (?, ?, 'credentials', FALSE, NULL, NULL, 'invalid_password', NOW())
+              `, [usuario.id, credentials.email]);
+            } catch (dbError) {
+              console.error('Error registrando intento de login fallido:', dbError);
+            }
+
             return null // Contraseña incorrecta
           }
 
@@ -295,6 +417,24 @@ export const authOptions: NextAuthOptions = {
             'UPDATE usuarios SET ultimo_acceso = NOW() WHERE id = ?',
             [usuario.id]
           )
+
+          // Registrar login exitoso en Redis
+          await recordLoginSuccess(credentials.email, {
+            userId: usuario.id,
+            method: 'credentials',
+            ip: undefined,
+          });
+
+          // Registrar en la tabla login_attempts
+          try {
+            await executeQuerySingle(`
+              INSERT INTO login_attempts (
+                user_id, email, login_method, success, ip_address, user_agent, created_at
+              ) VALUES (?, ?, 'credentials', TRUE, NULL, NULL, NOW())
+            `, [usuario.id, credentials.email]);
+          } catch (dbError) {
+            console.error('Error registrando intento de login exitoso:', dbError);
+          }
 
           // Retornar usuario completo (User type includes password_hash)
           return {
@@ -401,19 +541,45 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      // Handle OAuth token refresh
-      if (account?.provider === 'google' || account?.provider === 'facebook') {
-        // Check if token is near expiry (within 5 minutes)
-        if (token.expiresAt && Date.now() >= (token.expiresAt * 1000 - 5 * 60 * 1000)) {
+      // Handle OAuth token refresh - moved outside account dependency
+      if (token.refreshToken && token.expiresAt) {
+        const marginMinutes = parseInt(process.env.OAUTH_REFRESH_MARGIN_MINUTES || '5');
+        
+        // Check if token is near expiry
+        if (Date.now() >= (token.expiresAt * 1000 - marginMinutes * 60 * 1000)) {
           try {
-            const refreshedTokens = await refreshOAuthToken(account.provider, token.refreshToken as string)
+            // Determine provider from token or account
+            const provider = (account?.provider as OAuthProvider) || 
+                           (token as any).provider || 
+                           'google'; // Default fallback
+            
+            const refreshedTokens = await refreshOAuthToken(provider, token.refreshToken);
             if (refreshedTokens) {
-              token.accessToken = refreshedTokens.access_token
-              token.refreshToken = refreshedTokens.refresh_token || token.refreshToken
-              token.expiresAt = refreshedTokens.expires_at || Math.floor(Date.now() / 1000) + 3600
+              token.accessToken = refreshedTokens.access_token;
+              token.refreshToken = refreshedTokens.refresh_token || token.refreshToken;
+              token.expiresAt = refreshedTokens.expires_at || Math.floor(Date.now() / 1000) + 3600;
+              
+              // Store provider in token for future refreshes
+              (token as any).provider = provider;
 
-              // Update stored tokens in database if needed
-              await updateOAuthTokens(user.id, refreshedTokens)
+              // Get provider user ID from database for this user and provider
+              const oauthConnection = await executeQuerySingle<{ provider_user_id: string }>(
+                'SELECT provider_user_id FROM oauth_connections WHERE user_id = ? AND provider = ? AND is_active = TRUE',
+                [token.id, provider]
+              );
+              
+              const providerUserId = oauthConnection?.provider_user_id || '';
+
+              // Update stored tokens in database
+              await updateOAuthTokens(token.id, refreshedTokens, provider, providerUserId)
+            } else {
+              // Refresh failed completely, try to revoke the token
+              await revokeOAuthToken(provider, token.refreshToken);
+              
+              // Log the revocation
+              await logOAuthEvent(token.id, 'oauth_unlinked', provider, {
+                reason: 'token_refresh_failed'
+              });
             }
           } catch (error) {
             console.error('Error refreshing OAuth token:', error)
@@ -421,6 +587,11 @@ export const authOptions: NextAuthOptions = {
             // We don't throw here to avoid breaking the session
           }
         }
+      }
+      
+      // Store provider in token when account is available (during initial sign-in)
+      if (account && (account.provider === 'google' || account.provider === 'facebook')) {
+        (token as any).provider = account.provider;
       }
 
       return token
@@ -454,13 +625,62 @@ export const authOptions: NextAuthOptions = {
       return session
     },
 
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile, credentials }) {
       // Manejar inicio de sesión con OAuth
       if (account?.provider === 'google' || account?.provider === 'facebook') {
+        const provider = account.provider as OAuthProvider;
+        const startTime = Date.now();
+        
         try {
+        // Note: OAuth state validation would ideally happen in the callback
+        // For now, we'll skip state validation here as NextAuth handles it internally
+        // In a production environment, you might want to implement custom state handling
+          
+          // Check OAuth-specific rate limit
+          const rateLimitResult = await checkOAuthRateLimit(user.email || '', {
+            ip: undefined, // Will be set by middleware
+            userId: undefined, // Not available yet
+            provider: provider
+          });
+
+          if (!rateLimitResult.success) {
+            // Record OAuth login attempt with rate limit failure
+            await recordOAuthLoginAttempt(
+              null,
+              user.email || '',
+              provider,
+              false,
+              undefined,
+              undefined,
+              'rate_limit_exceeded'
+            );
+            return false; // Block login due to rate limit
+          }
+          
+          // Validate OAuth scopes
+          if (profile && account.scope) {
+            const receivedScopes = account.scope.split(' ');
+            if (!validateOAuthScopes(receivedScopes, provider)) {
+              console.error('Invalid OAuth scopes for', provider);
+              await recordOAuthLoginAttempt(
+                null,
+                user.email || '',
+                provider,
+                false,
+                undefined,
+                undefined,
+                'invalid_scopes'
+              );
+              return false;
+            }
+          }
+          
+          // Extract provider user ID from profile
+          const providerUserId = profile?.sub || (profile as any)?.id || '';
+          
           // Verificar si el usuario ya existe en la base de datos
           const existingUser = await executeQuerySingle<Usuario>(
-            'SELECT id, uuid FROM usuarios WHERE email = ? AND deleted_at IS NULL',
+            'SELECT id, uuid, email FROM usuarios WHERE email = ? AND deleted_at IS NULL',
             [user.email]
           )
 
@@ -469,13 +689,18 @@ export const authOptions: NextAuthOptions = {
             const insertId = await insertAndGetId(`
               INSERT INTO usuarios (
                 email, nombre, apellidos, avatar_url, rol, estado,
-                email_verificado_at, created_at, updated_at
-              ) VALUES (?, ?, ?, ?, 'usuario', 'activo', NOW(), NOW(), NOW())
+                email_verificado_at, oauth_provider, oauth_provider_id,
+                ultimo_login_ip, ultimo_login_user_agent, created_at, updated_at
+              ) VALUES (?, ?, ?, ?, 'usuario', 'activo', NOW(), ?, ?, INET6_ATON(?), ?, NOW(), NOW())
             `, [
               user.email || '',
               user.name?.split(' ')[0] || '',
               user.name?.split(' ').slice(1).join(' ') || '',
-              user.image || ''
+              user.image || '',
+              provider,
+              providerUserId,
+              '', // IP address will be set by middleware
+              '', // User agent will be set by middleware
             ])
 
             // Obtener el ID y UUID del usuario recién creado
@@ -489,14 +714,28 @@ export const authOptions: NextAuthOptions = {
             user.uuid = newUser.uuid
             user.rol = 'usuario'
             user.estado = 'activo'
+            
+            // Log OAuth linking event
+            await logOAuthEvent(newUser.id, 'oauth_linked', provider, {
+              providerUserId,
+              isNewUser: true
+            });
+            
+            // Record successful login attempt
+            await recordOAuthLoginAttempt(newUser.id, user.email || '', provider, true);
+            
           } else {
             // Actualizar datos del usuario existente con información de OAuth
             await executeQuerySingle(
-              'UPDATE usuarios SET nombre = ?, apellidos = ?, avatar_url = ?, updated_at = NOW() WHERE id = ?',
+              'UPDATE usuarios SET nombre = ?, apellidos = ?, avatar_url = ?, oauth_provider = ?, oauth_provider_id = ?, ultimo_login_ip = INET6_ATON(?), ultimo_login_user_agent = ?, updated_at = NOW() WHERE id = ?',
               [
                 user.name?.split(' ')[0] || '',
                 user.name?.split(' ').slice(1).join(' ') || '',
                 user.image || '',
+                provider,
+                providerUserId,
+                '', // IP address will be set by middleware
+                '', // User agent will be set by middleware
                 existingUser.id
               ]
             )
@@ -506,9 +745,39 @@ export const authOptions: NextAuthOptions = {
             user.uuid = existingUser.uuid
             user.rol = 'usuario'
             user.estado = 'activo'
+            
+            // Log OAuth linking event
+            await logOAuthEvent(existingUser.id, 'oauth_linked', provider, {
+              providerUserId,
+              isNewUser: false
+            });
+            
+            // Record successful login attempt
+            await recordOAuthLoginAttempt(existingUser.id, user.email || '', provider, true);
           }
+          
+          // Update provider status with success
+          const responseTime = Date.now() - startTime;
+          await updateOAuthProviderStatus(provider, true, responseTime);
+          
         } catch (error) {
-          console.error('Error en OAuth signIn:', error)
+          console.error('Error en OAuth signIn:', error);
+          
+          // Update provider status with failure
+          const responseTime = Date.now() - startTime;
+          await updateOAuthProviderStatus(provider, false, responseTime, error instanceof Error ? error.message : 'Unknown error');
+          
+          // Record failed login attempt
+          await recordOAuthLoginAttempt(
+            null,
+            user.email || '',
+            provider,
+            false,
+            undefined,
+            undefined,
+            'system_error'
+          );
+          
           return false // Bloquear el inicio de sesión si hay error
         }
       }
@@ -537,10 +806,35 @@ export const authOptions: NextAuthOptions = {
   events: {
     async signIn({ user, account, profile, isNewUser }) {
       // Guardar tokens de OAuth si es necesario
-      if (account) {
-        // Aquí podrías guardar los tokens en la base de datos si es necesario
-        // Por ejemplo, en una tabla de tokens OAuth
-        console.log('OAuth sign in event:', { provider: account.provider, userId: user.id, rememberMe: user.rememberMe || false })
+      if (account && (account.provider === 'google' || account.provider === 'facebook')) {
+        try {
+          const provider = account.provider as OAuthProvider;
+          
+          // Extract provider user ID from profile
+          const providerUserId = profile?.sub || (profile as any)?.id || '';
+          
+          // Store OAuth tokens securely
+          if (account.access_token) {
+            const tokens = {
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              expires_at: account.expires_at
+            };
+            
+            await updateOAuthTokens(user.id, tokens, provider, providerUserId);
+          }
+          
+          console.log('OAuth sign in event:', {
+            provider: account.provider,
+            userId: user.id,
+            providerUserId,
+            rememberMe: user.rememberMe || false,
+            isNewUser
+          });
+        } catch (error) {
+          console.error('Error storing OAuth tokens in signIn event:', error);
+          // Don't throw here to avoid breaking the sign-in flow
+        }
       }
     }
   },

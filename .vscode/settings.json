@@ -1,37 +1,13 @@
 {
-    // VS Code workspace settings for Model Context Protocol (MCP) integration
-    // This file configures VS Code to enable GitHub Copilot's MCP capabilities
-    // and provides optimal settings for MCP server discovery and management.
-    // Core MCP Settings
-    "chat.mcp.discovery.enabled": {
-        "claude-desktop": true,
-        "windsurf": true,
-        "cursor-global": true,
-        "cursor-workspace": true
-    },
-    // GitHub Copilot Configuration
-    "github.copilot.enable": {
-        "*": true
-    },
-    "github.copilot.advanced": {},
-    // File Association for MCP configuration
-    "files.associations": {
-        "mcp.json": "jsonc"
-    },
-    // JSON Schema validation (placeholder for MCP schema when available)
-    "json.schemas": [],
-    // Security and Performance Settings
-    "files.watcherExclude": {
-        "**/.env": true,
-        "**/.env.local": true,
-        "**/.env.*": true
-    },
-    // Editor Settings
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit"
-    },
-    // Note: MCP servers require trust confirmation on first run.
-    // Review server permissions before enabling them in your workspace.
-    // See: https://code.visualstudio.com/docs/model-context-protocol/security
+  "chat.agent.enabled": true,
+  "chat.agent.maxRequests": 15,
+  "github.copilot.chat.agent.runTasks": true,
+  "chat.mcp.discovery.enabled": {
+    "claude-desktop": true,
+    "windsurf": true,
+    "cursor-global": true,
+    "cursor-workspace": true
+  },
+  "github.copilot.chat.agent.autoFix": true,
+  "chat.tools.autoApprove": false
 }

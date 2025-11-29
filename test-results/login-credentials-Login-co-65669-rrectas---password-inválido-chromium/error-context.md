@@ -1,0 +1,96 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - button "Volver a la página principal" [ref=e6]:
+        - img [ref=e7]
+        - generic [ref=e9]: Volver
+      - button "Cambiar a tema oscuro" [ref=e10]:
+        - img [ref=e11]
+    - generic [ref=e16]:
+      - navigation "Enlaces de navegación rápida" [ref=e17]:
+        - list [ref=e18]:
+          - listitem [ref=e19]:
+            - link "Ir al contenido principal" [ref=e20] [cursor=pointer]:
+              - /url: "#main-content"
+          - listitem [ref=e21]:
+            - link "Ir al formulario de inicio de sesión" [ref=e22] [cursor=pointer]:
+              - /url: "#login-form"
+          - listitem [ref=e23]:
+            - link "Ir al pie de página" [ref=e24] [cursor=pointer]:
+              - /url: "#footer"
+      - banner "Encabezado del formulario de inicio de sesión" [ref=e25]:
+        - img [ref=e27]
+        - heading "Bienvenido de vuelta" [level=1] [ref=e29]
+        - paragraph [ref=e30]: Ingresa tus credenciales para continuar
+      - main "Formulario de inicio de sesión" [ref=e31]:
+        - form "Formulario de inicio de sesión moderno" [ref=e32]:
+          - generic [ref=e33]: Formulario de inicio de sesión con campos para email y contraseña. Todos los campos son obligatorios.
+          - generic [ref=e34]:
+            - generic [ref=e35]: Correo electrónico
+            - generic [ref=e36]:
+              - img [ref=e37]
+              - textbox "Correo electrónico" [ref=e40]:
+                - /placeholder: tu@email.com
+                - text: test@aunclick.com
+              - img [ref=e41]
+            - status "Campo válido" [ref=e44]:
+              - img [ref=e45]
+              - generic [ref=e48]: Válido
+          - generic [ref=e49]:
+            - generic [ref=e50]: Contraseña
+            - generic [ref=e51]:
+              - img [ref=e52]
+              - textbox "Contraseña" [ref=e55]:
+                - /placeholder: ••••••••
+                - text: PasswordIncorrecto123!
+              - button "Mostrar contraseña" [ref=e56]:
+                - img [ref=e57]
+              - img [ref=e60]
+            - status "Campo válido" [ref=e63]:
+              - img [ref=e64]
+              - generic [ref=e67]: Válido
+          - group "Opciones de sesión" [ref=e68]:
+            - generic [ref=e69]:
+              - checkbox "Recordarme" [ref=e70]
+              - generic [ref=e71] [cursor=pointer]: Recordarme
+              - generic [ref=e72]: Mantener la sesión iniciada por 30 días
+            - link "¿Olvidaste tu contraseña?" [ref=e73] [cursor=pointer]:
+              - /url: /password/forgot
+          - button "Iniciando sesión..." [disabled]:
+            - generic:
+              - img
+              - generic: Iniciando sesión...
+          - generic [ref=e74]: Botón para enviar el formulario de inicio de sesión con las credenciales proporcionadas
+        - generic [ref=e76]:
+          - generic [ref=e77]:
+            - img [ref=e78]
+            - generic [ref=e87]: "Detectado: Windows Hello"
+          - button "Iniciar sesión con biometría" [ref=e88]:
+            - img
+            - generic [ref=e89]: Iniciar sesión con biometría
+          - generic [ref=e90]: Usa tu huella digital, Face ID o Windows Hello para iniciar sesión sin contraseña.
+        - separator "O continúa con otras opciones de inicio de sesión" [ref=e91]:
+          - generic [ref=e95]: O continúa con
+        - group "Opciones de inicio de sesión con redes sociales" [ref=e96]:
+          - button "Iniciar sesión con Google" [disabled]:
+            - img
+            - generic: Google
+          - button "Iniciar sesión con Facebook" [disabled]:
+            - img
+            - generic: Facebook
+        - paragraph [ref=e98]:
+          - text: ¿No tienes cuenta?
+          - button "Ir a la página de registro para crear una nueva cuenta" [ref=e99]: Regístrate gratis
+      - contentinfo "Información de seguridad del sitio" [ref=e100]:
+        - paragraph [ref=e101]: 🔒 Tu información está segura y protegida
+    - paragraph [ref=e103]: AunClick - Tu plataforma de confianza
+  - region "Notifications (F8)":
+    - list
+  - alert [ref=e104]
+  - button "Open Next.js Dev Tools" [ref=e110] [cursor=pointer]:
+    - img [ref=e111]
+  - generic [ref=e114]: Iniciando sesión, por favor espere...
+```

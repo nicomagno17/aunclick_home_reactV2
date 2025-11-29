@@ -42,6 +42,29 @@ yarn-error.log*
 # Keep .vscode/mcp.json.example and .vscode/settings.json in version control
 .vscode/mcp.json
 
+# All folders containing "bmad" in their name
+**/bmad*/
+docs/
+
+# BMad/Kilo Code configuration and temporary files
+.kilocodemodes
+**/*.bmad
+**/*bmad*/
+*.bmad.*
+
+# BMad chat modes and GitHub configurations
+.github/chatmodes/
+
+# v4-backup folder
+v4-backup/
+
+# playwright-mcp folder
+.playwright-mcp/
+
+# snapshot files
+*.snapshot.txt
+snapshot-*.txt
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -53,3 +76,9 @@ test
 prompt
 server.log
 .replit
+
+# database folder
+database/
+
+# playwright-report folder
+playwright-report/

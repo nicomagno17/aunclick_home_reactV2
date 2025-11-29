@@ -1,6 +1,36 @@
-import { promises as fs } from 'fs'
-import path from 'path'
-import { AsyncLocalStorage } from 'async_hooks'
+// Check if we're in a non-Node.js environment (Edge Runtime)
+const isEdgeRuntime = typeof window !== 'undefined' || typeof EdgeRuntime !== 'undefined'
+
+// Dynamic imports for Node.js modules
+let fs: typeof import('fs').promises | null = null
+let path: typeof import('path') | null = null
+let AsyncLocalStorage: typeof import('async_hooks').AsyncLocalStorage | null = null
+
+// Initialize Node.js modules asynchronously
+let modulesInitialized = false
+
+async function initializeModules() {
+  if (modulesInitialized || isEdgeRuntime) return
+
+  try {
+    const fsModule = await import('fs')
+    const pathModule = await import('path')
+    const asyncHooksModule = await import('async_hooks')
+
+    fs = fsModule.promises
+    path = pathModule
+    AsyncLocalStorage = asyncHooksModule.AsyncLocalStorage
+    modulesInitialized = true
+  } catch (error) {
+    // Module loading failed, we're likely in Edge Runtime
+    console.warn('Node.js modules not available, running in Edge Runtime mode')
+  }
+}
+
+// Only initialize in non-Edge environments
+if (!isEdgeRuntime) {
+  initializeModules()
+}
 
 // Type definitions
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug'
@@ -63,17 +93,19 @@ const colors = {
   white: '\x1b[37m'
 }
 
-// AsyncLocalStorage for correlation IDs
-export const correlationStorage = new AsyncLocalStorage<LogContext>()
+// AsyncLocalStorage for correlation IDs (only in Node.js environment)
+export const correlationStorage = AsyncLocalStorage ? new AsyncLocalStorage<LogContext>() : null
 
 // Get current correlation ID from storage
 export function getCorrelationId(): string | undefined {
+  if (!correlationStorage) return undefined
   const store = correlationStorage.getStore()
   return store?.correlationId
 }
 
 // Set correlation context
 export function setCorrelationContext(context: LogContext): void {
+  if (!correlationStorage) return
   const currentStore = correlationStorage.getStore() || {}
   correlationStorage.enterWith({ ...currentStore, ...context })
 }
@@ -88,7 +120,7 @@ export function setCorrelationContextFromRequest(request: Request | { headers?: 
 
 // Ensure log directory exists
 async function ensureLogDirectory(): Promise<void> {
-  if (!config.logToFile) return
+  if (!config.logToFile || !path || !fs) return
 
   const logDir = path.dirname(config.logFilePath)
   try {
@@ -100,7 +132,7 @@ async function ensureLogDirectory(): Promise<void> {
 
 // Check if log file should be rotated
 async function shouldRotateLog(): Promise<boolean> {
-  if (!config.logToFile) return false
+  if (!config.logToFile || !fs) return false
 
   try {
     const stats = await fs.stat(config.logFilePath)
@@ -112,7 +144,7 @@ async function shouldRotateLog(): Promise<boolean> {
 
 // Rotate log files
 async function rotateLogFile(): Promise<void> {
-  if (!config.logToFile) return
+  if (!config.logToFile || !fs) return
 
   try {
     // Remove the oldest log file if it exists
@@ -180,7 +212,7 @@ function createLogEntry(
   context?: LogContext
 ): LogEntry {
   const correlationId = getCorrelationId()
-  const existingContext = correlationStorage.getStore() || {}
+  const existingContext = correlationStorage?.getStore() || {}
 
   return {
     timestamp: new Date().toISOString(),
@@ -282,8 +314,8 @@ async function writeLog(entry: LogEntry): Promise<void> {
     }
   }
 
-  // Write to file if configured and in production
-  if (!config.logToFile) return
+  // Write to file if configured and in production (and not in Edge Runtime)
+  if (!config.logToFile || !fs) return
 
   try {
     await ensureLogDirectory()

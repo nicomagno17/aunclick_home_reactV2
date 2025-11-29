@@ -1,0 +1,101 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - button "Volver a la página principal" [ref=e6]:
+        - img [ref=e7]
+        - generic [ref=e9]: Volver
+      - button "Cambiar a tema oscuro" [ref=e10]:
+        - img [ref=e11]
+    - generic [ref=e16]:
+      - navigation "Enlaces de navegación rápida" [ref=e17]:
+        - list [ref=e18]:
+          - listitem [ref=e19]:
+            - link "Ir al contenido principal" [ref=e20] [cursor=pointer]:
+              - /url: "#main-content"
+          - listitem [ref=e21]:
+            - link "Ir al formulario de inicio de sesión" [ref=e22] [cursor=pointer]:
+              - /url: "#login-form"
+          - listitem [ref=e23]:
+            - link "Ir al pie de página" [ref=e24] [cursor=pointer]:
+              - /url: "#footer"
+      - banner "Encabezado del formulario de inicio de sesión" [ref=e25]:
+        - img [ref=e27]
+        - heading "Bienvenido de vuelta" [level=1] [ref=e29]
+        - paragraph [ref=e30]: Ingresa tus credenciales para continuar
+      - main "Formulario de inicio de sesión" [ref=e31]:
+        - form "Formulario de inicio de sesión moderno" [ref=e32]:
+          - generic [ref=e33]: Formulario de inicio de sesión con campos para email y contraseña. Todos los campos son obligatorios.
+          - generic [ref=e34]:
+            - generic [ref=e35]: Correo electrónico
+            - generic [ref=e36]:
+              - img [ref=e37]
+              - textbox "Correo electrónico" [ref=e40]:
+                - /placeholder: tu@email.com
+                - text: noexiste@aunclick.com
+              - img [ref=e41]
+            - status "Campo válido" [ref=e44]:
+              - img [ref=e45]
+              - generic [ref=e48]: Válido
+          - generic [ref=e49]:
+            - generic [ref=e50]: Contraseña
+            - generic [ref=e51]:
+              - img [ref=e52]
+              - textbox "Contraseña" [ref=e55]:
+                - /placeholder: ••••••••
+                - text: cualquierpassword
+              - button "Mostrar contraseña" [ref=e56]:
+                - img [ref=e57]
+              - img [ref=e60]
+            - alert [ref=e62]: La contraseña debe contener una mayúscula, un número y un carácter especial
+            - generic [ref=e63]:
+              - generic [ref=e64]:
+                - img [ref=e65]
+                - generic [ref=e67]: "Falta:"
+              - list [ref=e68]:
+                - listitem [ref=e69]: Falta mayúscula
+                - listitem [ref=e71]: Falta número
+                - listitem [ref=e73]: Falta símbolo
+          - group "Opciones de sesión" [ref=e75]:
+            - generic [ref=e76]:
+              - checkbox "Recordarme" [ref=e77]
+              - generic [ref=e78] [cursor=pointer]: Recordarme
+              - generic [ref=e79]: Mantener la sesión iniciada por 30 días
+            - link "¿Olvidaste tu contraseña?" [ref=e80] [cursor=pointer]:
+              - /url: /password/forgot
+          - button "Iniciar Sesión" [active] [ref=e81]:
+            - generic [ref=e82]:
+              - img
+              - generic [ref=e83]: Iniciar Sesión
+          - generic [ref=e84]: Botón para enviar el formulario de inicio de sesión con las credenciales proporcionadas
+        - generic [ref=e86]:
+          - generic [ref=e87]:
+            - img [ref=e88]
+            - generic [ref=e97]: "Detectado: Windows Hello"
+          - button "Iniciar sesión con biometría" [ref=e98]:
+            - img
+            - generic [ref=e99]: Iniciar sesión con biometría
+          - generic [ref=e100]: Usa tu huella digital, Face ID o Windows Hello para iniciar sesión sin contraseña.
+        - separator "O continúa con otras opciones de inicio de sesión" [ref=e101]:
+          - generic [ref=e105]: O continúa con
+        - group "Opciones de inicio de sesión con redes sociales" [ref=e106]:
+          - button "Iniciar sesión con Google" [ref=e107]:
+            - img
+            - generic [ref=e108]: Google
+          - button "Iniciar sesión con Facebook" [ref=e110]:
+            - img
+            - generic [ref=e111]: Facebook
+        - paragraph [ref=e114]:
+          - text: ¿No tienes cuenta?
+          - button "Ir a la página de registro para crear una nueva cuenta" [ref=e115]: Regístrate gratis
+      - contentinfo "Información de seguridad del sitio" [ref=e116]:
+        - paragraph [ref=e117]: 🔒 Tu información está segura y protegida
+    - paragraph [ref=e119]: AunClick - Tu plataforma de confianza
+  - region "Notifications (F8)":
+    - list
+  - alert [ref=e120]
+  - button "Open Next.js Dev Tools" [ref=e126] [cursor=pointer]:
+    - img [ref=e127]
+```

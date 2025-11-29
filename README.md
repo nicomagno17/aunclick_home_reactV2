@@ -54,6 +54,29 @@ This scaffold provides a robust foundation built with:
 - **🚀 Production Ready** - Optimized build and deployment settings
 - **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
 
+## 📚 Documentación
+
+### Sistema de Login Profesional
+
+La documentación completa del sistema de autenticación está organizada en `docs/login/`:
+
+- **[Master Implementation Guide](./docs/login/00-MASTER_IMPLEMENTATION_GUIDE.md)** - Guía paso a paso completa
+- **[Getting Started](./docs/login/01-getting-started/)** - Inicio rápido y configuración
+- **[Security](./docs/login/02-security/)** - OAuth, SQL injection, rate limiting
+- **[Features](./docs/login/03-features/)** - UI moderna, accesibilidad, mejoras
+- **[Database](./docs/login/04-database/)** - Schemas, migraciones, queries
+- **[Deployment](./docs/login/05-deployment/)** - Checklist de producción
+
+**Inicio rápido:** Ver [docs/login/01-getting-started/quick-start.md](./docs/login/01-getting-started/quick-start.md)
+
+### Otras Documentaciones
+
+- **MCP Server:** [README_MCP.md](./README_MCP.md)
+- **Credenciales:** [README_credenciales.md](./README_credenciales.md) (privado)
+- **Logger:** [LOGGER_IMPLEMENTATION_SUMMARY.md](./LOGGER_IMPLEMENTATION_SUMMARY.md)
+- **Database ERD:** [database_erd.md](./database_erd.md)
+- **Marketplace:** [modelo_datos_marketplace.md](./modelo_datos_marketplace.md)
+
 ## 🚀 Quick Start
 
 ```bash

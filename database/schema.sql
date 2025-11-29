@@ -24,6 +24,29 @@ CREATE TABLE usuarios (
     rol ENUM('usuario', 'propietario_negocio', 'moderador', 'admin') NOT NULL DEFAULT 'usuario',
     email_verificado_at TIMESTAMP NULL DEFAULT NULL,
     ultimo_acceso TIMESTAMP NULL DEFAULT NULL,
+    
+    -- OAuth security fields (encrypted storage)
+    access_token VARCHAR(1000) NULL COMMENT 'OAuth access token (encrypted)',
+    refresh_token VARCHAR(1000) NULL COMMENT 'OAuth refresh token (encrypted)',
+    token_expires_at TIMESTAMP NULL COMMENT 'OAuth token expiration',
+    oauth_provider ENUM('google', 'facebook', 'credentials') NULL COMMENT 'Authentication provider',
+    oauth_provider_id VARCHAR(255) NULL COMMENT 'Provider user ID',
+    
+    -- Login audit fields
+    ultimo_login_ip VARBINARY(16) NULL COMMENT 'Last login IP address (IPv4/IPv6)',
+    ultimo_login_user_agent VARCHAR(500) NULL COMMENT 'Last login user agent',
+    intentos_login_fallidos TINYINT UNSIGNED DEFAULT 0 COMMENT 'Failed login attempts counter',
+    bloqueado_hasta TIMESTAMP NULL COMMENT 'Account lockout expiration',
+    ultimo_cambio_password TIMESTAMP NULL COMMENT 'Last password change date',
+    
+    -- Password recovery fields
+    password_reset_token VARCHAR(255) NULL COMMENT 'Password reset token',
+    password_reset_expires TIMESTAMP NULL COMMENT 'Reset token expiration',
+    
+    -- Email verification fields
+    email_verification_token VARCHAR(255) NULL COMMENT 'Email verification token',
+    email_verification_expires TIMESTAMP NULL COMMENT 'Verification token expiration',
+    
     preferencias JSON COMMENT 'Configuraciones de usuario y preferencias de notificación',
     metadata JSON COMMENT 'Campos adicionales flexibles',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -36,7 +59,13 @@ CREATE TABLE usuarios (
     INDEX idx_usuarios_rol (rol),
     INDEX idx_usuarios_ultimo_acceso (ultimo_acceso),
     INDEX idx_usuarios_created_at (created_at),
-    INDEX idx_usuarios_soft_delete (deleted_at)
+    INDEX idx_usuarios_soft_delete (deleted_at),
+    
+    -- Additional indexes for OAuth and security
+    INDEX idx_usuarios_oauth_provider (oauth_provider, oauth_provider_id),
+    INDEX idx_usuarios_password_reset (password_reset_token, password_reset_expires),
+    INDEX idx_usuarios_email_verification (email_verification_token),
+    INDEX idx_usuarios_bloqueado (bloqueado_hasta)
 ) ENGINE=InnoDB 
   DEFAULT CHARSET=utf8mb4 
   COLLATE=utf8mb4_unicode_ci 

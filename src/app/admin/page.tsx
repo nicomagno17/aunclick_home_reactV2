@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { VisuallyHidden } from '@/components/ui/visually-hidden'
+import { NavigationProvider, useNavigation } from '@/components/admin/NavigationContext'
+import { cn } from '@/lib/utils'
 import {
   Clock,
   Calendar,
@@ -39,7 +41,7 @@ import { ProductoCarrusel } from '@/types/product'
 
 
 
-export default function AdminPage() {
+function AdminContent() {
   // Estilos para la distorsión del banner
   const bannerDistortionStyle = `
     .banner-distortion {
@@ -58,6 +60,14 @@ export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedSection, setSelectedSection] = useState('')
   const [activeContainer, setActiveContainer] = useState<string | null>(null)
+  const { setSectionActive } = useNavigation()
+
+  // Sincronizar cambios de sección con el NavigationContext
+  useEffect(() => {
+    if (activeContainer) {
+      setSectionActive(activeContainer)
+    }
+  }, [activeContainer, setSectionActive])
   const [opcionesProducto, setOpcionesProducto] = useState({
     tallasCalzado: false,
     tallasRopa: false,
@@ -947,23 +957,55 @@ export default function AdminPage() {
             {/* Removed the "Panel de Administración" title as it's already in the header */}
 
             {/* Uniform-sized buttons grid */}
-            <div className="space-y-4 mb-4">
+            <div className="space-y-6 mb-6">
               {/* First row - 2 buttons */}
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setActiveContainer('datos-negocio')}
-                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
+                  className={cn(
+                    'group relative aspect-square bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm',
+                    'border border-slate-600/50 rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center',
+                    'hover:transform hover:scale-105 hover:shadow-2xl hover:border-blue-400/50',
+                    'hover:bg-gradient-to-br hover:from-blue-600/20 hover:to-blue-800/20',
+                    'active:scale-95',
+                    activeContainer === 'datos-negocio' && 'bg-gradient-to-br from-blue-600/30 to-blue-800/30 border-blue-400 shadow-xl shadow-blue-400/20'
+                  )}
                 >
-                  <Store className="w-8 h-8 text-blue-400 mb-2" />
-                  <span className="text-white text-sm font-medium">Datos del Negocio</span>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative z-10">
+                    <Store className={cn(
+                      'w-10 h-10 mb-3 transition-all duration-300',
+                      activeContainer === 'datos-negocio' ? 'text-blue-300 drop-shadow-lg' : 'text-blue-400 group-hover:text-blue-300 group-hover:scale-110'
+                    )} />
+                    <span className={cn(
+                      'text-sm font-semibold transition-colors duration-300',
+                      activeContainer === 'datos-negocio' ? 'text-white' : 'text-gray-200 group-hover:text-white'
+                    )}>Datos del Negocio</span>
+                  </div>
                 </button>
 
                 <button
                   onClick={() => setActiveContainer('gestion-productos')}
-                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
+                  className={cn(
+                    'group relative aspect-square bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm',
+                    'border border-slate-600/50 rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center',
+                    'hover:transform hover:scale-105 hover:shadow-2xl hover:border-green-400/50',
+                    'hover:bg-gradient-to-br hover:from-green-600/20 hover:to-green-800/20',
+                    'active:scale-95',
+                    activeContainer === 'gestion-productos' && 'bg-gradient-to-br from-green-600/30 to-green-800/30 border-green-400 shadow-xl shadow-green-400/20'
+                  )}
                 >
-                  <ShoppingBag className="w-8 h-8 text-green-400 mb-2" />
-                  <span className="text-white text-sm font-medium">Gestión de Productos</span>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative z-10">
+                    <ShoppingBag className={cn(
+                      'w-10 h-10 mb-3 transition-all duration-300',
+                      activeContainer === 'gestion-productos' ? 'text-green-300 drop-shadow-lg' : 'text-green-400 group-hover:text-green-300 group-hover:scale-110'
+                    )} />
+                    <span className={cn(
+                      'text-sm font-semibold transition-colors duration-300',
+                      activeContainer === 'gestion-productos' ? 'text-white' : 'text-gray-200 group-hover:text-white'
+                    )}>Gestión de Productos</span>
+                  </div>
                 </button>
               </div>
 
@@ -971,18 +1013,57 @@ export default function AdminPage() {
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setActiveContainer('gestion-banner')}
-                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
+                  className={cn(
+                    'group relative aspect-square bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm',
+                    'border border-slate-600/50 rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center',
+                    'hover:transform hover:scale-105 hover:shadow-2xl hover:border-yellow-400/50',
+                    'hover:bg-gradient-to-br hover:from-yellow-600/20 hover:to-yellow-800/20',
+                    'active:scale-95',
+                    activeContainer === 'gestion-banner' && 'bg-gradient-to-br from-yellow-600/30 to-yellow-800/30 border-yellow-400 shadow-xl shadow-yellow-400/20'
+                  )}
                 >
-                  <Image className="w-8 h-8 text-yellow-400 mb-2" />
-                  <span className="text-white text-sm font-medium">Gestión de Banner</span>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative z-10">
+                    <div
+                      className={cn(
+                        'w-10 h-10 mb-3 transition-all duration-300 flex items-center justify-center',
+                        activeContainer === 'gestion-banner' ? 'text-yellow-300 drop-shadow-lg' : 'text-yellow-400 group-hover:text-yellow-300 group-hover:scale-110'
+                      )}
+                      aria-hidden="true"
+                    >
+                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1m0 2v8h16V7H4m1 1h2v2H5V8m0 3h2v2H5v-2m3-3h8v2H8V8m0 3h8v2H8v-2z"/>
+                      </svg>
+                    </div>
+                    <span className={cn(
+                      'text-sm font-semibold transition-colors duration-300',
+                      activeContainer === 'gestion-banner' ? 'text-white' : 'text-gray-200 group-hover:text-white'
+                    )}>Gestión de Banner</span>
+                  </div>
                 </button>
 
                 <button
                   onClick={() => setActiveContainer('analytics')}
-                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
+                  className={cn(
+                    'group relative aspect-square bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm',
+                    'border border-slate-600/50 rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center',
+                    'hover:transform hover:scale-105 hover:shadow-2xl hover:border-purple-400/50',
+                    'hover:bg-gradient-to-br hover:from-purple-600/20 hover:to-purple-800/20',
+                    'active:scale-95',
+                    activeContainer === 'analytics' && 'bg-gradient-to-br from-purple-600/30 to-purple-800/30 border-purple-400 shadow-xl shadow-purple-400/20'
+                  )}
                 >
-                  <BarChart3 className="w-8 h-8 text-purple-400 mb-2" />
-                  <span className="text-white text-sm font-medium">Analytics Dashboard</span>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative z-10">
+                    <BarChart3 className={cn(
+                      'w-10 h-10 mb-3 transition-all duration-300',
+                      activeContainer === 'analytics' ? 'text-purple-300 drop-shadow-lg' : 'text-purple-400 group-hover:text-purple-300 group-hover:scale-110'
+                    )} />
+                    <span className={cn(
+                      'text-sm font-semibold transition-colors duration-300',
+                      activeContainer === 'analytics' ? 'text-white' : 'text-gray-200 group-hover:text-white'
+                    )}>Analytics Dashboard</span>
+                  </div>
                 </button>
               </div>
 
@@ -990,10 +1071,26 @@ export default function AdminPage() {
               <div className="flex justify-center">
                 <button
                   onClick={() => setActiveContainer('carruseles')}
-                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center w-[calc(50%-0.5rem)]"
+                  className={cn(
+                    'group relative aspect-square bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm',
+                    'border border-slate-600/50 rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center',
+                    'w-[calc(50%-0.5rem)] hover:transform hover:scale-105 hover:shadow-2xl hover:border-orange-400/50',
+                    'hover:bg-gradient-to-br hover:from-orange-600/20 hover:to-orange-800/20',
+                    'active:scale-95',
+                    activeContainer === 'carruseles' && 'bg-gradient-to-br from-orange-600/30 to-orange-800/30 border-orange-400 shadow-xl shadow-orange-400/20'
+                  )}
                 >
-                  <Settings className="w-8 h-8 text-orange-400 mb-2" />
-                  <span className="text-white text-sm font-medium">Gestión de Carruseles</span>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative z-10">
+                    <Settings className={cn(
+                      'w-10 h-10 mb-3 transition-all duration-300',
+                      activeContainer === 'carruseles' ? 'text-orange-300 drop-shadow-lg' : 'text-orange-400 group-hover:text-orange-300 group-hover:scale-110'
+                    )} />
+                    <span className={cn(
+                      'text-sm font-semibold transition-colors duration-300',
+                      activeContainer === 'carruseles' ? 'text-white' : 'text-gray-200 group-hover:text-white'
+                    )}>Gestión de Carruseles</span>
+                  </div>
                 </button>
               </div>
             </div>
@@ -1003,10 +1100,10 @@ export default function AdminPage() {
             {/* Back button */}
             <button
               onClick={() => setActiveContainer(null)}
-              className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors duration-200 mb-2"
+              className="group flex items-center gap-3 px-4 py-2.5 mb-4 bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm border border-slate-600/30 rounded-xl transition-all duration-300 hover:transform hover:scale-105 hover:bg-gradient-to-r hover:from-slate-700/70 hover:to-slate-600/70 hover:border-slate-500/50 hover:shadow-lg active:scale-95"
             >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm">Volver al menú</span>
+              <ArrowLeft className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" />
+              <span className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors duration-300">Volver al menú</span>
             </button>
           </div>
         )}
@@ -3623,6 +3720,14 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+export default function AdminPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
+      <AdminContent />
     </div>
   )
 }
