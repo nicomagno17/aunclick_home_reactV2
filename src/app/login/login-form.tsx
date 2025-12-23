@@ -139,7 +139,7 @@ export default function LoginForm() {
                                 <FormItem>
                                     <FormLabel
                                         htmlFor="email"
-                                        className="text-sm font-medium text-gray-200"
+                                        className="text-xs sm:text-sm font-medium text-gray-300"
                                     >
                                         Email del Negocio
                                     </FormLabel>
@@ -148,7 +148,7 @@ export default function LoginForm() {
                                             id="email"
                                             type="email"
                                             placeholder="Ingresa tu email"
-                                            className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                            className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-purple-500 focus:border-purple-500 text-xs sm:text-base"
                                             {...field}
                                         />
                                     </FormControl>
@@ -164,7 +164,7 @@ export default function LoginForm() {
                                 <FormItem>
                                     <FormLabel
                                         htmlFor="password"
-                                        className="text-sm font-medium text-gray-200"
+                                        className="text-xs sm:text-sm font-medium text-gray-300"
                                     >
                                         Contraseña
                                     </FormLabel>
@@ -173,7 +173,7 @@ export default function LoginForm() {
                                             id="password"
                                             type="password"
                                             placeholder="Ingresa tu contraseña"
-                                            className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                            className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-purple-500 focus:border-purple-500 text-xs sm:text-base"
                                             {...field}
                                         />
                                     </FormControl>
@@ -190,11 +190,11 @@ export default function LoginForm() {
                             type="checkbox"
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
-                            className="w-4 h-4 bg-white/20 border border-white/30 rounded text-yellow-400 focus:ring-yellow-400 focus:ring-2"
+                            className="w-4 h-4 rounded border-gray-500 bg-gray-600 text-purple-600 focus:ring-purple-500 cursor-pointer"
                         />
                         <label
                             htmlFor="remember"
-                            className="text-sm text-gray-200 cursor-pointer"
+                            className="text-xs sm:text-sm text-gray-300 cursor-pointer"
                         >
                             Recordarme en este dispositivo
                         </label>
@@ -204,12 +204,12 @@ export default function LoginForm() {
                     <div className="space-y-2">
                         <Link
                             href="/password/forgot"
-                            className="text-xs text-gray-300 hover:text-yellow-400 transition-colors"
+                            className="text-xs text-gray-400 hover:text-purple-400 transition-colors block"
                         >
                             ¿No recuerdas tu contraseña?
                         </Link>
                         <p
-                            className="text-xs text-gray-300 hover:text-yellow-400 cursor-pointer transition-colors"
+                            className="text-xs text-gray-400 hover:text-purple-400 cursor-pointer transition-colors"
                             onClick={() => router.push("/register")}
                         >
                             ¿No tienes cuenta? Regístrate
@@ -219,7 +219,7 @@ export default function LoginForm() {
                     {/* Submit Button */}
                     <Button
                         type="submit"
-                        className="w-full px-6 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-900 font-bold rounded-lg hover:from-yellow-500 hover:to-orange-600 transition-all shadow-lg"
+                        className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm sm:text-base"
                         disabled={isLoading}
                         aria-busy={isLoading}
                     >
@@ -239,10 +239,10 @@ export default function LoginForm() {
             <div className="mt-8">
                 <div className="relative">
                     <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-white/20" />
+                        <div className="w-full border-t border-gray-700" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                        <span className="px-2 bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 text-gray-300">
+                        <span className="px-2 bg-gray-800 text-gray-400">
                             O continúa con
                         </span>
                     </div>
@@ -252,7 +252,7 @@ export default function LoginForm() {
                     {/* Google OAuth */}
                     <Button
                         variant="outline"
-                        className="flex items-center justify-center gap-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 bg-transparent disabled:bg-transparent"
+                        className="flex items-center justify-center gap-2 bg-gray-700 hover:bg-gray-600 text-white border-gray-600 disabled:bg-gray-700"
                         onClick={() => handleOAuthSignIn("google")}
                         disabled={isOAuthLoading === "google" || isLoading}
                         aria-busy={isOAuthLoading === "google"}
@@ -287,7 +287,7 @@ export default function LoginForm() {
                     {/* Facebook OAuth */}
                     <Button
                         variant="outline"
-                        className="flex items-center justify-center gap-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 bg-transparent disabled:bg-transparent"
+                        className="flex items-center justify-center gap-2 bg-gray-700 hover:bg-gray-600 text-white border-gray-600 disabled:bg-gray-700"
                         onClick={() => handleOAuthSignIn("facebook")}
                         disabled={isOAuthLoading === "facebook" || isLoading}
                         aria-busy={isOAuthLoading === "facebook"}
