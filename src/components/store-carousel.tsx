@@ -62,7 +62,7 @@ export function StoreCarousel({ products, storeName }: StoreCarouselProps) {
 
   return (
     <section className="mb-12 overflow-hidden">
-      <div className="mb-6 px-6">
+      <div className="mb-6 px-6 lg:max-w-[1200px] lg:mx-auto">
         <h2 className="text-2xl font-bold text-foreground mb-2">
           Productos Destacados
         </h2>

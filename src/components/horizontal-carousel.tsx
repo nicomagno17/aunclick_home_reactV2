@@ -167,14 +167,14 @@ export function HorizontalCarousel({ title, subtitle, products, cardKeyPrefix }:
 
   return (
     <section className="mb-12">
-      <div className="mb-6 px-6">
+      <div className="mb-6 px-6 lg:max-w-[1200px] lg:mx-auto">
         <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       </div>
 
       <div className="relative md:pb-16 pb-4">
         {/* Layout con tarjeta fija a la izquierda en desktop */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 lg:justify-center lg:mx-auto lg:max-w-[1200px]">
           {/* Tarjeta fija con borde dorado - Solo desktop */}
           {products[featuredProductIndex] && (
             <div className="hidden lg:block flex-shrink-0 px-6">

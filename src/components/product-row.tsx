@@ -133,7 +133,7 @@ export function ProductRow({ products, onProductClick }: ProductRowProps) {
       {/* Contenedor de productos */}
       <div
         ref={scrollContainerRef}
-        className="flex gap-3 md:gap-4 overflow-x-auto md:overflow-x-visible scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-5"
+        className="flex gap-3 md:gap-4 overflow-x-auto md:overflow-x-visible scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-5 md:justify-center md:max-w-[1200px] md:mx-auto"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'

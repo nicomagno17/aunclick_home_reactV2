@@ -68,7 +68,7 @@ export function ImageCarouselContinuous2({
       `}</style>
 
       {/* Título */}
-      <div className="text-center mb-8 px-6">
+      <div className="text-center mb-8 px-6 lg:max-w-[1200px] lg:mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold text-purple-800 mb-2">
           Tiendas que nos Acompañan
         </h2>

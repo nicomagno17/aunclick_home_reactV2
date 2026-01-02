@@ -280,7 +280,7 @@ export default function RegisterPage() {
                 {step === 1
                   ? 'Información personal y acceso'
                   : step === 2
-                    ? 'Selección de plan'
+                    ? 'Tu plan'
                     : 'Información del negocio'}
               </p>
             </div>
@@ -661,7 +661,7 @@ export default function RegisterPage() {
 
                 {step === 2 && (
                   <div className="space-y-2 sm:space-y-3">
-                    <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 text-center pb-2 border-b-2 border-gray-700">Selección de Plan</h2>
+                    <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 text-center pb-2 border-b-2 border-gray-700">Tu Plan es</h2>
 
                     {/* Plan Selection */}
                     <FormField
@@ -669,30 +669,27 @@ export default function RegisterPage() {
                       name="selectedPlan"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs sm:text-sm font-medium text-gray-300">
-                            Elige el plan que mejor se adapte a tu negocio
-                          </FormLabel>
                           <FormControl>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
-                              {/* Plan Gratuito */}
+                            <div className="flex justify-center">
+                              {/* Plan Gratuito - Único plan visible */}
                               <div
                                 onClick={() => field.onChange('gratuito')}
-                                className={`cursor-pointer p-2 sm:p-3 rounded-lg border-2 transition-all ${
+                                className={`cursor-pointer p-4 sm:p-6 rounded-lg border-2 transition-all max-w-sm ${
                                   field.value === 'gratuito'
                                     ? 'border-purple-500 bg-gray-700'
                                     : 'border-gray-600 bg-gray-800 hover:bg-gray-700'
                                 }`}
                               >
-                                <div className="flex flex-col items-center text-center space-y-1 sm:space-y-2">
-                                  <Building2 className="w-5 h-5 sm:w-8 sm:h-8 text-green-400" />
-                                  <div className="space-y-0.5 sm:space-y-1">
-                                    <h3 className="text-xs sm:text-sm md:text-base font-bold text-white">Plan Gratuito</h3>
-                                    <span className="text-base sm:text-xl font-bold text-green-400">$0</span>
+                                <div className="flex flex-col items-center text-center space-y-2 sm:space-y-3">
+                                  <Building2 className="w-8 h-8 sm:w-12 sm:h-12 text-green-400" />
+                                  <div className="space-y-1 sm:space-y-2">
+                                    <h3 className="text-sm sm:text-lg md:text-xl font-bold text-white">Panel básico de administración</h3>
+                                    <span className="text-xl sm:text-2xl font-bold text-green-400">$0</span>
                                   </div>
-                                  <p className="text-[9px] sm:text-xs text-gray-300">
+                                  <p className="text-xs sm:text-sm text-gray-300">
                                     Perfecto para empezar
                                   </p>
-                                  <ul className="text-[9px] sm:text-xs text-gray-300 space-y-0.5 sm:space-y-1 text-left w-full">
+                                  <ul className="text-xs sm:text-sm text-gray-300 space-y-1 sm:space-y-2 text-left w-full">
                                     <li>• 5 imágenes</li>
                                     <li>• Página principal</li>
                                     <li>• Panel básico</li>
@@ -700,8 +697,8 @@ export default function RegisterPage() {
                                 </div>
                               </div>
 
-                              {/* Plan Normal */}
-                              <div
+                              {/* TEMPORALMENTE OCULTO - Plan Normal */}
+                              {/* <div
                                 onClick={() => field.onChange('normal')}
                                 className={`cursor-pointer p-2 sm:p-3 rounded-lg border-2 transition-all ${
                                   field.value === 'normal'
@@ -730,10 +727,10 @@ export default function RegisterPage() {
                                     <li>• Prioridad alta</li>
                                   </ul>
                                 </div>
-                              </div>
+                              </div> */}
 
-                              {/* Plan Premium - Centrado en segunda fila solo en móvil */}
-                              <div className="col-span-2 md:col-span-1 flex justify-center">
+                              {/* TEMPORALMENTE OCULTO - Plan Premium */}
+                              {/* <div className="col-span-2 md:col-span-1 flex justify-center">
                                 <div
                                   onClick={() => field.onChange('premium')}
                                   className={`cursor-pointer p-2 sm:p-3 rounded-lg border-2 transition-all w-1/2 md:w-full ${
@@ -753,7 +750,6 @@ export default function RegisterPage() {
                                       <span className="inline-block px-1.5 py-0.5 bg-orange-400 text-black text-[7px] sm:text-[9px] font-bold rounded-full">
                                         MEJOR OPCIÓN
                                       </span>
-                                      {/* Promoción */}
                                       <div className="bg-gradient-to-r from-green-600 to-green-500 px-2 py-0.5 rounded text-[7px] sm:text-[9px] font-bold text-white mt-1">
                                         ¡Paga 2 meses, lleva 3! 🎉
                                       </div>
@@ -772,7 +768,7 @@ export default function RegisterPage() {
                                     </ul>
                                   </div>
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -780,8 +776,8 @@ export default function RegisterPage() {
                       )}
                     />
 
-                    {/* Ver Detalles de Planes */}
-                    <div className="flex justify-center">
+                    {/* TEMPORALMENTE OCULTO - Ver Detalles de Planes */}
+                    {/* <div className="flex justify-center">
                       <Button
                         type="button"
                         onClick={() => setShowPlansModal(true)}
@@ -790,7 +786,7 @@ export default function RegisterPage() {
                         <Eye className="w-5 h-5" />
                         Ver comparación detallada de planes
                       </Button>
-                    </div>
+                    </div> */}
 
                     {/* Botones de navegación */}
                     <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-3 sm:mt-4">

@@ -79,10 +79,10 @@ export function ProductInfoPopup({ product, isOpen, onClose }: ProductInfoPopupP
           <DialogTitle>{product.name}</DialogTitle>
         </VisuallyHidden>
 
-        {/* Icono de Tienda - Parte superior izquierda */}
+        {/* TEMPORALMENTE OCULTO - Icono de Tienda - Parte superior izquierda */}
         <button
           onClick={handleStoreClick}
-          className="absolute left-2 top-2 md:left-4 md:top-4 z-10 group"
+          className="absolute left-2 top-2 md:left-4 md:top-4 z-10 group hidden"
           title={`Ir a la tienda: ${product.source || 'Tienda'}`}
         >
           <div className="bg-gradient-to-br from-purple-600 to-purple-800 p-2 md:p-2.5 rounded-full shadow-lg transition-all group-hover:scale-110 group-hover:shadow-xl cursor-pointer">

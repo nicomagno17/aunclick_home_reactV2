@@ -109,7 +109,8 @@ export default function Home() {
       />
 
       {/* Nuevo Carrusel entre Header y Destacados con tarjetas de filtro */}
-      <div className="relative">
+      {/* TEMPORALMENTE OCULTO - Descomentar cuando se necesite mostrar el banner */}
+      {/* <div className="relative">
         <HeaderCarousel
           sections={[
             {
@@ -136,6 +137,15 @@ export default function Home() {
         <CategoryFilterCards
           onCategorySelect={handleCategorySelect}
           selectedCategory={selectedCategory}
+        />
+      </div> */}
+
+      {/* Tarjetas de filtro de categoría - Visible mientras el banner está oculto */}
+      <div className="py-4 bg-gradient-to-b from-purple-100 to-white">
+        <CategoryFilterCards
+          onCategorySelect={handleCategorySelect}
+          selectedCategory={selectedCategory}
+          standalone={true}
         />
       </div>
 
@@ -244,7 +254,7 @@ export default function Home() {
             )}
 
             {/* Carrusel Informativo */}
-            <div className="px-6">
+            <div className="px-6 lg:max-w-[1200px] lg:mx-auto">
               <InfoBannerCarousel autoPlayInterval={7000}>
                 {/* Banner 1: Regístrate y Obtén Beneficios */}
                 <section className="mb-6 md:mb-8">

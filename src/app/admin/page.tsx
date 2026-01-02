@@ -1057,8 +1057,8 @@ export default function AdminPage() {
                 </button>
               </div>
 
-              {/* Second row - 2 buttons */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* TEMPORALMENTE OCULTO - Second row - 2 buttons */}
+              {/* <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setActiveContainer('gestion-banner')}
                   className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
@@ -1074,10 +1074,10 @@ export default function AdminPage() {
                   <BarChart3 className="w-8 h-8 text-purple-400 mb-2" />
                   <span className="text-white text-sm font-medium">Analytics Dashboard</span>
                 </button>
-              </div>
+              </div> */}
 
-              {/* Third row - 1 centered button */}
-              <div className="flex justify-center">
+              {/* TEMPORALMENTE OCULTO - Third row - 1 centered button */}
+              {/* <div className="flex justify-center">
                 <button
                   onClick={() => setActiveContainer('carruseles')}
                   className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center w-[calc(50%-0.5rem)]"
@@ -1085,7 +1085,7 @@ export default function AdminPage() {
                   <Settings className="w-8 h-8 text-orange-400 mb-2" />
                   <span className="text-white text-sm font-medium">Gestión de Carruseles</span>
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         ) : (
@@ -1928,8 +1928,8 @@ export default function AdminPage() {
       </div>
 
 
-      {/* Sección: Analytics Dashboard */}
-      <div className={`px-6 py-8 ${activeContainer === 'analytics' ? 'block' : 'hidden md:block'}`}>
+      {/* TEMPORALMENTE OCULTO - Sección: Analytics Dashboard */}
+      <div className={`px-6 py-8 hidden`}>
         <div className="flex items-center gap-3">
           <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Analytics Dashboard</h1>
           <button
@@ -1942,8 +1942,8 @@ export default function AdminPage() {
         <p className="text-gray-400 text-xs md:text-base">Estadísticas y métricas del rendimiento</p>
       </div>
 
-      {/* Container Analytics */}
-      <div className={`px-6 pb-4 relative ${activeContainer === 'analytics' ? 'block' : 'hidden md:block'}`}>
+      {/* TEMPORALMENTE OCULTO - Container Analytics */}
+      <div className={`px-6 pb-4 relative hidden`}>
         <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative">{/* banner-distortion class removed - PREMIUM FEATURE */}
           {/* Fila Superior - 3 Columnas en desktop, apiladas en mobile */}
           <div className="grid md:grid-cols-3 grid-cols-1 md:gap-6 gap-4 md:mb-8 mb-6">
@@ -2163,7 +2163,8 @@ export default function AdminPage() {
           </div>
         </DialogContent>
       </Dialog>
-      <div className={`px-6 py-8 ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
+      {/* TEMPORALMENTE OCULTO - Sección Gestión de Carruseles */}
+      <div className={`px-6 py-8 hidden`}>
         <div className="flex items-center gap-3">
           <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Carruseles</h1>
           <button
@@ -2176,8 +2177,8 @@ export default function AdminPage() {
         <p className="text-gray-400 text-xs md:text-base">Administra las imágenes de los carruseles principales</p>
       </div>
 
-      {/* Pestañas de Carruseles */}
-      <div className={`px-6 pb-4 relative ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
+      {/* TEMPORALMENTE OCULTO - Pestañas de Carruseles */}
+      <div className={`px-6 pb-4 relative hidden`}>
         <Tabs defaultValue="carrusel1" className={`w-full ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
           {/* Overlay Message - PREMIUM FEATURE (commented for now, will be used later) */}
           {/* <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -2988,8 +2989,8 @@ export default function AdminPage() {
 
       </div>
 
-      {/* Sección: Gestión de Banner */}
-      <div className={`px-6 py-8 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'}`}>
+      {/* TEMPORALMENTE OCULTO - Sección: Gestión de Banner */}
+      <div className={`px-6 py-8 hidden`}>
         <div className="flex items-center gap-3">
           <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Banner</h1>
           <button
@@ -3002,8 +3003,8 @@ export default function AdminPage() {
         <p className="text-gray-400 text-xs md:text-base">Configuración de banners promocionales</p>
       </div>
 
-      {/* Container Gestión de Banner */}
-      <div className={`px-6 pb-4 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'} relative`}>
+      {/* TEMPORALMENTE OCULTO - Container Gestión de Banner */}
+      <div className={`px-6 pb-4 hidden relative`}>
         {/* Overlay Message - PREMIUM FEATURE (commented for now, will be used later) */}
         {/* <div className="absolute inset-0 flex items-center justify-center z-20">
           <div className="bg-white border-2 border-purple-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
@@ -3886,8 +3887,8 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* Botón flotante para visualizar tienda */}
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50">
+      {/* TEMPORALMENTE OCULTO - Botón flotante para visualizar tienda */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden">
         <div className="relative">
           {/* Tooltip */}
           {showStoreTooltip && (
