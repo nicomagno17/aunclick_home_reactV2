@@ -44,7 +44,6 @@ yarn-error.log*
 
 # All folders containing "bmad" in their name
 **/bmad*/
-docs/
 
 # BMad/Kilo Code configuration and temporary files
 .kilocodemodes
