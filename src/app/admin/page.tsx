@@ -1,14 +1,12 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { VisuallyHidden } from '@/components/ui/visually-hidden'
-import { NavigationProvider, useNavigation } from '@/components/admin/NavigationContext'
-import { cn } from '@/lib/utils'
 import {
   Clock,
   Calendar,
@@ -20,54 +18,53 @@ import {
   HelpCircle,
   Shield,
   Cookie,
-  RefreshCw,
   FileText,
   MapPin,
   Settings,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   BarChart3,
   Image,
   ShoppingBag,
   ArrowLeft,
   Plus,
-  X
+  X,
+  Eye
 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminProductCarousel } from '@/components/admin/admin-product-carousel'
 import { CarouselProductForm } from '@/components/admin/carousel-product-form'
 import { ProductoCarrusel } from '@/types/product'
+import { PrivacyPolicyPopup } from '@/components/privacy-policy-popup'
+import { CookiesPolicyPopup } from '@/components/cookies-policy-popup'
+import { SecurityPolicyPopup } from '@/components/security-policy-popup'
+import { TermsConditionsPopup } from '@/components/terms-conditions-popup'
+import { AboutUsPopup } from '@/components/about-us-popup'
+import { FaqPopup } from '@/components/faq-popup'
 
 
 
-function AdminContent() {
-  // Estilos para la distorsión del banner
-  const bannerDistortionStyle = `
+export default function AdminPage() {
+  // Estilos para la distorsión del banner - PREMIUM FEATURE (commented for now, will be used later)
+  /* const bannerDistortionStyle = `
     .banner-distortion {
       filter: blur(3px) grayscale(70%);
       opacity: 0.5;
       pointer-events: none;
       transition: all 0.3s ease;
     }
-    
+
     .banner-distortion:hover {
       filter: blur(2px) grayscale(50%);
       opacity: 0.7;
     }
-  `;
+  `; */
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedSection, setSelectedSection] = useState('')
   const [activeContainer, setActiveContainer] = useState<string | null>(null)
-  const { setSectionActive } = useNavigation()
-
-  // Sincronizar cambios de sección con el NavigationContext
-  useEffect(() => {
-    if (activeContainer) {
-      setSectionActive(activeContainer)
-    }
-  }, [activeContainer, setSectionActive])
   const [opcionesProducto, setOpcionesProducto] = useState({
     tallasCalzado: false,
     tallasRopa: false,
@@ -75,10 +72,10 @@ function AdminContent() {
     medidas: false
   })
   const [descripcion, setDescripcion] = useState('')
+  const [showStoreTooltip, setShowStoreTooltip] = useState(false)
 
   // Estados para los campos del formulario
   const [productoData, setProductoData] = useState({
-    tipoNegocio: '',
     categoria: '',
     subcategoria: '',
     nombre: '',
@@ -118,6 +115,18 @@ function AdminContent() {
   const [showHelpPopup, setShowHelpPopup] = useState(false)
   const [helpContent, setHelpContent] = useState<{ title: string, content: string } | null>(null)
 
+  // Estados para el acordeón del footer móvil
+  const [openFooterSection, setOpenFooterSection] = useState<string | null>(null)
+  const footerRef = useRef<HTMLDivElement>(null)
+
+  // Estados para los pop-ups de políticas
+  const [showPrivacyPopup, setShowPrivacyPopup] = useState(false)
+  const [showCookiesPopup, setShowCookiesPopup] = useState(false)
+  const [showSecurityPopup, setShowSecurityPopup] = useState(false)
+  const [showTermsPopup, setShowTermsPopup] = useState(false)
+  const [showAboutUsPopup, setShowAboutUsPopup] = useState(false)
+  const [showFaqPopup, setShowFaqPopup] = useState(false)
+
   // Contenido de ayuda para cada sección
   const helpContentData = {
     'datos-negocio': {
@@ -154,6 +163,28 @@ function AdminContent() {
     setShowHelpPopup(false)
     setHelpContent(null)
   }
+
+  // Función para alternar secciones del footer
+  const toggleFooterSection = (section: string) => {
+    setOpenFooterSection(openFooterSection === section ? null : section)
+  }
+
+  // useEffect para cerrar el acordeón al hacer clic fuera del footer
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (footerRef.current && !footerRef.current.contains(event.target as Node)) {
+        setOpenFooterSection(null)
+      }
+    }
+
+    if (openFooterSection) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [openFooterSection])
 
   // Estado para información del negocio
   const [businessInfo, setBusinessInfo] = useState({
@@ -194,6 +225,12 @@ function AdminContent() {
     carrusel2: Array(8).fill(null)  // 8 productos para el carrusel 2
   })
 
+  // Estado para rastrear la tarjeta de carrusel actual
+  const [currentCarouselCard, setCurrentCarouselCard] = useState<{
+    carruselType: 'carrusel1' | 'carrusel2',
+    index: number
+  } | null>(null)
+
   // Estado para los títulos de los carruseles
   const [carouselTitles, setCarouselTitles] = useState({
     carrusel1: '',
@@ -227,12 +264,19 @@ function AdminContent() {
 
 
 
-  const openModal = (section: string) => {
-    setSelectedSection(section)
+  const openModal = (section?: string, carouselInfo?: { carruselType: 'carrusel1' | 'carrusel2', index: number }) => {
+    if (carouselInfo) {
+      // Modo carrusel
+      setCurrentCarouselCard(carouselInfo)
+      setSelectedSection('carrusel') // Sección especial para carruseles
+    } else if (section) {
+      // Modo normal (secciones de productos)
+      setSelectedSection(section)
+      setCurrentCarouselCard(null)
+    }
     setEditingProducto(null)
     // Limpiar todos los campos al abrir el modal
     setProductoData({
-      tipoNegocio: '',
       categoria: '',
       subcategoria: '',
       nombre: '',
@@ -262,7 +306,6 @@ function AdminContent() {
 
     // Pre-llenar todos los campos con los datos existentes
     setProductoData({
-      tipoNegocio: producto.tipoNegocio || '',
       categoria: producto.categoria || '',
       subcategoria: producto.subcategoria || '',
       nombre: producto.nombre || '',
@@ -507,7 +550,6 @@ function AdminContent() {
   const autollenarCampos = () => {
     const ejemplos = {
       destacados: {
-        tipoNegocio: 'productos',
         categoria: 'electronica',
         subcategoria: 'smartphones',
         nombre: 'iPhone 15 Pro Max',
@@ -521,7 +563,6 @@ function AdminContent() {
         imagen: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop'
       },
       ofertas: {
-        tipoNegocio: 'productos',
         categoria: 'ropa',
         subcategoria: 'hombre',
         nombre: 'Camisa Formal Premium',
@@ -535,7 +576,6 @@ function AdminContent() {
         imagen: 'https://images.unsplash.com/photo-1596755094512-f2912cd5b9e3?w=400&h=300&fit=crop'
       },
       novedades: {
-        tipoNegocio: 'servicios',
         categoria: 'profesionales',
         subcategoria: 'consultoria',
         nombre: 'Consultoría Digital Empresarial',
@@ -549,7 +589,6 @@ function AdminContent() {
         imagen: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop'
       },
       tendencias: {
-        tipoNegocio: 'arriendos',
         categoria: 'vehiculos',
         subcategoria: 'autos',
         nombre: 'Tesla Model 3 2024',
@@ -563,7 +602,6 @@ function AdminContent() {
         imagen: 'https://images.unsplash.com/photo-1554224712-d8560f709cbe?w=400&h=300&fit=crop'
       },
       'no-te-lo-pierdas': {
-        tipoNegocio: 'productos',
         categoria: 'hogar',
         subcategoria: 'cocina',
         nombre: 'Set de Ollas Premium 6 piezas',
@@ -577,7 +615,6 @@ function AdminContent() {
         imagen: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop'
       },
       liquidaciones: {
-        tipoNegocio: 'productos',
         categoria: 'deportes',
         subcategoria: 'fitness',
         nombre: 'Bicicleta Estática Profesional',
@@ -595,7 +632,6 @@ function AdminContent() {
     const ejemplo = ejemplos[selectedSection as keyof typeof ejemplos] || ejemplos.destacados
 
     setProductoData({
-      tipoNegocio: ejemplo.tipoNegocio,
       categoria: ejemplo.categoria,
       subcategoria: ejemplo.subcategoria,
       nombre: ejemplo.nombre,
@@ -631,11 +667,56 @@ function AdminContent() {
       return
     }
 
+    // Si estamos en modo carrusel
+    if (currentCarouselCard) {
+      const { carruselType, index } = currentCarouselCard
+
+      const productoData_carousel = {
+        categoria: productoData.categoria,
+        subcategoria: productoData.subcategoria,
+        nombre: productoData.nombre,
+        precioActual: Number.parseFloat(productoData.precioActual) || 0,
+        precioAnterior: productoData.precioAnterior ? Number.parseFloat(productoData.precioAnterior) : undefined,
+        imagen: imagenProducto!
+      }
+
+      console.log('📦 Guardando producto al carrusel:', {
+        carruselType,
+        index,
+        productoData_carousel
+      })
+
+      // Guardar imagen en carouselImages
+      setCarouselImages(prev => ({
+        ...prev,
+        [carruselType]: prev[carruselType].map((img, idx) =>
+          idx === index ? imagenProducto : img
+        )
+      }))
+
+      // Guardar datos del producto en carouselProductData
+      setCarouselProductData(prev => {
+        const newData = {
+          ...prev,
+          [carruselType]: prev[carruselType].map((data, idx) =>
+            idx === index ? productoData_carousel : data
+          )
+        }
+        console.log('✅ Nuevo estado de carouselProductData:', newData)
+        return newData
+      })
+
+      setCurrentCarouselCard(null)
+      setIsModalOpen(false)
+      setImagenProducto(null)
+      return
+    }
+
+    // Modo normal (productos en secciones)
     if (editingProducto) {
       // Modo edición: actualizar producto existente
       const productoActualizado: ProductoCarrusel = {
         id: editingProducto.id,
-        tipoNegocio: productoData.tipoNegocio,
         categoria: productoData.categoria,
         subcategoria: productoData.subcategoria,
         nombre: productoData.nombre,
@@ -660,7 +741,6 @@ function AdminContent() {
       // Modo agregar: crear nuevo producto
       const nuevoProducto: ProductoCarrusel = {
         id: Date.now(), // ID único basado en timestamp
-        tipoNegocio: productoData.tipoNegocio,
         categoria: productoData.categoria,
         subcategoria: productoData.subcategoria,
         nombre: productoData.nombre,
@@ -947,8 +1027,8 @@ function AdminContent() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Banner Distortion Styles */}
-      <style dangerouslySetInnerHTML={{ __html: bannerDistortionStyle }} />
+      {/* Banner Distortion Styles - PREMIUM FEATURE (commented for now, will be used later) */}
+      {/* <style dangerouslySetInnerHTML={{ __html: bannerDistortionStyle }} /> */}
 
       {/* Responsive Menu - Only shows on mobile */}
       <div className="md:hidden block">
@@ -957,142 +1037,55 @@ function AdminContent() {
             {/* Removed the "Panel de Administración" title as it's already in the header */}
 
             {/* Uniform-sized buttons grid */}
-            <div className="space-y-6 mb-6">
+            <div className="space-y-4 mb-4">
               {/* First row - 2 buttons */}
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setActiveContainer('datos-negocio')}
-                  className={cn(
-                    'group relative aspect-square bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm',
-                    'border border-slate-600/50 rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center',
-                    'hover:transform hover:scale-105 hover:shadow-2xl hover:border-blue-400/50',
-                    'hover:bg-gradient-to-br hover:from-blue-600/20 hover:to-blue-800/20',
-                    'active:scale-95',
-                    activeContainer === 'datos-negocio' && 'bg-gradient-to-br from-blue-600/30 to-blue-800/30 border-blue-400 shadow-xl shadow-blue-400/20'
-                  )}
+                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
                 >
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative z-10">
-                    <Store className={cn(
-                      'w-10 h-10 mb-3 transition-all duration-300',
-                      activeContainer === 'datos-negocio' ? 'text-blue-300 drop-shadow-lg' : 'text-blue-400 group-hover:text-blue-300 group-hover:scale-110'
-                    )} />
-                    <span className={cn(
-                      'text-sm font-semibold transition-colors duration-300',
-                      activeContainer === 'datos-negocio' ? 'text-white' : 'text-gray-200 group-hover:text-white'
-                    )}>Datos del Negocio</span>
-                  </div>
+                  <Store className="w-8 h-8 text-blue-400 mb-2" />
+                  <span className="text-white text-sm font-medium">Datos del Negocio</span>
                 </button>
 
                 <button
                   onClick={() => setActiveContainer('gestion-productos')}
-                  className={cn(
-                    'group relative aspect-square bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm',
-                    'border border-slate-600/50 rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center',
-                    'hover:transform hover:scale-105 hover:shadow-2xl hover:border-green-400/50',
-                    'hover:bg-gradient-to-br hover:from-green-600/20 hover:to-green-800/20',
-                    'active:scale-95',
-                    activeContainer === 'gestion-productos' && 'bg-gradient-to-br from-green-600/30 to-green-800/30 border-green-400 shadow-xl shadow-green-400/20'
-                  )}
+                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
                 >
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative z-10">
-                    <ShoppingBag className={cn(
-                      'w-10 h-10 mb-3 transition-all duration-300',
-                      activeContainer === 'gestion-productos' ? 'text-green-300 drop-shadow-lg' : 'text-green-400 group-hover:text-green-300 group-hover:scale-110'
-                    )} />
-                    <span className={cn(
-                      'text-sm font-semibold transition-colors duration-300',
-                      activeContainer === 'gestion-productos' ? 'text-white' : 'text-gray-200 group-hover:text-white'
-                    )}>Gestión de Productos</span>
-                  </div>
+                  <ShoppingBag className="w-8 h-8 text-green-400 mb-2" />
+                  <span className="text-white text-sm font-medium">Gestión de Productos</span>
                 </button>
               </div>
 
-              {/* Second row - 2 buttons */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* TEMPORALMENTE OCULTO - Second row - 2 buttons */}
+              {/* <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setActiveContainer('gestion-banner')}
-                  className={cn(
-                    'group relative aspect-square bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm',
-                    'border border-slate-600/50 rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center',
-                    'hover:transform hover:scale-105 hover:shadow-2xl hover:border-yellow-400/50',
-                    'hover:bg-gradient-to-br hover:from-yellow-600/20 hover:to-yellow-800/20',
-                    'active:scale-95',
-                    activeContainer === 'gestion-banner' && 'bg-gradient-to-br from-yellow-600/30 to-yellow-800/30 border-yellow-400 shadow-xl shadow-yellow-400/20'
-                  )}
+                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
                 >
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative z-10">
-                    <div
-                      className={cn(
-                        'w-10 h-10 mb-3 transition-all duration-300 flex items-center justify-center',
-                        activeContainer === 'gestion-banner' ? 'text-yellow-300 drop-shadow-lg' : 'text-yellow-400 group-hover:text-yellow-300 group-hover:scale-110'
-                      )}
-                      aria-hidden="true"
-                    >
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1m0 2v8h16V7H4m1 1h2v2H5V8m0 3h2v2H5v-2m3-3h8v2H8V8m0 3h8v2H8v-2z"/>
-                      </svg>
-                    </div>
-                    <span className={cn(
-                      'text-sm font-semibold transition-colors duration-300',
-                      activeContainer === 'gestion-banner' ? 'text-white' : 'text-gray-200 group-hover:text-white'
-                    )}>Gestión de Banner</span>
-                  </div>
+                  <Image className="w-8 h-8 text-yellow-400 mb-2" />
+                  <span className="text-white text-sm font-medium">Gestión de Banner</span>
                 </button>
 
                 <button
                   onClick={() => setActiveContainer('analytics')}
-                  className={cn(
-                    'group relative aspect-square bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm',
-                    'border border-slate-600/50 rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center',
-                    'hover:transform hover:scale-105 hover:shadow-2xl hover:border-purple-400/50',
-                    'hover:bg-gradient-to-br hover:from-purple-600/20 hover:to-purple-800/20',
-                    'active:scale-95',
-                    activeContainer === 'analytics' && 'bg-gradient-to-br from-purple-600/30 to-purple-800/30 border-purple-400 shadow-xl shadow-purple-400/20'
-                  )}
+                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center"
                 >
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative z-10">
-                    <BarChart3 className={cn(
-                      'w-10 h-10 mb-3 transition-all duration-300',
-                      activeContainer === 'analytics' ? 'text-purple-300 drop-shadow-lg' : 'text-purple-400 group-hover:text-purple-300 group-hover:scale-110'
-                    )} />
-                    <span className={cn(
-                      'text-sm font-semibold transition-colors duration-300',
-                      activeContainer === 'analytics' ? 'text-white' : 'text-gray-200 group-hover:text-white'
-                    )}>Analytics Dashboard</span>
-                  </div>
+                  <BarChart3 className="w-8 h-8 text-purple-400 mb-2" />
+                  <span className="text-white text-sm font-medium">Analytics Dashboard</span>
                 </button>
-              </div>
+              </div> */}
 
-              {/* Third row - 1 centered button */}
-              <div className="flex justify-center">
+              {/* TEMPORALMENTE OCULTO - Third row - 1 centered button */}
+              {/* <div className="flex justify-center">
                 <button
                   onClick={() => setActiveContainer('carruseles')}
-                  className={cn(
-                    'group relative aspect-square bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm',
-                    'border border-slate-600/50 rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center',
-                    'w-[calc(50%-0.5rem)] hover:transform hover:scale-105 hover:shadow-2xl hover:border-orange-400/50',
-                    'hover:bg-gradient-to-br hover:from-orange-600/20 hover:to-orange-800/20',
-                    'active:scale-95',
-                    activeContainer === 'carruseles' && 'bg-gradient-to-br from-orange-600/30 to-orange-800/30 border-orange-400 shadow-xl shadow-orange-400/20'
-                  )}
+                  className="aspect-square bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg p-4 transition-colors duration-200 flex flex-col items-center justify-center text-center w-[calc(50%-0.5rem)]"
                 >
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative z-10">
-                    <Settings className={cn(
-                      'w-10 h-10 mb-3 transition-all duration-300',
-                      activeContainer === 'carruseles' ? 'text-orange-300 drop-shadow-lg' : 'text-orange-400 group-hover:text-orange-300 group-hover:scale-110'
-                    )} />
-                    <span className={cn(
-                      'text-sm font-semibold transition-colors duration-300',
-                      activeContainer === 'carruseles' ? 'text-white' : 'text-gray-200 group-hover:text-white'
-                    )}>Gestión de Carruseles</span>
-                  </div>
+                  <Settings className="w-8 h-8 text-orange-400 mb-2" />
+                  <span className="text-white text-sm font-medium">Gestión de Carruseles</span>
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         ) : (
@@ -1100,10 +1093,10 @@ function AdminContent() {
             {/* Back button */}
             <button
               onClick={() => setActiveContainer(null)}
-              className="group flex items-center gap-3 px-4 py-2.5 mb-4 bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm border border-slate-600/30 rounded-xl transition-all duration-300 hover:transform hover:scale-105 hover:bg-gradient-to-r hover:from-slate-700/70 hover:to-slate-600/70 hover:border-slate-500/50 hover:shadow-lg active:scale-95"
+              className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors duration-200 mb-2"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" />
-              <span className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors duration-300">Volver al menú</span>
+              <ArrowLeft className="w-5 h-5" />
+              <span className="text-sm">Volver al menú</span>
             </button>
           </div>
         )}
@@ -1311,7 +1304,6 @@ function AdminContent() {
           if (!open) {
             // Limpiar todos los campos al cerrar el modal
             setProductoData({
-              tipoNegocio: '',
               categoria: '',
               subcategoria: '',
               nombre: '',
@@ -1382,25 +1374,8 @@ function AdminContent() {
                 </div>
               </div>
 
-              {/* Tipo de Negocio, Categoría y Subcategoría en la misma fila SOLO PARA NORMAL MODE */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Tipo de Negocio */}
-                <div>
-                  <Label htmlFor="tipo-negocio" className="text-gray-300 mb-2 block md:text-sm text-xs">
-                    Tipo de Negocio
-                  </Label>
-                  <Select value={productoData.tipoNegocio} onValueChange={(value) => handleProductoDataChange('tipoNegocio', value)}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-full">
-                      <SelectValue placeholder="Seleccionar" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600 w-full">
-                      <SelectItem value="productos">Productos</SelectItem>
-                      <SelectItem value="servicios">Servicios</SelectItem>
-                      <SelectItem value="arriendos">Arriendos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
+              {/* Categoría y Subcategoría en la misma fila */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Categoría */}
                 <div>
                   <Label htmlFor="categoria" className="text-gray-300 mb-2 block md:text-sm text-xs">
@@ -1953,8 +1928,8 @@ function AdminContent() {
       </div>
 
 
-      {/* Sección: Analytics Dashboard */}
-      <div className={`px-6 py-8 ${activeContainer === 'analytics' ? 'block' : 'hidden md:block'}`}>
+      {/* TEMPORALMENTE OCULTO - Sección: Analytics Dashboard */}
+      <div className={`px-6 py-8 hidden`}>
         <div className="flex items-center gap-3">
           <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Analytics Dashboard</h1>
           <button
@@ -1967,9 +1942,9 @@ function AdminContent() {
         <p className="text-gray-400 text-xs md:text-base">Estadísticas y métricas del rendimiento</p>
       </div>
 
-      {/* Container Analytics */}
-      <div className={`px-6 pb-4 relative ${activeContainer === 'analytics' ? 'block' : 'hidden md:block'}`}>
-        <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative banner-distortion">
+      {/* TEMPORALMENTE OCULTO - Container Analytics */}
+      <div className={`px-6 pb-4 relative hidden`}>
+        <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative">{/* banner-distortion class removed - PREMIUM FEATURE */}
           {/* Fila Superior - 3 Columnas en desktop, apiladas en mobile */}
           <div className="grid md:grid-cols-3 grid-cols-1 md:gap-6 gap-4 md:mb-8 mb-6">
             {/* Columna 1 - 4 KPIs en 2 filas */}
@@ -2138,13 +2113,16 @@ function AdminContent() {
           </div>
         </div>
 
-        {/* Overlay Message */}
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
-            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
-            <p className="md:text-sm text-xs text-gray-600">Panel de análisis avanzado para monitorear el rendimiento y visualización de tus productos en tiempo real.</p>
+        {/* Overlay Message - PREMIUM FEATURE (commented for now, will be used later) */}
+        {/* <div className="absolute inset-0 flex items-center justify-center z-10">
+          <div className="bg-white border-2 border-purple-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-3 mb-2">📊 Analytics Dashboard</h3>
+            <p className="md:text-sm text-xs text-gray-700 md:mb-3 mb-2">Panel de análisis avanzado que te permite monitorear en tiempo real el rendimiento de tu negocio: visualizaciones de productos, interacciones de clientes, consultas recibidas y estadísticas detalladas de tus publicaciones.</p>
+            <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg md:py-2 py-1.5 md:px-3 px-2 border border-purple-300">
+              <p className="md:text-xs text-[10px] font-semibold text-purple-800">✨ Disponible para clientes Premium</p>
+            </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
 
@@ -2185,7 +2163,8 @@ function AdminContent() {
           </div>
         </DialogContent>
       </Dialog>
-      <div className={`px-6 py-8 ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
+      {/* TEMPORALMENTE OCULTO - Sección Gestión de Carruseles */}
+      <div className={`px-6 py-8 hidden`}>
         <div className="flex items-center gap-3">
           <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Carruseles</h1>
           <button
@@ -2198,16 +2177,19 @@ function AdminContent() {
         <p className="text-gray-400 text-xs md:text-base">Administra las imágenes de los carruseles principales</p>
       </div>
 
-      {/* Pestañas de Carruseles */}
-      <div className={`px-6 pb-4 relative ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
+      {/* TEMPORALMENTE OCULTO - Pestañas de Carruseles */}
+      <div className={`px-6 pb-4 relative hidden`}>
         <Tabs defaultValue="carrusel1" className={`w-full ${activeContainer === 'carruseles' ? 'block' : 'hidden md:block'}`}>
-          {/* Overlay Message */}
-          <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
-              <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
-              <p className="md:text-sm text-xs text-gray-600">Sistema de gestión de carruseles para mostrar tus productos destacados en la página principal.</p>
+          {/* Overlay Message - PREMIUM FEATURE (commented for now, will be used later) */}
+          {/* <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="bg-white border-2 border-purple-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+              <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-3 mb-2">🎠 Gestión de Carruseles</h3>
+              <p className="md:text-sm text-xs text-gray-700 md:mb-3 mb-2">Sistema avanzado de carruseles que te permite organizar y exhibir tus productos destacados en galerías visuales rotativas en la página principal de tu negocio. Hasta 16 posiciones disponibles en 2 carruseles personalizables.</p>
+              <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg md:py-2 py-1.5 md:px-3 px-2 border border-purple-300">
+                <p className="md:text-xs text-[10px] font-semibold text-purple-800">✨ Disponible para clientes Premium</p>
+              </div>
             </div>
-          </div>
+          </div> */}
           <TabsList className="grid grid-cols-2 w-full md:max-w-md max-w-xs mx-auto md:px-6 px-3 md:mb-8 mb-6 bg-gray-800 border border-gray-700 rounded-lg p-1">
             <TabsTrigger
               value="carrusel1"
@@ -2227,7 +2209,7 @@ function AdminContent() {
           <div className="md:px-6 px-3">
             {/* Tab Carrusel 1 */}
             <TabsContent value="carrusel1" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative banner-distortion">
+              <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative">{/* banner-distortion class removed - PREMIUM FEATURE */}
                 <h2 className="text-base md:text-xl font-semibold text-white md:mb-6 mb-4">Carrusel 1 - Imágenes (1-8)</h2>
 
                 {/* Desktop Layout - 4 columns */}
@@ -2242,16 +2224,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2276,10 +2252,35 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel1[index] && (() => {
+                          console.log(`🎨 Renderizando info del producto en carrusel1[${index}]:`, carouselProductData.carrusel1[index])
+                          return (
+                            <div className="mt-2 text-xs text-gray-300 space-y-1">
+                              <div className="font-medium text-gray-400">
+                                {carouselProductData.carrusel1[index].categoria} / {carouselProductData.carrusel1[index].subcategoria}
+                              </div>
+                              <div className="font-semibold text-white truncate">
+                                {carouselProductData.carrusel1[index].nombre}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-400 font-bold">
+                                  ${carouselProductData.carrusel1[index].precioActual?.toLocaleString('es-CL')}
+                                </span>
+                                {carouselProductData.carrusel1[index].precioAnterior && (
+                                  <span className="text-gray-500 line-through text-[10px]">
+                                    ${carouselProductData.carrusel1[index].precioAnterior?.toLocaleString('es-CL')}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })()}
                       </div>
                     ))}
                   </div>
@@ -2294,16 +2295,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2328,10 +2323,35 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel1[index] && (() => {
+                          console.log(`🎨 Renderizando info del producto en carrusel1[${index}]:`, carouselProductData.carrusel1[index])
+                          return (
+                            <div className="mt-2 text-xs text-gray-300 space-y-1">
+                              <div className="font-medium text-gray-400">
+                                {carouselProductData.carrusel1[index].categoria} / {carouselProductData.carrusel1[index].subcategoria}
+                              </div>
+                              <div className="font-semibold text-white truncate">
+                                {carouselProductData.carrusel1[index].nombre}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-400 font-bold">
+                                  ${carouselProductData.carrusel1[index].precioActual?.toLocaleString('es-CL')}
+                                </span>
+                                {carouselProductData.carrusel1[index].precioAnterior && (
+                                  <span className="text-gray-500 line-through text-[10px]">
+                                    ${carouselProductData.carrusel1[index].precioAnterior?.toLocaleString('es-CL')}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })()}
                       </div>
                     ))}
                   </div>
@@ -2349,16 +2369,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2380,7 +2394,7 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
@@ -2398,16 +2412,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2432,7 +2440,7 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
@@ -2450,16 +2458,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2484,7 +2486,7 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
@@ -2502,16 +2504,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel1[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel1', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel1[index] && openModal(undefined, { carruselType: 'carrusel1', index })}
+                        >
                           {carouselImages.carrusel1[index] ? (
                             <>
                               <img
@@ -2536,7 +2532,7 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
@@ -2559,7 +2555,7 @@ function AdminContent() {
 
             {/* Tab Carrusel 2 */}
             <TabsContent value="carrusel2" className="space-y-4">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative banner-distortion">
+              <div className="bg-gray-800 rounded-lg border border-gray-700 md:p-6 p-4 relative">{/* banner-distortion class removed - PREMIUM FEATURE */}
                 <h2 className="text-base md:text-xl font-semibold text-white md:mb-6 mb-4">Carrusel 2 - Imágenes (9-16)</h2>
 
                 {/* Desktop Layout - 4 columns */}
@@ -2574,16 +2570,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2608,10 +2598,32 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2626,16 +2638,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2660,10 +2666,32 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2681,16 +2709,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2715,10 +2737,32 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2733,16 +2777,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2767,10 +2805,32 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2785,16 +2845,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2819,10 +2873,32 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2837,16 +2913,10 @@ function AdminContent() {
                         </div>
 
                         {/* Marco para imagen */}
-                        <div className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden">
-                          {!carouselImages.carrusel2[index] && (
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleCarouselImageUpload('carrusel2', index, e)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                          )}
-
+                        <div
+                          className="aspect-[4/3] bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg hover:border-purple-400 transition-colors cursor-pointer relative overflow-hidden"
+                          onClick={() => !carouselImages.carrusel2[index] && openModal(undefined, { carruselType: 'carrusel2', index })}
+                        >
                           {carouselImages.carrusel2[index] ? (
                             <>
                               <img
@@ -2870,10 +2940,32 @@ function AdminContent() {
                           ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                               <Plus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">Subir imagen</span>
+                              <span className="text-sm">Agregar producto</span>
                             </div>
                           )}
                         </div>
+
+                        {/* Información del producto debajo de la tarjeta */}
+                        {carouselProductData.carrusel2[index] && (
+                          <div className="mt-2 text-xs text-gray-300 space-y-1">
+                            <div className="font-medium text-gray-400">
+                              {carouselProductData.carrusel2[index].categoria} / {carouselProductData.carrusel2[index].subcategoria}
+                            </div>
+                            <div className="font-semibold text-white truncate">
+                              {carouselProductData.carrusel2[index].nombre}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">
+                                ${carouselProductData.carrusel2[index].precioActual?.toLocaleString('es-CL')}
+                              </span>
+                              {carouselProductData.carrusel2[index].precioAnterior && (
+                                <span className="text-gray-500 line-through text-[10px]">
+                                  ${carouselProductData.carrusel2[index].precioAnterior?.toLocaleString('es-CL')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -2897,8 +2989,8 @@ function AdminContent() {
 
       </div>
 
-      {/* Sección: Gestión de Banner */}
-      <div className={`px-6 py-8 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'}`}>
+      {/* TEMPORALMENTE OCULTO - Sección: Gestión de Banner */}
+      <div className={`px-6 py-8 hidden`}>
         <div className="flex items-center gap-3">
           <h1 className="text-lg md:text-3xl font-bold text-white mb-2">Gestión de Banner</h1>
           <button
@@ -2911,17 +3003,20 @@ function AdminContent() {
         <p className="text-gray-400 text-xs md:text-base">Configuración de banners promocionales</p>
       </div>
 
-      {/* Container Gestión de Banner */}
-      <div className={`px-6 pb-4 ${activeContainer === 'gestion-banner' ? 'block' : 'hidden md:block'} relative`}>
-        {/* Overlay Message - Colocado fuera del contenedor con distorsión */}
-        <div className="absolute inset-0 flex items-center justify-center z-20">
-          <div className="bg-white border-2 border-gray-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
-            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-2 mb-1.5">¡Próximamente!</h3>
-            <p className="md:text-sm text-xs text-gray-600">Sistema de gestión de banners para promocionar ofertas especiales en lugares destacados de tu página.</p>
+      {/* TEMPORALMENTE OCULTO - Container Gestión de Banner */}
+      <div className={`px-6 pb-4 hidden relative`}>
+        {/* Overlay Message - PREMIUM FEATURE (commented for now, will be used later) */}
+        {/* <div className="absolute inset-0 flex items-center justify-center z-20">
+          <div className="bg-white border-2 border-purple-400 rounded-lg md:px-6 px-4 md:py-5 py-4 shadow-lg text-center md:max-w-sm max-w-[300px]">
+            <h3 className="md:text-lg text-base font-bold text-gray-800 md:mb-3 mb-2">🎯 Gestión de Banners</h3>
+            <p className="md:text-sm text-xs text-gray-700 md:mb-3 mb-2">Sistema de banners publicitarios que te permite crear y gestionar anuncios visuales prominentes en zonas estratégicas de tu página. Ideal para promocionar ofertas especiales, productos destacados o eventos importantes.</p>
+            <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg md:py-2 py-1.5 md:px-3 px-2 border border-purple-300">
+              <p className="md:text-xs text-[10px] font-semibold text-purple-800">✨ Disponible para clientes Premium</p>
+            </div>
           </div>
-        </div>
+        </div> */}
 
-        <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative banner-distortion">
+        <div className="md:bg-transparent md:border-0 md:rounded-none md:p-0 bg-gray-800 border border-gray-700 rounded-lg p-4 relative">{/* banner-distortion class removed - PREMIUM FEATURE */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
             {/* Columna 1 - Banner 1 */}
             <div className="relative bg-gray-700 border border-gray-600 rounded-lg p-3 md:p-4">
@@ -3091,6 +3186,13 @@ function AdminContent() {
       {/* Popup de Información del Producto */}
       <Dialog open={selectedProducto !== null} onOpenChange={(open) => !open && setSelectedProducto(null)}>
         <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700 text-white md:p-6 p-4">
+          {/* Título oculto para accesibilidad */}
+          {selectedProducto && (
+            <VisuallyHidden>
+              <DialogTitle>{selectedProducto.nombre}</DialogTitle>
+            </VisuallyHidden>
+          )}
+
           {/* Botón cerrar */}
           <button
             onClick={() => setSelectedProducto(null)}
@@ -3490,26 +3592,34 @@ function AdminContent() {
                   Avisos Legales
                 </h3>
                 <div className="space-y-1 md:space-y-2">
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowPrivacyPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Privacidad
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowCookiesPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Cookie className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Cookies
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
-                    <RefreshCw className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
-                    Reembolso
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowSecurityPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Seguridad
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowTermsPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <FileText className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Condiciones y términos
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -3523,18 +3633,24 @@ function AdminContent() {
                   Información
                 </h3>
                 <div className="space-y-1 md:space-y-2">
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowAboutUsPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Users className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Sobre Nosotros
-                  </a>
+                  </button>
                   <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
                     <Store className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Registra tu Negocio
                   </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowFaqPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <HelpCircle className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Preguntas
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -3608,7 +3724,7 @@ function AdminContent() {
       </Dialog>
 
       {/* Mobile-only footer - appears at the end */}
-      <div className="md:hidden block bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white py-6 px-6">
+      <div ref={footerRef} className="md:hidden block bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white py-6 px-6">
         <div className="container mx-auto">
           {/* Fila superior - 2 filas de 2 columnas en móvil, 4 columnas en desktop */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mb-8">
@@ -3622,40 +3738,56 @@ function AdminContent() {
                   <h2 className="text-lg md:text-2xl font-bold text-white mb-0.5">Solo a un</h2>
                   <h2 className="text-xl md:text-3xl font-bold text-yellow-300">CLICK</h2>
                 </div>
-                <p className="text-primary-foreground/80 text-xs md:text-sm leading-relaxed">
-                  Tu guía completa de comercios, servicios y eventos.
-                </p>
-                <p className="text-primary-foreground/80 text-xs md:text-sm leading-relaxed">
-                  Descubre todo lo que tu ciudad tiene para ofrecer.
-                </p>
               </div>
 
               {/* Columna 2 - Avisos Legales (intercambiado con Contacto) */}
               <div className="text-left">
-                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
-                  Avisos Legales
-                </h3>
-                <div className="space-y-1 md:space-y-2">
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleFooterSection('avisos-legales')}
+                >
+                  <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2 flex-1">
+                    Avisos Legales
+                  </h3>
+                  <ChevronDown
+                    className={`w-4 h-4 text-yellow-300 transition-transform duration-300 mb-3 md:mb-4 ${
+                      openFooterSection === 'avisos-legales' ? 'rotate-180' : ''
+                    }`}
+                  />
+                </div>
+                <div
+                  className={`space-y-1 md:space-y-2 overflow-hidden transition-all duration-300 ${
+                    openFooterSection === 'avisos-legales' ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <button
+                    onClick={() => setShowPrivacyPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Privacidad
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowCookiesPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Cookie className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Cookies
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
-                    <RefreshCw className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
-                    Reembolso
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowSecurityPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Shield className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Seguridad
-                  </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  </button>
+                  <button
+                    onClick={() => setShowTermsPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <FileText className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Condiciones y términos
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -3665,31 +3797,65 @@ function AdminContent() {
 
               {/* Columna 3 - Información */}
               <div className="text-left">
-                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
-                  Información
-                </h3>
-                <div className="space-y-1 md:space-y-2">
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleFooterSection('informacion')}
+                >
+                  <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2 flex-1">
+                    Información
+                  </h3>
+                  <ChevronDown
+                    className={`w-4 h-4 text-yellow-300 transition-transform duration-300 mb-3 md:mb-4 ${
+                      openFooterSection === 'informacion' ? 'rotate-180' : ''
+                    }`}
+                  />
+                </div>
+                <div
+                  className={`space-y-1 md:space-y-2 overflow-hidden transition-all duration-300 ${
+                    openFooterSection === 'informacion' ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <button
+                    onClick={() => setShowAboutUsPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <Users className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Sobre Nosotros
-                  </a>
+                  </button>
                   <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
                     <Store className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Registra tu Negocio
                   </a>
-                  <a href="#" className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200">
+                  <button
+                    onClick={() => setShowFaqPopup(true)}
+                    className="flex items-center gap-1 md:gap-2 text-primary-foreground/80 text-xs hover:text-yellow-300 transition-colors duration-200"
+                  >
                     <HelpCircle className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     Preguntas
-                  </a>
+                  </button>
                 </div>
               </div>
 
               {/* Columna 4 - Contacto (intercambiado con Avisos Legales) */}
               <div className="text-left">
-                <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2">
-                  Contacto
-                </h3>
-                <div className="space-y-2 md:space-y-3">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleFooterSection('contacto')}
+                >
+                  <h3 className="text-sm md:text-lg font-semibold text-white mb-3 md:mb-4 border-b border-yellow-400/30 pb-2 flex-1">
+                    Contacto
+                  </h3>
+                  <ChevronDown
+                    className={`w-4 h-4 text-yellow-300 transition-transform duration-300 mb-3 md:mb-4 ${
+                      openFooterSection === 'contacto' ? 'rotate-180' : ''
+                    }`}
+                  />
+                </div>
+                <div
+                  className={`space-y-2 md:space-y-3 overflow-hidden transition-all duration-300 ${
+                    openFooterSection === 'contacto' ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
                   <div className="flex items-center gap-2 md:gap-3">
                     <Mail className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
                     <span className="text-primary-foreground/80 text-xs">soloaunclick@gmail.com</span>
@@ -3720,14 +3886,73 @@ function AdminContent() {
           </div>
         </div>
       </div>
-    </div>
-  )
-}
 
-export default function AdminPage() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
-      <AdminContent />
+      {/* TEMPORALMENTE OCULTO - Botón flotante para visualizar tienda */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden">
+        <div className="relative">
+          {/* Tooltip */}
+          {showStoreTooltip && (
+            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-gray-800 text-white px-3 py-2 rounded-lg shadow-xl border border-yellow-400/50">
+              <span className="text-sm font-medium">Visualiza tu tienda</span>
+              {/* Flecha del tooltip */}
+              <div className="absolute left-full top-1/2 -translate-y-1/2 -ml-px">
+                <div className="border-8 border-transparent border-l-gray-800"></div>
+              </div>
+            </div>
+          )}
+
+          {/* Botón */}
+          <button
+            onClick={() => {
+              // TODO: Aquí deberías usar el ID real de la tienda del usuario
+              // Por ahora usaremos 'beautyplus' como ejemplo
+              window.open('/tienda/beautyplus', '_blank')
+            }}
+            onMouseEnter={() => setShowStoreTooltip(true)}
+            onMouseLeave={() => setShowStoreTooltip(false)}
+            className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-600 via-purple-500 to-purple-700 hover:from-purple-700 hover:via-purple-600 hover:to-purple-800 rounded-full shadow-2xl border-2 border-yellow-400 transition-all duration-300 hover:scale-110 hover:shadow-yellow-400/50"
+            aria-label="Visualizar tienda"
+          >
+            <Store className="w-7 h-7 text-yellow-300" />
+          </button>
+        </div>
+      </div>
+
+      {/* Popup de Políticas de Privacidad */}
+      <PrivacyPolicyPopup
+        isOpen={showPrivacyPopup}
+        onClose={() => setShowPrivacyPopup(false)}
+      />
+
+      {/* Popup de Políticas de Cookies */}
+      <CookiesPolicyPopup
+        isOpen={showCookiesPopup}
+        onClose={() => setShowCookiesPopup(false)}
+      />
+
+      {/* Popup de Política de Seguridad */}
+      <SecurityPolicyPopup
+        isOpen={showSecurityPopup}
+        onClose={() => setShowSecurityPopup(false)}
+      />
+
+      {/* Popup de Términos y Condiciones */}
+      <TermsConditionsPopup
+        isOpen={showTermsPopup}
+        onClose={() => setShowTermsPopup(false)}
+      />
+
+      {/* Popup de Sobre Nosotros */}
+      <AboutUsPopup
+        isOpen={showAboutUsPopup}
+        onClose={() => setShowAboutUsPopup(false)}
+      />
+
+      {/* Popup de Preguntas Frecuentes */}
+      <FaqPopup
+        isOpen={showFaqPopup}
+        onClose={() => setShowFaqPopup(false)}
+      />
     </div>
   )
 }

@@ -8,7 +8,7 @@ interface InfoBannerCarouselProps {
   autoPlayInterval?: number
 }
 
-export function InfoBannerCarousel({ children, autoPlayInterval = 5000 }: InfoBannerCarouselProps) {
+export function InfoBannerCarousel({ children, autoPlayInterval = 8000 }: InfoBannerCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward')
 
@@ -99,8 +99,8 @@ export function InfoBannerCarousel({ children, autoPlayInterval = 5000 }: InfoBa
             key={index}
             onClick={() => goToSlide(index)}
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex 
-                ? 'bg-white scale-125' 
+              index === currentIndex
+                ? 'bg-white scale-125'
                 : 'bg-white/30 hover:bg-white/50'
             }`}
             aria-label={`Ir al banner ${index + 1}`}

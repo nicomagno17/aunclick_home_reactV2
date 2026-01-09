@@ -16,7 +16,7 @@ export function SkeletonCarousel({
   return (
     <section className="mb-12">
       {/* Header skeleton */}
-      <div className="mb-6">
+      <div className="mb-6 px-6 lg:max-w-[1200px] lg:mx-auto">
         <div className="flex items-center justify-between mb-2">
           <div className="h-8 bg-gray-200 rounded w-48 animate-pulse"></div>
           <div className="hidden md:flex items-center gap-2">
@@ -28,7 +28,7 @@ export function SkeletonCarousel({
       </div>
 
       {/* Cards container */}
-      <div className="relative group">
+      <div className="relative group px-6 lg:max-w-[1200px] lg:mx-auto">
         <div 
           className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}

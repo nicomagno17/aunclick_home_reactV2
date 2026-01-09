@@ -39,7 +39,7 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
 
   // Configuración responsive
   const visibleCardsPerRowDesktop = 4 // 4 tarjetas visibles por fila en desktop
-  const visibleCardsPerRowMobile = 2 // 2 tarjetas visibles por fila en móvil
+  const visibleCardsPerRowMobile = 3 // 3 tarjetas visibles por fila en móvil
   const cardsPerMove = 1 // Mover de a 1 tarjeta para mejor control en móvil
 
   const totalCards = products.length
@@ -284,15 +284,15 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
 
   return (
     <section className="mb-12">
-      <div className="mb-6">
+      <div className="mb-6 px-6">
         <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       </div>
 
       {/* Fila 1 */}
-      <div className="relative mb-8">
+      <div className="relative mb-8 px-2 lg:px-6 overflow-hidden">
         <div className="overflow-hidden">
-          <div className={`grid ${visibleCardsPerRow === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-2 sm:gap-4 md:gap-6`}>
+          <div className={`grid ${visibleCardsPerRow === 3 ? 'grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-1 sm:gap-4 md:gap-6`}>
             {visibleProductsRow1.map((product) => (
               <div key={`${cardKeyPrefix}-row1-${product.id}`} onClick={() => handleCardInteractionForRow(1)}>
                 <AdminProductCard producto={product} />
@@ -315,7 +315,7 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
         {row1State.startIndex < maxIndex1 && (
           <button
             onClick={() => handleNextForRow(1)}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-gradient-to-r from-purple-900 via-purple-800 via-purple-700 via-purple-600 to-purple-500 border border-yellow-400 rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-purple-900 via-purple-800 via-purple-700 via-purple-600 to-purple-500 border border-yellow-400 rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10"
             aria-label="Ver más tarjetas - Fila 1"
           >
             <ChevronRight className="h-5 w-5 text-yellow-300" />
@@ -324,9 +324,9 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
       </div>
 
       {/* Fila 2 */}
-      <div className="relative">
+      <div className="relative px-2 lg:px-6 overflow-hidden">
         <div className="overflow-hidden">
-          <div className={`grid ${visibleCardsPerRow === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-2 sm:gap-4 md:gap-6`}>
+          <div className={`grid ${visibleCardsPerRow === 3 ? 'grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-1 sm:gap-4 md:gap-6`}>
             {visibleProductsRow2.map((product) => (
               <div key={`${cardKeyPrefix}-row2-${product.id}`} onClick={() => handleCardInteractionForRow(2)}>
                 <AdminProductCard producto={product} />
@@ -349,7 +349,7 @@ export function CardCarousel({ title, subtitle, products, cardKeyPrefix }: CardC
         {row2State.startIndex < maxIndex2 && (
           <button
             onClick={() => handleNextForRow(2)}
-            className="hidden sm:flex absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-gradient-to-r from-purple-900 via-purple-800 via-purple-700 via-purple-600 to-purple-500 border border-yellow-400 rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 items-center justify-center"
+            className="hidden sm:flex absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-purple-900 via-purple-800 via-purple-700 via-purple-600 to-purple-500 border border-yellow-400 rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-10 items-center justify-center"
             aria-label="Ver más tarjetas - Fila 2"
           >
             <ChevronRight className="h-5 w-5 text-yellow-300" />

@@ -1,15 +1,16 @@
 export interface Product {
   id: string
   name: string
-  description: string
+  description?: string
   price: number
   originalPrice?: number
   image: string
   category: string
-  source: string
-  rating: number
-  reviews: number
-  inStock: boolean
+  source: string // Nombre de la tienda que subió el producto (uso interno - NO se muestra en tarjetas)
+  // NOTA: Cuando se conecte la BD, agregar: negocio_id o userId para filtrar productos por tienda
+  rating?: number
+  reviews?: number
+  inStock?: boolean
   discount?: number
 }
 
@@ -173,4 +174,25 @@ export interface ImageData {
 export interface CarouselSection {
   title: string;
   images: ImageData[];
+}
+
+// Tipo para banners de tienda con precios opcionales
+export interface BannerInfo {
+  imagen: string;
+  precioActual?: number;
+  precioAnterior?: number;
+}
+
+// Tipo para información de tienda/negocio (página de tienda)
+export interface StoreInfo {
+  nombre: string;
+  logo: string;
+  telefono: string;
+  whatsapp: string;
+  email: string;
+  direccion: string;
+  horarios: Record<string, string>;
+  banner1: string | BannerInfo; // Puede ser string (legacy) o BannerInfo con precios opcionales
+  banner2: string | BannerInfo; // Puede ser string (legacy) o BannerInfo con precios opcionales
+  carousels: Array<{ products: Product[] }>;
 }
